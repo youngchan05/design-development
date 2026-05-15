@@ -43,7 +43,10 @@ body {
 
     /* ─── Left panel ─── */
     .panel-left {
-      background: var(--teal);
+      background: #1a2e26;
+      background-image: url('https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?fit=crop&w=960&q=80');
+      background-size: cover;
+      background-position: center;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -57,8 +60,8 @@ body {
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 60% 50% at 110% 20%, rgba(255,255,255,.08) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 60% at -10% 80%, rgba(0,0,0,.15) 0%, transparent 60%);
+        linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 45%),
+        linear-gradient(to bottom, rgba(0,0,0,.35) 0%, transparent 35%);
     }
 
     .panel-left > * { position: relative; z-index: 1; }
@@ -92,14 +95,16 @@ body {
       color: #fff;
       line-height: 1.25;
       letter-spacing: -.6px;
+      text-shadow: 0 2px 12px rgba(0,0,0,.5);
       margin-bottom: 14px;
     }
 
     .panel-copy p {
       font-size: 14px;
-      color: rgba(255,255,255,.7);
+      color: rgba(255,255,255,.85);
       line-height: 1.7;
       max-width: 360px;
+      text-shadow: 0 1px 8px rgba(0,0,0,.5);
     }
 
     .panel-tags {
@@ -299,64 +304,6 @@ body {
     <div class="panel-copy">
       <h2>GHG Emission,<br>Authentic Reporting<br>System</h2>
       <p>IMO DCS · EU MRV · CII 규정에 대응하는 해운사 온실가스 배출량 검증 플랫폼입니다.</p>
-    </div>
-
-    <!-- Ship illustration -->
-    <div style="margin-bottom: 24px;">
-      <svg viewBox="0 0 420 140" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; opacity:.22;">
-        <!-- Water -->
-        <path d="M0 108 Q52 100 105 108 Q157 116 210 108 Q262 100 315 108 Q367 116 420 108 L420 140 L0 140Z" fill="white"/>
-        <!-- Hull -->
-        <path d="M20 108 L20 88 L380 88 L400 96 L400 108Z" fill="white"/>
-        <!-- Bow curve -->
-        <path d="M380 88 Q400 88 400 96" fill="none" stroke="white" stroke-width="1.5"/>
-        <!-- Stern -->
-        <path d="M20 108 L14 104 L16 92 L20 88" fill="white"/>
-        <!-- Deck line -->
-        <line x1="20" y1="88" x2="380" y2="88" stroke="white" stroke-width="1" opacity=".5"/>
-        <!-- Bridge / Superstructure -->
-        <rect x="52" y="56" width="60" height="32" rx="2" fill="white"/>
-        <rect x="58" y="48" width="48" height="12" rx="2" fill="white"/>
-        <rect x="64" y="40" width="36" height="12" rx="2" fill="white"/>
-        <!-- Bridge windows -->
-        <rect x="62" y="62" width="8" height="6" rx="1" fill="rgba(0,0,0,.15)"/>
-        <rect x="74" y="62" width="8" height="6" rx="1" fill="rgba(0,0,0,.15)"/>
-        <rect x="86" y="62" width="8" height="6" rx="1" fill="rgba(0,0,0,.15)"/>
-        <rect x="98" y="62" width="8" height="6" rx="1" fill="rgba(0,0,0,.15)"/>
-        <!-- Funnel -->
-        <rect x="60" y="34" width="12" height="8" rx="1" fill="white"/>
-        <rect x="62" y="28" width="8" height="8" rx="1" fill="white" opacity=".7"/>
-        <!-- Crane arm -->
-        <line x1="78" y1="40" x2="78" y2="20" stroke="white" stroke-width="2"/>
-        <line x1="78" y1="20" x2="130" y2="30" stroke="white" stroke-width="1.5"/>
-        <line x1="105" y1="25" x2="105" y2="56" stroke="white" stroke-width="1" opacity=".6"/>
-        <!-- Containers row 1 -->
-        <rect x="135" y="72" width="28" height="16" rx="1" fill="white" opacity=".9"/>
-        <rect x="167" y="72" width="28" height="16" rx="1" fill="white" opacity=".8"/>
-        <rect x="199" y="72" width="28" height="16" rx="1" fill="white" opacity=".9"/>
-        <rect x="231" y="72" width="28" height="16" rx="1" fill="white" opacity=".7"/>
-        <rect x="263" y="72" width="28" height="16" rx="1" fill="white" opacity=".9"/>
-        <rect x="295" y="72" width="28" height="16" rx="1" fill="white" opacity=".8"/>
-        <rect x="327" y="72" width="28" height="16" rx="1" fill="white" opacity=".75"/>
-        <!-- Containers row 2 -->
-        <rect x="140" y="58" width="28" height="14" rx="1" fill="white" opacity=".65"/>
-        <rect x="172" y="58" width="28" height="14" rx="1" fill="white" opacity=".6"/>
-        <rect x="204" y="58" width="28" height="14" rx="1" fill="white" opacity=".65"/>
-        <rect x="236" y="58" width="28" height="14" rx="1" fill="white" opacity=".55"/>
-        <rect x="268" y="58" width="28" height="14" rx="1" fill="white" opacity=".65"/>
-        <rect x="300" y="58" width="28" height="14" rx="1" fill="white" opacity=".55"/>
-        <!-- Containers row 3 -->
-        <rect x="148" y="46" width="28" height="12" rx="1" fill="white" opacity=".4"/>
-        <rect x="180" y="46" width="28" height="12" rx="1" fill="white" opacity=".35"/>
-        <rect x="212" y="46" width="28" height="12" rx="1" fill="white" opacity=".4"/>
-        <rect x="244" y="46" width="28" height="12" rx="1" fill="white" opacity=".3"/>
-        <rect x="276" y="46" width="28" height="12" rx="1" fill="white" opacity=".35"/>
-        <!-- Mast / antenna -->
-        <line x1="340" y1="88" x2="340" y2="58" stroke="white" stroke-width="1.5" opacity=".7"/>
-        <line x1="334" y1="62" x2="346" y2="62" stroke="white" stroke-width="1" opacity=".5"/>
-        <!-- Wave lines -->
-        <path d="M0 116 Q35 112 70 116 Q105 120 140 116 Q175 112 210 116 Q245 120 280 116 Q315 112 350 116 Q385 120 420 116" stroke="white" stroke-width="1" opacity=".3" fill="none"/>
-      </svg>
     </div>
 
     <div class="panel-tags">
