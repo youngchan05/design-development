@@ -1,397 +1,755 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — GEARS</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — GEARS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    :root {
-      --bg:        #f5f7f5;
-      --surface:   #ffffff;
-      --surface-2: #f0f4f0;
-      --border:    rgba(0,0,0,.08);
-      --border-md: rgba(0,0,0,.13);
-      --teal:      #3d8b6e;
-      --teal-dim:  rgba(61,139,110,.09);
-      --teal-mid:  rgba(61,139,110,.22);
-      --text-1:    #1a2420;
-      --text-2:    #5a6e68;
-      --text-3:    #9eb0aa;
-      --radius:    10px;
-      --radius-sm: 6px;
-    }
+      :root {
+        --bg: #f5f7f5;
+        --surface: #ffffff;
+        --surface-2: #f0f4f0;
+        --border: rgba(0, 0, 0, 0.08);
+        --border-md: rgba(0, 0, 0, 0.13);
+        --teal: #3d8b6e;
+        --teal-dim: rgba(61, 139, 110, 0.09);
+        --teal-mid: rgba(61, 139, 110, 0.22);
+        --text-1: #1a2420;
+        --text-2: #5a6e68;
+        --text-3: #9eb0aa;
+        --radius: 10px;
+        --radius-sm: 6px;
+      }
 
-body {
-      font-family: 'Geist', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text-1);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+      body {
+        font-family: "Geist", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text-1);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-    /* ─── Layout ─── */
-    .wrap {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 480px;
-    }
+      /* ─── Layout ─── */
+      .wrap {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 1fr 480px;
+      }
 
-    /* ─── Left panel ─── */
-    .panel-left {
-      background: #1a2e26;
-      background-image: url('https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?fit=crop&w=960&q=80');
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 48px 56px;
-      position: relative;
-      overflow: hidden;
-    }
+      /* ─── Left panel ─── */
+      .panel-left {
+        background: linear-gradient(
+          160deg,
+          #0d2318 0%,
+          #1a3a2a 50%,
+          #0e2820 100%
+        );
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 48px 56px;
+        position: relative;
+        overflow: hidden;
+      }
 
-    .panel-left::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 45%),
-        linear-gradient(to bottom, rgba(0,0,0,.35) 0%, transparent 35%);
-    }
+      .panel-left > * {
+        position: relative;
+        z-index: 1;
+      }
 
-    .panel-left > * { position: relative; z-index: 1; }
+      .iso-art {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        top: 48px;
+        height: 64%;
+        opacity: 0.92;
+      }
 
-    .panel-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+      .panel-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-    .brand-mark {
-      width: 36px; height: 36px;
-      background: rgba(255,255,255,.2);
-      border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      backdrop-filter: blur(4px);
-    }
+      .brand-mark {
+        width: 36px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+      }
 
-    .brand-name {
-      font-size: 18px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -.3px;
-    }
+      .brand-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.3px;
+      }
 
-    .panel-copy { }
+      .panel-copy {
+      }
 
-    .panel-copy h2 {
-      font-size: 32px;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1.25;
-      letter-spacing: -.6px;
-      text-shadow: 0 2px 12px rgba(0,0,0,.5);
-      margin-bottom: 14px;
-    }
+      .panel-copy h2 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.25;
+        letter-spacing: -0.6px;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+        margin-bottom: 14px;
+      }
 
-    .panel-copy p {
-      font-size: 14px;
-      color: rgba(255,255,255,.85);
-      line-height: 1.7;
-      max-width: 360px;
-      text-shadow: 0 1px 8px rgba(0,0,0,.5);
-    }
+      .panel-copy p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.7;
+        max-width: 360px;
+        text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+      }
 
-    .panel-tags {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+      .panel-tags {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
 
-    .panel-tag {
-      padding: 5px 12px;
-      border-radius: 20px;
-      background: rgba(255,255,255,.15);
-      font-size: 11.5px;
-      font-weight: 500;
-      color: rgba(255,255,255,.9);
-      border: 1px solid rgba(255,255,255,.2);
-    }
+      .panel-tag {
+        padding: 5px 12px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.15);
+        font-size: 11.5px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
 
-    /* ─── Right panel ─── */
-    .panel-right {
-      background: var(--surface);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 56px 48px;
-      position: relative;
-    }
+      /* ─── Right panel ─── */
+      .panel-right {
+        background: var(--surface);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 56px 48px;
+        position: relative;
+      }
 
-.login-header { margin-bottom: 32px; }
+      .login-header {
+        margin-bottom: 32px;
+      }
 
-    .login-header h1 {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -.4px;
-      color: var(--text-1);
-      margin-bottom: 6px;
-    }
+      .login-header h1 {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.4px;
+        color: var(--text-1);
+        margin-bottom: 6px;
+      }
 
-    .login-header p {
-      font-size: 13px;
-      color: var(--text-2);
-    }
+      .login-header p {
+        font-size: 13px;
+        color: var(--text-2);
+      }
 
-    /* ─── Form ─── */
-    .form { display: flex; flex-direction: column; gap: 16px; }
+      /* ─── Form ─── */
+      .form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
 
-    .field { display: flex; flex-direction: column; gap: 6px; }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
 
-    .field label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-2);
-      letter-spacing: .2px;
-    }
+      .field label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-2);
+        letter-spacing: 0.2px;
+      }
 
-    .input-wrap { position: relative; }
+      .input-wrap {
+        position: relative;
+      }
 
-    .input-icon {
-      position: absolute;
-      left: 12px; top: 50%; transform: translateY(-50%);
-      color: var(--text-3);
-      pointer-events: none;
-      display: flex;
-    }
+      .input-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-3);
+        pointer-events: none;
+        display: flex;
+      }
 
-    .field input {
-      width: 100%;
-      height: 42px;
-      padding: 0 12px 0 38px;
-      border: 1px solid var(--border-md);
-      border-radius: var(--radius-sm);
-      font-family: 'Geist', system-ui, sans-serif;
-      font-size: 13px;
-      color: var(--text-1);
-      background: var(--surface);
-      outline: none;
-      transition: border-color .15s, box-shadow .15s;
-    }
+      .field input {
+        width: 100%;
+        height: 42px;
+        padding: 0 12px 0 38px;
+        border: 1px solid var(--border-md);
+        border-radius: var(--radius-sm);
+        font-family: "Geist", system-ui, sans-serif;
+        font-size: 13px;
+        color: var(--text-1);
+        background: var(--surface);
+        outline: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
 
-    .field input::placeholder { color: var(--text-3); }
+      .field input::placeholder {
+        color: var(--text-3);
+      }
 
-    .field input:focus {
-      border-color: var(--teal);
-      box-shadow: 0 0 0 3px var(--teal-dim);
-    }
+      .field input:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 3px var(--teal-dim);
+      }
 
-    .field-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+      .field-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
 
-    .remember {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      cursor: pointer;
-      font-size: 12.5px;
-      color: var(--text-2);
-      user-select: none;
-    }
+      .remember {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        cursor: pointer;
+        font-size: 12.5px;
+        color: var(--text-2);
+        user-select: none;
+      }
 
-    .remember input[type="checkbox"] {
-      width: 15px; height: 15px;
-      accent-color: var(--teal);
-      cursor: pointer;
-    }
+      .remember input[type="checkbox"] {
+        width: 15px;
+        height: 15px;
+        accent-color: var(--teal);
+        cursor: pointer;
+      }
 
-    .forgot {
-      font-size: 12.5px;
-      color: var(--teal);
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .forgot:hover { text-decoration: underline; }
+      .forgot {
+        font-size: 12.5px;
+        color: var(--teal);
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .forgot:hover {
+        text-decoration: underline;
+      }
 
-    .btn-login {
-      width: 100%;
-      height: 44px;
-      background: var(--teal);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-family: 'Geist', system-ui, sans-serif;
-      font-size: 13.5px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background .15s, transform .1s;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      margin-top: 4px;
-    }
+      .btn-login {
+        width: 100%;
+        height: 44px;
+        background: var(--teal);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-family: "Geist", system-ui, sans-serif;
+        font-size: 13.5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          transform 0.1s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 4px;
+      }
 
-    .btn-login:hover { background: #34775e; }
-    .btn-login:active { transform: scale(.99); }
+      .btn-login:hover {
+        background: #34775e;
+      }
+      .btn-login:active {
+        transform: scale(0.99);
+      }
 
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      color: var(--text-3); font-size: 11.5px;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text-3);
+        font-size: 11.5px;
+      }
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
 
-    .sso-btn {
-      width: 100%; height: 42px;
-      border: 1px solid var(--border-md);
-      border-radius: var(--radius-sm);
-      background: var(--surface);
-      color: var(--text-1);
-      font-family: 'Geist', system-ui, sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: all .15s;
-    }
-    .sso-btn:hover { background: var(--surface-2); border-color: var(--teal-mid); }
+      .sso-btn {
+        width: 100%;
+        height: 42px;
+        border: 1px solid var(--border-md);
+        border-radius: var(--radius-sm);
+        background: var(--surface);
+        color: var(--text-1);
+        font-family: "Geist", system-ui, sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.15s;
+      }
+      .sso-btn:hover {
+        background: var(--surface-2);
+        border-color: var(--teal-mid);
+      }
 
-    .login-footer {
-      margin-top: 32px;
-      text-align: center;
-      font-size: 12px;
-      color: var(--text-3);
-      line-height: 1.7;
-    }
+      .login-footer {
+        margin-top: 32px;
+        text-align: center;
+        font-size: 12px;
+        color: var(--text-3);
+        line-height: 1.7;
+      }
 
-    /* ─── Error state ─── */
-    .error-msg {
-      display: none;
-      align-items: center;
-      gap: 7px;
-      padding: 10px 14px;
-      background: rgba(192,57,43,.08);
-      border: 1px solid rgba(192,57,43,.2);
-      border-radius: var(--radius-sm);
-      font-size: 12.5px;
-      color: #c0392b;
-    }
-    .error-msg.show { display: flex; }
+      /* ─── Error state ─── */
+      .error-msg {
+        display: none;
+        align-items: center;
+        gap: 7px;
+        padding: 10px 14px;
+        background: rgba(192, 57, 43, 0.08);
+        border: 1px solid rgba(192, 57, 43, 0.2);
+        border-radius: var(--radius-sm);
+        font-size: 12.5px;
+        color: #c0392b;
+      }
+      .error-msg.show {
+        display: flex;
+      }
 
-    @media (max-width: 720px) {
-      .wrap { grid-template-columns: 1fr; }
-      .panel-left { display: none; }
-      .panel-right { padding: 48px 28px; }
-    }
-  </style>
-</head>
-<body>
+      @media (max-width: 720px) {
+        .wrap {
+          grid-template-columns: 1fr;
+        }
+        .panel-left {
+          display: none;
+        }
+        .panel-right {
+          padding: 48px 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- Left panel -->
+      <div class="panel-left">
+        <div class="panel-brand">
+          <img
+            src="logo.png"
+            alt="GEARS"
+            style="
+              height: 30px;
+              display: block;
+              filter: brightness(0) invert(1);
+            "
+          />
+        </div>
 
-<div class="wrap">
-  <!-- Left panel -->
-  <div class="panel-left">
-    <div class="panel-brand">
-      <img src="logo.png" alt="GEARS" style="height:30px; display:block; filter:brightness(0) invert(1);">
-    </div>
+        <!-- Isometric port illustration — coordinates from f(r,f,u)=(240+r·14−f·14, 210+r·7+f·7−u·20) -->
+        <svg
+          class="iso-art"
+          viewBox="0 0 480 320"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <!-- Water -->
+          <ellipse
+            cx="210"
+            cy="304"
+            rx="195"
+            ry="13"
+            fill="rgba(61,139,110,.13)"
+          />
+          <line
+            x1="45"
+            y1="298"
+            x2="155"
+            y2="293"
+            stroke="#3d8b6e"
+            stroke-opacity=".28"
+            stroke-width="1.2"
+            stroke-linecap="round"
+          />
+          <line
+            x1="275"
+            y1="296"
+            x2="395"
+            y2="290"
+            stroke="#3d8b6e"
+            stroke-opacity=".2"
+            stroke-width="1"
+            stroke-linecap="round"
+          />
 
-    <div class="panel-copy">
-      <h2>GHG Emission,<br>Authentic Reporting<br>System</h2>
-      <p>IMO DCS · EU MRV · CII 규정에 대응하는 해운사 온실가스 배출량 검증 플랫폼입니다.</p>
-    </div>
+          <!-- Ship silhouette (left, alongside dock) -->
+          <polygon
+            points="28,288 158,269 168,280 158,292 28,293"
+            fill="#0e2218"
+            opacity=".88"
+          />
+          <polygon
+            points="128,269 152,262 160,270 140,274"
+            fill="#152a1e"
+            opacity=".9"
+          />
+          <rect
+            x="143"
+            y="259"
+            width="9"
+            height="10"
+            rx="1.5"
+            fill="#1e3d2e"
+            opacity=".9"
+          />
+          <rect
+            x="149"
+            y="255"
+            width="5"
+            height="6"
+            rx="1"
+            fill="#2a5940"
+            opacity=".95"
+          />
 
-    <div class="panel-tags">
-      <span class="panel-tag">IMO DCS</span>
-      <span class="panel-tag">EU MRV</span>
-      <span class="panel-tag">CII Verification</span>
-      <span class="panel-tag">FuelEU Maritime</span>
-    </div>
-  </div>
+          <!-- Dock — right face (r=8, f:0→6, u:0→1.5) -->
+          <polygon points="352,236 268,278 268,308 352,266" fill="#1a3b2c" />
+          <!-- Dock — front face (f=0, r:0→8, u:0→1.5) -->
+          <polygon points="240,180 352,236 352,266 240,210" fill="#1e4332" />
+          <!-- Dock — top face (u=1.5) -->
+          <polygon points="240,180 352,236 268,278 156,222" fill="#2a5940" />
+          <!-- Dock top-edge highlight -->
+          <polyline
+            points="156,222 240,180 352,236"
+            stroke="rgba(79,168,130,.38)"
+            stroke-width="1.2"
+            fill="none"
+          />
 
-  <!-- Right panel -->
-  <div class="panel-right">
+          <!-- Container D — teal, r:1–3 f:3–5 u:1.5–3.5  (back, drawn first) -->
+          <!-- right face (r=3) -->
+          <polygon points="240,222 212,236 212,196 240,182" fill="#2e6b55" />
+          <!-- front face (f=3) -->
+          <polygon points="212,208 240,222 240,182 212,168" fill="#3d8b6e" />
+          <!-- top  face        -->
+          <polygon points="212,168 240,182 212,196 184,182" fill="#4fa882" />
 
-<div class="login-header">
-      <h1>Sign in</h1>
-      <p>KR GEARS 계정으로 로그인하세요</p>
-    </div>
+          <!-- Container A — teal, r:1–3 f:1–3 u:1.5–4.5 -->
+          <!-- right face (r=3) -->
+          <polygon points="268,208 240,222 240,162 268,148" fill="#2e6b55" />
+          <!-- front face (f=1) -->
+          <polygon points="240,194 268,208 268,148 240,134" fill="#3d8b6e" />
+          <!-- top  face        -->
+          <polygon points="240,134 268,148 240,162 212,148" fill="#4fa882" />
+          <line
+            x1="254"
+            y1="135"
+            x2="254"
+            y2="193"
+            stroke="rgba(0,0,0,.15)"
+            stroke-width="1"
+          />
 
-    <div class="form" id="loginForm">
-      <div class="error-msg" id="errorMsg">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="7"/><path d="M8 5v3M8 11h.01"/></svg>
-        아이디 또는 비밀번호를 확인해 주세요.
-      </div>
+          <!-- Container C — blue, r:1–3 f:1–3 u:4.5–6.5  (stacked on A) -->
+          <!-- right face (r=3) -->
+          <polygon points="268,148 240,162 240,122 268,108" fill="#2d6e9e" />
+          <!-- front face (f=1) -->
+          <polygon points="240,134 268,148 268,108 240,94" fill="#3a85c0" />
+          <!-- top  face        -->
+          <polygon points="240,94  268,108 240,122 212,108" fill="#4a9bd4" />
+          <line
+            x1="254"
+            y1="95"
+            x2="254"
+            y2="133"
+            stroke="rgba(0,0,0,.15)"
+            stroke-width="1"
+          />
 
-      <div class="field">
-        <label for="userId">아이디 (ID)</label>
-        <div class="input-wrap">
-          <span class="input-icon">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/></svg>
-          </span>
-          <input type="text" id="userId" placeholder="아이디를 입력하세요" autocomplete="username">
+          <!-- Container B — amber, r:4–6 f:1–3 u:1.5–4.5 -->
+          <!-- right face (r=6) -->
+          <polygon points="310,229 282,243 282,183 310,169" fill="#a06820" />
+          <!-- front face (f=1) -->
+          <polygon points="282,215 310,229 310,169 282,155" fill="#c0832e" />
+          <!-- top  face        -->
+          <polygon points="282,155 310,169 282,183 254,169" fill="#d4943a" />
+          <line
+            x1="296"
+            y1="156"
+            x2="296"
+            y2="214"
+            stroke="rgba(0,0,0,.15)"
+            stroke-width="1"
+          />
+
+          <!-- Crane tower (r:7.25–7.75, f:1.75–2.25, u:1.5–10) -->
+          <polygon
+            points="317,73 324,77 324,247 317,243"
+            fill="#4fa882"
+            opacity=".95"
+          />
+          <polygon
+            points="324,77 320,80 320,250 324,247"
+            fill="#2e6b55"
+            opacity=".95"
+          />
+          <!-- Boom (left arm, tower-top → r=2,f=2,u=10) -->
+          <line
+            x1="320"
+            y1="75"
+            x2="240"
+            y2="38"
+            stroke="#4fa882"
+            stroke-width="3.5"
+            stroke-linecap="round"
+          />
+          <!-- Counter-boom (short right arm) -->
+          <line
+            x1="320"
+            y1="75"
+            x2="344"
+            y2="88"
+            stroke="#4fa882"
+            stroke-width="3"
+            stroke-linecap="round"
+          />
+          <!-- Diagonal stay -->
+          <line
+            x1="240"
+            y1="38"
+            x2="320"
+            y2="196"
+            stroke="rgba(79,168,130,.36)"
+            stroke-width="1.5"
+          />
+          <!-- Hoist cable (r=4, f=2: u=10→1.5) -->
+          <line
+            x1="268"
+            y1="52"
+            x2="268"
+            y2="218"
+            stroke="rgba(255,255,255,.26)"
+            stroke-width="1.2"
+            stroke-dasharray="3,4"
+          />
+          <!-- Spreader bar -->
+          <line
+            x1="260"
+            y1="215"
+            x2="276"
+            y2="220"
+            stroke="#4fa882"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+          <line
+            x1="268"
+            y1="212"
+            x2="268"
+            y2="221"
+            stroke="#4fa882"
+            stroke-width="1.5"
+          />
+
+          <!-- Ambient particles -->
+          <circle cx="50" cy="112" r="1.5" fill="rgba(255,255,255,.18)" />
+          <circle cx="430" cy="88" r="1" fill="rgba(255,255,255,.15)" />
+          <circle cx="452" cy="168" r="1.5" fill="rgba(255,255,255,.12)" />
+          <circle cx="42" cy="185" r="1" fill="rgba(255,255,255,.14)" />
+          <circle cx="455" cy="240" r="1" fill="rgba(255,255,255,.1)" />
+          <circle cx="118" cy="148" r="1" fill="rgba(79,168,130,.22)" />
+          <circle cx="395" cy="152" r="1" fill="rgba(79,168,130,.18)" />
+        </svg>
+
+        <div class="panel-copy">
+          <h2>GHG Emission,<br />Authentic Reporting<br />System</h2>
+          <p>
+            IMO DCS · EU MRV · CII 규정에 대응하는 해운사 온실가스 배출량 검증
+            플랫폼입니다.
+          </p>
+        </div>
+
+        <div class="panel-tags">
+          <span class="panel-tag">IMO DCS</span>
+          <span class="panel-tag">EU MRV</span>
+          <span class="panel-tag">CII Verification</span>
+          <span class="panel-tag">FuelEU Maritime</span>
         </div>
       </div>
 
-      <div class="field">
-        <label for="userPw">비밀번호</label>
-        <div class="input-wrap">
-          <span class="input-icon">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="10" height="8" rx="1.5"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-          </span>
-          <input type="password" id="userPw" placeholder="비밀번호를 입력하세요" autocomplete="current-password">
+      <!-- Right panel -->
+      <div class="panel-right">
+        <div class="login-header">
+          <h1>Sign in</h1>
+          <p>KR GEARS 계정으로 로그인하세요</p>
+        </div>
+
+        <div class="form" id="loginForm">
+          <div class="error-msg" id="errorMsg">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <circle cx="8" cy="8" r="7" />
+              <path d="M8 5v3M8 11h.01" />
+            </svg>
+            아이디 또는 비밀번호를 확인해 주세요.
+          </div>
+
+          <div class="field">
+            <label for="userId">아이디 (ID)</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                >
+                  <circle cx="8" cy="6" r="3" />
+                  <path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" />
+                </svg>
+              </span>
+              <input
+                type="text"
+                id="userId"
+                placeholder="아이디를 입력하세요"
+                autocomplete="username"
+              />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="userPw">비밀번호</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                >
+                  <rect x="3" y="7" width="10" height="8" rx="1.5" />
+                  <path d="M5 7V5a3 3 0 0 1 6 0v2" />
+                </svg>
+              </span>
+              <input
+                type="password"
+                id="userPw"
+                placeholder="비밀번호를 입력하세요"
+                autocomplete="current-password"
+              />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label class="remember">
+              <input type="checkbox" id="rememberMe" /> 로그인 상태 유지
+            </label>
+            <a href="#" class="forgot">비밀번호 찾기</a>
+          </div>
+
+          <button class="btn-login" id="loginBtn" onclick="handleLogin()">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M6 3H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h3M10 11l3-3-3-3M13 8H6"
+              />
+            </svg>
+            로그인
+          </button>
+
+          <div class="divider">또는</div>
+
+          <button class="sso-btn">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <rect x="2" y="2" width="5" height="5" rx="1" />
+              <rect x="9" y="2" width="5" height="5" rx="1" />
+              <rect x="2" y="9" width="5" height="5" rx="1" />
+              <rect x="9" y="9" width="5" height="5" rx="1" />
+            </svg>
+            KR SSO 로그인
+          </button>
+        </div>
+
+        <div class="login-footer">
+          계정이 없으신가요? 관리자에게 문의하세요.<br />
+          © 2025 Korean Register. All rights reserved.
         </div>
       </div>
-
-      <div class="field-row">
-        <label class="remember">
-          <input type="checkbox" id="rememberMe"> 로그인 상태 유지
-        </label>
-        <a href="#" class="forgot">비밀번호 찾기</a>
-      </div>
-
-      <button class="btn-login" id="loginBtn" onclick="handleLogin()">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h3M10 11l3-3-3-3M13 8H6"/></svg>
-        로그인
-      </button>
-
-      <div class="divider">또는</div>
-
-      <button class="sso-btn">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
-        KR SSO 로그인
-      </button>
     </div>
 
-    <div class="login-footer">
-      계정이 없으신가요? 관리자에게 문의하세요.<br>
-      © 2025 Korean Register. All rights reserved.
-    </div>
-  </div>
-</div>
+    <script>
+      // Login
+      function handleLogin() {
+        const id = document.getElementById("userId").value.trim();
+        const pw = document.getElementById("userPw").value;
+        const err = document.getElementById("errorMsg");
+        if (!id || !pw) {
+          err.classList.add("show");
+          return;
+        }
+        err.classList.remove("show");
+        window.location.href = "gears-dashboard-redesign.html";
+      }
 
-<script>
-  // Login
-  function handleLogin() {
-    const id = document.getElementById('userId').value.trim();
-    const pw = document.getElementById('userPw').value;
-    const err = document.getElementById('errorMsg');
-    if (!id || !pw) {
-      err.classList.add('show');
-      return;
-    }
-    err.classList.remove('show');
-    window.location.href = 'gears-dashboard-redesign.html';
-  }
-
-  document.getElementById('userPw').addEventListener('keydown', e => {
-    if (e.key === 'Enter') handleLogin();
-  });
-</script>
-</body>
+      document.getElementById("userPw").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") handleLogin();
+      });
+    </script>
+  </body>
 </html>

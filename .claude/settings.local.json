@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l \"/mnt/c/Users/김영찬/Desktop/프로젝트/design/taste-skill/.claude/worktrees/vigorous-maxwell-8f56f7/examples/gears-dashboard-redesign.html\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(git remote *)",
+      "Bash(git ls-remote *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git mv *)",
+      "Bash(git rm *)"
+    ]
+  }
+}
