@@ -378,7 +378,7 @@
           />
         </div>
 
-        <!-- Isometric port illustration — coordinates from f(r,f,u)=(240+r·14−f·14, 210+r·7+f·7−u·20) -->
+        <!-- Container ship line illustration -->
         <svg
           class="iso-art"
           viewBox="0 0 480 320"
@@ -386,212 +386,56 @@
           xmlns="http://www.w3.org/2000/svg"
           aria-hidden="true"
         >
-          <!-- Water -->
-          <ellipse
-            cx="210"
-            cy="304"
-            rx="195"
-            ry="13"
-            fill="rgba(61,139,110,.13)"
-          />
-          <line
-            x1="45"
-            y1="298"
-            x2="155"
-            y2="293"
-            stroke="#3d8b6e"
-            stroke-opacity=".28"
-            stroke-width="1.2"
-            stroke-linecap="round"
-          />
-          <line
-            x1="275"
-            y1="296"
-            x2="395"
-            y2="290"
-            stroke="#3d8b6e"
-            stroke-opacity=".2"
-            stroke-width="1"
-            stroke-linecap="round"
-          />
+          <!-- Stars -->
+          <circle cx="35"  cy="25"  r="1"   fill="rgba(255,255,255,.22)"/>
+          <circle cx="98"  cy="12"  r="1.3" fill="rgba(255,255,255,.2)"/>
+          <circle cx="190" cy="8"   r="1"   fill="rgba(255,255,255,.16)"/>
+          <circle cx="308" cy="28"  r="1.3" fill="rgba(255,255,255,.2)"/>
+          <circle cx="408" cy="14"  r="1"   fill="rgba(255,255,255,.18)"/>
+          <circle cx="458" cy="48"  r="1.3" fill="rgba(255,255,255,.16)"/>
+          <circle cx="50"  cy="95"  r="1"   fill="rgba(255,255,255,.12)"/>
+          <circle cx="452" cy="102" r="1"   fill="rgba(255,255,255,.12)"/>
+          <circle cx="158" cy="58"  r="1"   fill="rgba(255,255,255,.1)"/>
+          <circle cx="380" cy="42"  r="1"   fill="rgba(255,255,255,.13)"/>
+          <circle cx="238" cy="20"  r="1.2" fill="rgba(255,255,255,.18)"/>
+          <circle cx="142" cy="35"  r="1"   fill="rgba(255,255,255,.12)"/>
+          <circle cx="318" cy="60"  r="1"   fill="rgba(255,255,255,.1)"/>
 
-          <!-- Ship silhouette (left, alongside dock) -->
-          <polygon
-            points="28,288 158,269 168,280 158,292 28,293"
-            fill="#0e2218"
-            opacity=".88"
-          />
-          <polygon
-            points="128,269 152,262 160,270 140,274"
-            fill="#152a1e"
-            opacity=".9"
-          />
-          <rect
-            x="143"
-            y="259"
-            width="9"
-            height="10"
-            rx="1.5"
-            fill="#1e3d2e"
-            opacity=".9"
-          />
-          <rect
-            x="149"
-            y="255"
-            width="5"
-            height="6"
-            rx="1"
-            fill="#2a5940"
-            opacity=".95"
-          />
+          <!-- Horizon glow -->
+          <ellipse cx="240" cy="168" rx="260" ry="22" fill="rgba(79,168,130,.07)"/>
 
-          <!-- Dock — right face (r=8, f:0→6, u:0→1.5) -->
-          <polygon points="352,236 268,278 268,308 352,266" fill="#1a3b2c" />
-          <!-- Dock — front face (f=0, r:0→8, u:0→1.5) -->
-          <polygon points="240,180 352,236 352,266 240,210" fill="#1e4332" />
-          <!-- Dock — top face (u=1.5) -->
-          <polygon points="240,180 352,236 268,278 156,222" fill="#2a5940" />
-          <!-- Dock top-edge highlight -->
-          <polyline
-            points="156,222 240,180 352,236"
-            stroke="rgba(79,168,130,.38)"
-            stroke-width="1.2"
-            fill="none"
-          />
+          <!-- ── WAVE LAYERS — far to near, opacity + amplitude increase ── -->
 
-          <!-- Container D — teal, r:1–3 f:3–5 u:1.5–3.5  (back, drawn first) -->
-          <!-- right face (r=3) -->
-          <polygon points="240,222 212,236 212,196 240,182" fill="#2e6b55" />
-          <!-- front face (f=3) -->
-          <polygon points="212,208 240,222 240,182 212,168" fill="#3d8b6e" />
-          <!-- top  face        -->
-          <polygon points="212,168 240,182 212,196 184,182" fill="#4fa882" />
+          <!-- Far (y≈130–168, tight + faint) -->
+          <path d="M0,132 Q60,129 120,132 Q180,135 240,132 Q300,129 360,132 Q420,135 480,132" stroke="rgba(79,168,130,.07)" stroke-width=".5" fill="none" stroke-linecap="round"/>
+          <path d="M0,144 Q80,141 160,145 Q240,149 320,144 Q400,140 480,143"                  stroke="rgba(79,168,130,.09)" stroke-width=".6" fill="none" stroke-linecap="round"/>
+          <path d="M0,156 Q70,152 140,157 Q210,162 280,156 Q350,150 420,155 Q455,158 480,156" stroke="rgba(79,168,130,.12)" stroke-width=".7" fill="none" stroke-linecap="round"/>
+          <path d="M0,167 Q60,163 120,168 Q180,173 240,167 Q300,161 360,167 Q420,172 480,168" stroke="rgba(79,168,130,.18)" stroke-width=".9" fill="none" stroke-linecap="round"/>
 
-          <!-- Container A — teal, r:1–3 f:1–3 u:1.5–4.5 -->
-          <!-- right face (r=3) -->
-          <polygon points="268,208 240,222 240,162 268,148" fill="#2e6b55" />
-          <!-- front face (f=1) -->
-          <polygon points="240,194 268,208 268,148 240,134" fill="#3d8b6e" />
-          <!-- top  face        -->
-          <polygon points="240,134 268,148 240,162 212,148" fill="#4fa882" />
-          <line
-            x1="254"
-            y1="135"
-            x2="254"
-            y2="193"
-            stroke="rgba(0,0,0,.15)"
-            stroke-width="1"
-          />
+          <!-- Mid (y≈180–224, growing) -->
+          <path d="M0,180 Q80,174 160,181 Q240,188 320,180 Q400,172 480,178"                  stroke="rgba(79,168,130,.25)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+          <path d="M0,193 Q70,186 140,194 Q210,202 280,193 Q350,184 420,192 Q458,196 480,193" stroke="rgba(79,168,130,.31)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <path d="M0,207 Q80,199 160,208 Q240,217 320,207 Q400,197 480,204"                  stroke="rgba(79,168,130,.37)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+          <path d="M0,221 Q70,212 140,222 Q210,232 280,221 Q350,210 420,220 Q458,225 480,221" stroke="rgba(79,168,130,.42)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
 
-          <!-- Container C — blue, r:1–3 f:1–3 u:4.5–6.5  (stacked on A) -->
-          <!-- right face (r=3) -->
-          <polygon points="268,148 240,162 240,122 268,108" fill="#2d6e9e" />
-          <!-- front face (f=1) -->
-          <polygon points="240,134 268,148 268,108 240,94" fill="#3a85c0" />
-          <!-- top  face        -->
-          <polygon points="240,94  268,108 240,122 212,108" fill="#4a9bd4" />
-          <line
-            x1="254"
-            y1="95"
-            x2="254"
-            y2="133"
-            stroke="rgba(0,0,0,.15)"
-            stroke-width="1"
-          />
+          <!-- Near (y≈236–300, widest + most opaque, then fading) -->
+          <path d="M0,236 Q80,226 160,237 Q240,248 320,236 Q400,224 480,233"                  stroke="rgba(79,168,130,.44)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M0,252 Q70,241 140,253 Q210,265 280,252 Q350,239 420,250 Q458,256 480,252" stroke="rgba(79,168,130,.40)" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+          <path d="M0,268 Q80,257 160,269 Q240,281 320,268 Q400,255 480,265"                  stroke="rgba(79,168,130,.33)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <path d="M0,283 Q70,272 140,284 Q210,296 280,283 Q350,270 420,281 Q458,287 480,283" stroke="rgba(79,168,130,.24)" stroke-width="1.0" fill="none" stroke-linecap="round"/>
+          <path d="M0,298 Q80,287 160,299 Q240,311 320,298 Q400,285 480,295"                  stroke="rgba(79,168,130,.15)" stroke-width=".8"  fill="none" stroke-linecap="round"/>
 
-          <!-- Container B — amber, r:4–6 f:1–3 u:1.5–4.5 -->
-          <!-- right face (r=6) -->
-          <polygon points="310,229 282,243 282,183 310,169" fill="#a06820" />
-          <!-- front face (f=1) -->
-          <polygon points="282,215 310,229 310,169 282,155" fill="#c0832e" />
-          <!-- top  face        -->
-          <polygon points="282,155 310,169 282,183 254,169" fill="#d4943a" />
-          <line
-            x1="296"
-            y1="156"
-            x2="296"
-            y2="214"
-            stroke="rgba(0,0,0,.15)"
-            stroke-width="1"
-          />
+          <!-- Wave crest shimmers (subtle bright accents) -->
+          <path d="M88,200 Q108,196 128,200"  stroke="rgba(120,210,170,.32)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <path d="M255,214 Q278,209 300,214" stroke="rgba(120,210,170,.28)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+          <path d="M360,228 Q388,222 415,228" stroke="rgba(120,210,170,.24)" stroke-width="1.0" fill="none" stroke-linecap="round"/>
+          <path d="M42,244 Q72,238 102,244"   stroke="rgba(120,210,170,.22)" stroke-width="1.0" fill="none" stroke-linecap="round"/>
+          <path d="M185,258 Q215,251 245,258" stroke="rgba(120,210,170,.2)"  stroke-width=".9"  fill="none" stroke-linecap="round"/>
 
-          <!-- Crane tower (r:7.25–7.75, f:1.75–2.25, u:1.5–10) -->
-          <polygon
-            points="317,73 324,77 324,247 317,243"
-            fill="#4fa882"
-            opacity=".95"
-          />
-          <polygon
-            points="324,77 320,80 320,250 324,247"
-            fill="#2e6b55"
-            opacity=".95"
-          />
-          <!-- Boom (left arm, tower-top → r=2,f=2,u=10) -->
-          <line
-            x1="320"
-            y1="75"
-            x2="240"
-            y2="38"
-            stroke="#4fa882"
-            stroke-width="3.5"
-            stroke-linecap="round"
-          />
-          <!-- Counter-boom (short right arm) -->
-          <line
-            x1="320"
-            y1="75"
-            x2="344"
-            y2="88"
-            stroke="#4fa882"
-            stroke-width="3"
-            stroke-linecap="round"
-          />
-          <!-- Diagonal stay -->
-          <line
-            x1="240"
-            y1="38"
-            x2="320"
-            y2="196"
-            stroke="rgba(79,168,130,.36)"
-            stroke-width="1.5"
-          />
-          <!-- Hoist cable (r=4, f=2: u=10→1.5) -->
-          <line
-            x1="268"
-            y1="52"
-            x2="268"
-            y2="218"
-            stroke="rgba(255,255,255,.26)"
-            stroke-width="1.2"
-            stroke-dasharray="3,4"
-          />
-          <!-- Spreader bar -->
-          <line
-            x1="260"
-            y1="215"
-            x2="276"
-            y2="220"
-            stroke="#4fa882"
-            stroke-width="2"
-            stroke-linecap="round"
-          />
-          <line
-            x1="268"
-            y1="212"
-            x2="268"
-            y2="221"
-            stroke="#4fa882"
-            stroke-width="1.5"
-          />
-
-          <!-- Ambient particles -->
-          <circle cx="50" cy="112" r="1.5" fill="rgba(255,255,255,.18)" />
-          <circle cx="430" cy="88" r="1" fill="rgba(255,255,255,.15)" />
-          <circle cx="452" cy="168" r="1.5" fill="rgba(255,255,255,.12)" />
-          <circle cx="42" cy="185" r="1" fill="rgba(255,255,255,.14)" />
-          <circle cx="455" cy="240" r="1" fill="rgba(255,255,255,.1)" />
-          <circle cx="118" cy="148" r="1" fill="rgba(79,168,130,.22)" />
-          <circle cx="395" cy="152" r="1" fill="rgba(79,168,130,.18)" />
+          <!-- Ambient -->
+          <circle cx="20"  cy="305" r="1.2" fill="rgba(79,168,130,.18)"/>
+          <circle cx="460" cy="308" r="1"   fill="rgba(79,168,130,.14)"/>
+          <circle cx="240" cy="315" r="1"   fill="rgba(79,168,130,.12)"/>
         </svg>
 
         <div class="panel-copy">
