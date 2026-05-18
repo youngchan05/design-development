@@ -227,24 +227,53 @@
       display: none; align-items: center; justify-content: space-between;
       padding: 10px 16px;
       border-top: 1px solid var(--teal-mid);
-      background: var(--teal-dim);
+      background: rgba(61,139,110,.11);
       min-height: 44px;
-      margin-top: auto;
+      margin-top: auto; flex-shrink: 0;
+      position: sticky; bottom: 0; z-index: 6;
+      box-shadow: 0 -2px 8px rgba(61,139,110,.08);
     }
     .sel-bar.visible { display: flex; }
     .sel-bar__info { font-size: 12.5px; color: var(--teal); font-weight: 500; }
     .sel-bar__info strong { font-weight: 700; }
-    .sel-bar__actions { display: flex; gap: 6px; }
+    .sel-bar__actions { display: flex; gap: 6px; align-items: center; }
     .sel-btn {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 5px 11px; border-radius: var(--radius-sm);
-      font-size: 11.5px; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: var(--radius-sm);
+      font-size: 11.5px; font-weight: 500; font-family: inherit;
       background: var(--surface); border: 1px solid var(--teal-mid);
       color: var(--teal); cursor: pointer; transition: all .12s;
     }
-    .sel-btn:hover { background: #fff; border-color: var(--teal); }
+    .sel-btn:hover { border-color: var(--teal); background: var(--teal-dim); }
+    .sel-btn--filled { background: var(--teal); color: #fff; border-color: var(--teal); }
+    .sel-btn--filled:hover { background: #338f6a; border-color: #338f6a; }
     .sel-btn--danger { color: #e05252; border-color: rgba(224,82,82,.3); }
-    .sel-btn--danger:hover { background: #fff; border-color: #e05252; }
+    .sel-btn--danger:hover { border-color: #e05252; background: rgba(224,82,82,.06); }
+    .sel-btn--more { padding: 5px 10px; letter-spacing: 1px; }
+    .sel-divider { width: 1px; height: 18px; background: var(--teal-mid); margin: 0 2px; flex-shrink: 0; }
+    /* Overflow dropdown */
+    .sel-overflow { position: relative; }
+    .sel-overflow__menu {
+      position: absolute; bottom: calc(100% + 8px); right: 0;
+      background: var(--surface); border: 1px solid var(--border-md);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 4px 20px rgba(0,0,0,.12);
+      min-width: 160px; padding: 4px; z-index: 20;
+      display: none;
+    }
+    .sel-overflow__menu.open { display: block; }
+    .sel-overflow__item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 6px;
+      font-size: 12px; font-weight: 500; color: var(--text-1);
+      cursor: pointer; transition: background .12s;
+      border: none; background: none; width: 100%;
+      text-align: left; font-family: inherit;
+    }
+    .sel-overflow__item:hover { background: var(--teal-dim); color: var(--teal); }
+    .sel-overflow__item--danger { color: #e05252; }
+    .sel-overflow__item--danger:hover { background: rgba(224,82,82,.07); color: #e05252; }
+    .sel-overflow__sep { height: 1px; background: var(--border); margin: 4px 0; }
 
     /* Table */
     .tbl { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -550,16 +579,7 @@
       <!-- Meta bar -->
       <div class="table-meta">
         <span class="table-meta__total">Total <strong>47</strong> posts</span>
-        <div id="bulkActions" style="display:none; gap:6px; align-items:center;">
-          <button class="sel-btn">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3v8M5 8l3 3 3-3"/><path d="M3 13h10"/></svg>
-            Export
-          </button>
-          <button class="sel-btn sel-btn--danger">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h10M5 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1M6 7v5M10 7v5M4 4l1 9h6l1-9"/></svg>
-            Delete
-          </button>
-        </div>
+        <div id="bulkActions" style="display:none;"></div>
       </div>
 
       <!-- Table -->
@@ -702,7 +722,28 @@
 
       <!-- Selection bar -->
       <div class="sel-bar" id="selBar">
-        <span class="sel-bar__info"><strong id="selectedCount">0</strong> items selected</span>
+        <span class="sel-bar__info"><strong id="selectedCount">0</strong> item(s) selected</span>
+        <div class="sel-bar__actions">
+          <button class="sel-btn" id="selDeselectAll">Deselect All</button>
+          <div class="sel-divider"></div>
+          <button class="sel-btn" id="selExportBtn">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13h10M8 3v7M5 7l3 3 3-3"/></svg>
+            Export
+          </button>
+          <button class="sel-btn sel-btn--filled" id="selPinBtn">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2l5 5-2 2-3-1-4 4v2H3v-2l4-4-1-3z"/><path d="M7 9L2 14"/></svg>
+            Pin
+          </button>
+          <div class="sel-overflow" id="selOverflow">
+            <button class="sel-btn sel-btn--more" id="selMoreBtn" aria-label="More actions">•••</button>
+            <div class="sel-overflow__menu" id="selOverflowMenu">
+              <button class="sel-overflow__item sel-overflow__item--danger" id="selDeleteBtn">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
+                Delete Selected
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -783,9 +824,66 @@
     const n = [...rowCbs].filter(c => c.checked).length;
     document.getElementById('selectedCount').textContent = n;
     document.getElementById('selBar').classList.toggle('visible', n > 0);
-    document.getElementById('bulkActions').style.display = n > 0 ? 'flex' : 'none';
     cbAll.indeterminate = n > 0 && n < rowCbs.length;
     cbAll.checked = n === rowCbs.length;
+  }
+
+  // ─── Sel-bar buttons ───
+  document.getElementById('selDeselectAll').addEventListener('click', () => {
+    rowCbs.forEach(cb => { cb.checked = false; cb.closest('tr').classList.remove('selected'); });
+    cbAll.checked = false; cbAll.indeterminate = false;
+    updateSelected();
+  });
+
+  // More (···) overflow
+  const selMoreBtn      = document.getElementById('selMoreBtn');
+  const selOverflowMenu = document.getElementById('selOverflowMenu');
+  selMoreBtn.addEventListener('click', e => { e.stopPropagation(); selOverflowMenu.classList.toggle('open'); });
+  document.addEventListener('click', () => selOverflowMenu.classList.remove('open'));
+
+  document.getElementById('selExportBtn').addEventListener('click', () => {
+    const n = [...rowCbs].filter(c => c.checked).length;
+    showToast(`Exporting ${n} post${n > 1 ? 's' : ''} as CSV…`, 'success');
+  });
+
+  document.getElementById('selPinBtn').addEventListener('click', () => {
+    const n = [...rowCbs].filter(c => c.checked).length;
+    rowCbs.forEach(cb => { if (cb.checked) cb.closest('tr').classList.add('pinned'); });
+    rowCbs.forEach(cb => { cb.checked = false; cb.closest('tr').classList.remove('selected'); });
+    cbAll.checked = false; cbAll.indeterminate = false;
+    updateSelected();
+    showToast(`${n} post${n > 1 ? 's' : ''} pinned.`, 'success');
+  });
+
+  document.getElementById('selDeleteBtn').addEventListener('click', () => {
+    selOverflowMenu.classList.remove('open');
+    const checked = [...rowCbs].filter(c => c.checked);
+    const n = checked.length;
+    checked.forEach(cb => cb.closest('tr').remove());
+    cbAll.checked = false; cbAll.indeterminate = false;
+    updateSelected();
+    showToast(`${n} post${n > 1 ? 's' : ''} deleted.`, 'danger');
+  });
+
+  // ─── Toast ───
+  function showToast(msg, type = 'success') {
+    let wrap = document.getElementById('toastWrap');
+    if (!wrap) {
+      wrap = document.createElement('div');
+      wrap.id = 'toastWrap';
+      wrap.style.cssText = 'position:fixed;bottom:28px;right:28px;display:flex;flex-direction:column;gap:8px;z-index:400;pointer-events:none;';
+      document.body.appendChild(wrap);
+    }
+    const t = document.createElement('div');
+    t.style.cssText = 'display:flex;align-items:center;gap:10px;padding:11px 14px 11px 12px;background:#1e2023;color:#f0f2f4;border-radius:6px;font-size:12.5px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.35);pointer-events:auto;opacity:0;transform:translateY(10px);transition:opacity .2s,transform .2s;min-width:220px;max-width:340px;';
+    const iconBg = type === 'success' ? '#16a34a' : '#e05252';
+    const iconSvg = type === 'success'
+      ? `<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M3 8l4 4 6-7"/></svg>`
+      : `<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>`;
+    t.innerHTML = `<div style="width:20px;height:20px;border-radius:50%;background:${iconBg};display:flex;align-items:center;justify-content:center;flex-shrink:0;">${iconSvg}</div><span style="flex:1;line-height:1.4;">${msg}</span><button onclick="this.closest('div[style]').remove()" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.5);display:flex;align-items:center;"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3l10 10M13 3L3 13"/></svg></button>`;
+    wrap.appendChild(t);
+    requestAnimationFrame(() => requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateY(0)'; }));
+    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateY(6px)'; setTimeout(() => t.remove(), 220); }, 3500);
   }
 
   // Filter popover
