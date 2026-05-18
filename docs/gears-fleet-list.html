@@ -444,6 +444,42 @@
     .footer__address { font-size: 11.5px; color: var(--text-2); }
     .footer__copy    { font-size: 11px; color: var(--text-3); }
 
+    /* ─── Toast ─── */
+    .toast-wrap {
+      position: fixed; bottom: 28px; right: 28px;
+      display: flex; flex-direction: column; gap: 8px;
+      z-index: 400; pointer-events: none;
+    }
+    .toast {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 14px 11px 12px;
+      background: var(--text-1); color: #fff;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px; font-weight: 500;
+      box-shadow: 0 4px 20px rgba(0,0,0,.2);
+      pointer-events: auto;
+      opacity: 0; transform: translateY(10px);
+      transition: opacity .2s, transform .2s;
+      min-width: 220px; max-width: 340px;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.hide { opacity: 0; transform: translateY(6px); }
+    .toast__icon {
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .toast__icon--success { background: #16a34a; }
+    .toast__icon--danger  { background: #e05252; }
+    .toast__msg { flex: 1; line-height: 1.4; }
+    .toast__close {
+      width: 18px; height: 18px; border-radius: 4px;
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,.5); display: flex; align-items: center; justify-content: center;
+      transition: color .12s; flex-shrink: 0;
+    }
+    .toast__close:hover { color: #fff; }
+
     /* ─── Modal ─── */
     .modal-backdrop {
       position: fixed; inset: 0;
@@ -892,6 +928,9 @@
     </div>
   </div>
 </div>
+
+<!-- Toast -->
+<div class="toast-wrap" id="toastWrap"></div>
 
 <!-- Drawer overlay -->
 <div class="drawer-overlay" id="drawerOverlay"></div>
@@ -1390,8 +1429,8 @@
   });
 
   document.getElementById('deleteConfirmBtn').addEventListener('click', () => {
-    // remove selected from vessels array
     const toRemove = new Set(selectedIdx);
+    const count = toRemove.size;
     for (let i = vessels.length - 1; i >= 0; i--) {
       if (toRemove.has(i)) vessels.splice(i, 1);
     }
@@ -1400,10 +1439,38 @@
     closeDeleteModal();
     renderRows(currentList);
     updateSelBar();
-    // update tab counts
     document.getElementById('tabCountMrv').textContent = vessels.length;
     document.getElementById('tabCountCii').textContent = vessels.length;
+    showToast(`${count} vessel${count > 1 ? 's' : ''} deleted successfully.`, 'danger');
   });
+
+  // ─── Toast ───
+  function showToast(msg, type = 'success') {
+    const wrap = document.getElementById('toastWrap');
+    const t = document.createElement('div');
+    t.className = 'toast';
+    const iconClass = type === 'success' ? 'toast__icon--success' : 'toast__icon--danger';
+    const icon = type === 'success'
+      ? `<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M3 8l4 4 6-7"/></svg>`
+      : `<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>`;
+    t.innerHTML = `
+      <div class="toast__icon ${iconClass}">${icon}</div>
+      <span class="toast__msg">${msg}</span>
+      <button class="toast__close" aria-label="Close">
+        <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3l10 10M13 3L3 13"/></svg>
+      </button>`;
+    wrap.appendChild(t);
+    t.querySelector('.toast__close').addEventListener('click', () => dismissToast(t));
+    requestAnimationFrame(() => { requestAnimationFrame(() => t.classList.add('show')); });
+    setTimeout(() => dismissToast(t), 3500);
+  }
+
+  function dismissToast(t) {
+    if (!t.parentNode) return;
+    t.classList.remove('show');
+    t.classList.add('hide');
+    setTimeout(() => t.remove(), 220);
+  }
 
   // ─── Sidebar toggle ───
   const sidebarToggle = document.getElementById('sidebarToggle');
