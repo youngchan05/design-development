@@ -320,7 +320,7 @@
     .sel-bar.visible { display: flex; }
     .sel-bar__info { font-size: 12.5px; color: var(--teal); font-weight: 500; }
     .sel-bar__info strong { font-weight: 700; }
-    .sel-bar__actions { display: flex; gap: 6px; }
+    .sel-bar__actions { display: flex; gap: 6px; align-items: center; }
     .sel-btn {
       display: inline-flex; align-items: center; gap: 5px;
       padding: 5px 12px; border-radius: var(--radius-sm);
@@ -328,9 +328,37 @@
       background: var(--surface); border: 1px solid var(--teal-mid);
       color: var(--teal); cursor: pointer; transition: all .12s;
     }
-    .sel-btn:hover { border-color: var(--teal); }
+    .sel-btn:hover { border-color: var(--teal); background: var(--teal-dim); }
+    .sel-btn--filled { background: var(--teal); color: #fff; border-color: var(--teal); }
+    .sel-btn--filled:hover { background: #338f6a; border-color: #338f6a; }
     .sel-btn--danger { color: #e05252; border-color: rgba(224,82,82,.3); }
-    .sel-btn--danger:hover { border-color: #e05252; }
+    .sel-btn--danger:hover { border-color: #e05252; background: rgba(224,82,82,.06); }
+    .sel-btn--more { padding: 5px 10px; letter-spacing: 1px; }
+    .sel-divider { width: 1px; height: 18px; background: var(--teal-mid); margin: 0 2px; flex-shrink: 0; }
+
+    /* Overflow dropdown */
+    .sel-overflow { position: relative; }
+    .sel-overflow__menu {
+      position: absolute; bottom: calc(100% + 8px); right: 0;
+      background: var(--surface); border: 1px solid var(--border-md);
+      border-radius: var(--radius-sm);
+      box-shadow: 0 4px 20px rgba(0,0,0,.12);
+      min-width: 168px; padding: 4px; z-index: 20;
+      display: none;
+    }
+    .sel-overflow__menu.open { display: block; }
+    .sel-overflow__item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 6px;
+      font-size: 12px; font-weight: 500; color: var(--text-1);
+      cursor: pointer; transition: background .12s;
+      border: none; background: none; width: 100%;
+      text-align: left; font-family: inherit;
+    }
+    .sel-overflow__item:hover { background: var(--teal-dim); color: var(--teal); }
+    .sel-overflow__item--danger { color: #e05252; }
+    .sel-overflow__item--danger:hover { background: rgba(224,82,82,.07); color: #e05252; }
+    .sel-overflow__sep { height: 1px; background: var(--border); margin: 4px 0; }
 
     /* ─── Danger button ─── */
     .btn--danger { background: #e05252; border-color: #e05252; color: #fff; }
@@ -795,10 +823,29 @@
           <span class="sel-bar__info"><strong id="selCount">0</strong> vessel(s) selected</span>
           <div class="sel-bar__actions">
             <button class="sel-btn" id="selDeselectAll">Deselect All</button>
-            <button class="sel-btn sel-btn--danger" id="selDeleteBtn">
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
-              Delete
+            <div class="sel-divider"></div>
+            <button class="sel-btn" id="selExportBtn">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13h10M8 3v7M5 7l3 3 3-3"/></svg>
+              Export
             </button>
+            <button class="sel-btn sel-btn--filled" id="selSubmitBtn">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8l4 4 6-7"/></svg>
+              Submit
+            </button>
+            <div class="sel-overflow" id="selOverflow">
+              <button class="sel-btn sel-btn--more" id="selMoreBtn" aria-label="More actions">•••</button>
+              <div class="sel-overflow__menu" id="selOverflowMenu">
+                <button class="sel-overflow__item" id="selCopyBtn">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="6" y="6" width="8" height="8" rx="1.5"/><path d="M4 10H3a1.5 1.5 0 0 1-1.5-1.5v-7A1.5 1.5 0 0 1 3 0h7A1.5 1.5 0 0 1 11.5 1.5V3"/></svg>
+                  Copy Vessel
+                </button>
+                <div class="sel-overflow__sep"></div>
+                <button class="sel-overflow__item sel-overflow__item--danger" id="selDeleteBtn">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
+                  Delete Selected
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div><!-- /tbl-scroll -->
@@ -1410,7 +1457,44 @@
     updateSelBar();
   });
 
+  // ─── More (···) overflow toggle ───
+  const selMoreBtn      = document.getElementById('selMoreBtn');
+  const selOverflowMenu = document.getElementById('selOverflowMenu');
+
+  selMoreBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    selOverflowMenu.classList.toggle('open');
+  });
+  document.addEventListener('click', () => selOverflowMenu.classList.remove('open'));
+
+  // Export
+  document.getElementById('selExportBtn').addEventListener('click', () => {
+    showToast(`Exporting ${selectedIdx.size} vessel${selectedIdx.size > 1 ? 's' : ''} as CSV…`, 'success');
+  });
+
+  // Submit
+  document.getElementById('selSubmitBtn').addEventListener('click', () => {
+    const n = selectedIdx.size;
+    selectedIdx.clear();
+    document.querySelectorAll('.cb-row').forEach(cb => {
+      cb.checked = false;
+      cb.closest('tr').classList.remove('selected');
+    });
+    const cbAll = document.querySelector('.cb-all');
+    if (cbAll) { cbAll.checked = false; cbAll.indeterminate = false; }
+    updateSelBar();
+    showToast(`${n} vessel${n > 1 ? 's' : ''} submitted successfully.`, 'success');
+  });
+
+  // Copy
+  document.getElementById('selCopyBtn').addEventListener('click', () => {
+    selOverflowMenu.classList.remove('open');
+    showToast(`${selectedIdx.size} vessel${selectedIdx.size > 1 ? 's' : ''} copied.`, 'success');
+  });
+
+  // Delete (now inside overflow menu)
   document.getElementById('selDeleteBtn').addEventListener('click', () => {
+    selOverflowMenu.classList.remove('open');
     document.getElementById('deleteCount').textContent = selectedIdx.size;
     document.getElementById('deleteBackdrop').classList.add('open');
     document.body.style.overflow = 'hidden';
