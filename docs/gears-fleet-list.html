@@ -222,6 +222,37 @@
       display: flex; flex-direction: column;
       flex: 1;
     }
+
+    /* ─── Card tabs ─── */
+    .card-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      padding: 0 4px;
+    }
+    .card-tab {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 13px 14px 12px;
+      font-size: 12.5px; font-weight: 500;
+      color: var(--text-3);
+      cursor: pointer;
+      border: none; border-bottom: 2px solid transparent;
+      background: none; font-family: inherit;
+      margin-bottom: -1px;
+      transition: color .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .card-tab:hover { color: var(--text-2); }
+    .card-tab.active { color: var(--teal); border-bottom-color: var(--teal); font-weight: 600; }
+    .card-tab__count {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 18px; height: 18px; padding: 0 5px;
+      background: var(--surface-2); color: var(--text-3);
+      font-size: 10px; font-weight: 700; border-radius: 9px;
+      transition: background .15s, color .15s;
+    }
+    .card-tab.active .card-tab__count { background: var(--teal-dim); color: var(--teal); }
+
     .table-meta {
       display: flex; align-items: center; justify-content: space-between;
       padding: 10px 16px;
@@ -551,35 +582,26 @@
 
     <!-- List -->
     <div class="list-card">
+      <!-- Tabs -->
+      <div class="card-tabs">
+        <button class="card-tab active" data-tab="mrv">
+          ETS / FEUM (MRV)
+          <span class="card-tab__count" id="tabCountMrv">8</span>
+        </button>
+        <button class="card-tab" data-tab="cii">
+          CII (DCS)
+          <span class="card-tab__count" id="tabCountCii">8</span>
+        </button>
+      </div>
+
+      <!-- Meta -->
       <div class="table-meta">
         <span class="table-meta__total">Total <strong id="totalCount">8</strong> vessels</span>
       </div>
 
       <table class="tbl">
-        <colgroup>
-          <col class="col-vessel">
-          <col class="col-imo">
-          <col class="col-type">
-          <col class="col-flag">
-          <col class="col-gt">
-          <col class="col-cii">
-          <col class="col-s2">
-          <col class="col-s3">
-          <col class="col-dv">
-        </colgroup>
-        <thead>
-          <tr>
-            <th><span class="th-sort" data-col="name">Vessel Name<span class="sort-icon"><svg class="sort-asc" width="8" height="5" viewBox="0 0 8 5" fill="currentColor"><path d="M4 0L8 5H0z"/></svg><svg class="sort-desc" width="8" height="5" viewBox="0 0 8 5" fill="currentColor"><path d="M4 5L0 0h8z"/></svg></span></span></th>
-            <th>IMO No.</th>
-            <th><span class="th-sort" data-col="type">Type<span class="sort-icon"><svg class="sort-asc" width="8" height="5" viewBox="0 0 8 5" fill="currentColor"><path d="M4 0L8 5H0z"/></svg><svg class="sort-desc" width="8" height="5" viewBox="0 0 8 5" fill="currentColor"><path d="M4 5L0 0h8z"/></svg></span></span></th>
-            <th>Flag</th>
-            <th class="col-gt"><span class="th-sort" data-col="gt">GT<span class="sort-icon"><svg class="sort-asc" width="8" height="5" viewBox="0 0 8 5" fill="currentColor"><path d="M4 0L8 5H0z"/></svg><svg class="sort-desc" width="8" height="5" viewBox="0 0 8 5" fill="currentColor"><path d="M4 5L0 0h8z"/></svg></span></span></th>
-            <th class="col-cii">CII</th>
-            <th>SEEMP II</th>
-            <th>SEEMP III</th>
-            <th>Data Verif.</th>
-          </tr>
-        </thead>
+        <colgroup id="tblColgroup"></colgroup>
+        <thead id="tblHead"></thead>
         <tbody id="fleetTbody">
           <!-- rows rendered by JS -->
         </tbody>
@@ -724,40 +746,140 @@
 <script>
   // ─── Vessel data ───
   const vessels = [
-    { name:'KR OCEAN STAR',    imo:'9876543', type:'Bulk Carrier', flag:'Panama',        gt:'82,400',   cii:'B', built:'2014', cls:'KR', s2:'Approved',  s3:'Approved',  dv:'Submitted' },
-    { name:'HARMONY QUEEN',    imo:'9543210', type:'Tanker',       flag:'Marshall Is.',  gt:'105,700',  cii:'A', built:'2017', cls:'LR', s2:'Approved',  s3:'Approved',  dv:'Approved'  },
-    { name:'SEOUL PIONEER',    imo:'9112233', type:'Container',    flag:'Liberia',       gt:'64,200',   cii:'C', built:'2011', cls:'DNV',s2:'Revision',  s3:'Submitted', dv:'Saved'     },
-    { name:'BUSAN TRADER',     imo:'9334455', type:'Bulk Carrier', flag:'Hong Kong',     gt:'76,900',   cii:'B', built:'2012', cls:'KR', s2:'Approved',  s3:'Revision',  dv:'Submitted' },
-    { name:'GREEN HORIZON',    imo:'9667788', type:'Tanker',       flag:'Bahamas',       gt:'118,500',  cii:'D', built:'2009', cls:'BV', s2:'Submitted', s3:'Saved',     dv:'Saved'     },
-    { name:'ATLANTIC BRIDGE',  imo:'9889900', type:'Container',    flag:'Singapore',     gt:'91,300',   cii:'A', built:'2019', cls:'KR', s2:'Approved',  s3:'Approved',  dv:'Approved'  },
-    { name:'EAST WIND GLORY',  imo:'9221144', type:'LNG Carrier',  flag:'Cayman Is.',    gt:'142,000',  cii:'A', built:'2020', cls:'ABS',s2:'Approved',  s3:'Approved',  dv:'Approved'  },
-    { name:'PACIFIC SHIELD',   imo:'9445566', type:'RORO',         flag:'Bahamas',       gt:'28,400',   cii:'C', built:'2016', cls:'DNV',s2:'Approved',  s3:'Submitted', dv:'Saved'     },
+    { name:'KR OCEAN STAR',    imo:'9876543', type:'Bulk Carrier', flag:'Panama',        gt:'82,400',   cii:'B', built:'2014', cls:'KR',  s2:'Approved',  s3:'Approved',  dv:'Submitted', attained:'4.21', required:'4.63', ciiSt:'Approved'  },
+    { name:'HARMONY QUEEN',    imo:'9543210', type:'Tanker',       flag:'Marshall Is.',  gt:'105,700',  cii:'A', built:'2017', cls:'LR',  s2:'Approved',  s3:'Approved',  dv:'Approved',  attained:'2.88', required:'3.91', ciiSt:'Approved'  },
+    { name:'SEOUL PIONEER',    imo:'9112233', type:'Container',    flag:'Liberia',       gt:'64,200',   cii:'C', built:'2011', cls:'DNV', s2:'Revision',  s3:'Submitted', dv:'Saved',     attained:'7.12', required:'6.55', ciiSt:'Submitted' },
+    { name:'BUSAN TRADER',     imo:'9334455', type:'Bulk Carrier', flag:'Hong Kong',     gt:'76,900',   cii:'B', built:'2012', cls:'KR',  s2:'Approved',  s3:'Revision',  dv:'Submitted', attained:'3.95', required:'4.42', ciiSt:'Submitted' },
+    { name:'GREEN HORIZON',    imo:'9667788', type:'Tanker',       flag:'Bahamas',       gt:'118,500',  cii:'D', built:'2009', cls:'BV',  s2:'Submitted', s3:'Saved',     dv:'Saved',     attained:'9.34', required:'7.20', ciiSt:'Saved'     },
+    { name:'ATLANTIC BRIDGE',  imo:'9889900', type:'Container',    flag:'Singapore',     gt:'91,300',   cii:'A', built:'2019', cls:'KR',  s2:'Approved',  s3:'Approved',  dv:'Approved',  attained:'3.10', required:'4.08', ciiSt:'Approved'  },
+    { name:'EAST WIND GLORY',  imo:'9221144', type:'LNG Carrier',  flag:'Cayman Is.',    gt:'142,000',  cii:'A', built:'2020', cls:'ABS', s2:'Approved',  s3:'Approved',  dv:'Approved',  attained:'2.41', required:'3.15', ciiSt:'Approved'  },
+    { name:'PACIFIC SHIELD',   imo:'9445566', type:'RORO',         flag:'Bahamas',       gt:'28,400',   cii:'C', built:'2016', cls:'DNV', s2:'Approved',  s3:'Submitted', dv:'Saved',     attained:'6.88', required:'6.10', ciiSt:'Saved'     },
   ];
 
   const statusClass = s => ({ Approved:'reg-badge--approved', Submitted:'reg-badge--submitted', Revision:'reg-badge--revision', Saved:'reg-badge--saved' }[s] || '');
   const ciiClass    = r => ({ A:'cii-a', B:'cii-b', C:'cii-c', D:'cii-d', E:'cii-e' }[r] || '');
 
-  // ─── Render table ───
-  function renderRows(list) {
-    const tbody = document.getElementById('fleetTbody');
-    tbody.innerHTML = list.map((v, i) => `
-      <tr class="fleet-row" data-idx="${vessels.indexOf(v)}">
+  let currentTab = 'mrv';
+
+  // ─── Table structure per tab ───
+  const tabConfig = {
+    mrv: {
+      colgroup: `
+        <col style="width:auto">
+        <col style="width:96px">
+        <col style="width:110px">
+        <col style="width:100px">
+        <col style="width:80px">
+        <col style="width:100px">
+        <col style="width:100px">
+        <col style="width:100px">
+        <col style="width:90px">`,
+      head: `<tr>
+        <th><span class="th-sort" data-col="name">Vessel Name${sortIcon()}</span></th>
+        <th>IMO No.</th>
+        <th><span class="th-sort" data-col="type">Type${sortIcon()}</span></th>
+        <th>Flag</th>
+        <th style="text-align:right"><span class="th-sort" data-col="gt">GT${sortIcon()}</span></th>
+        <th>SEEMP II</th>
+        <th>SEEMP III</th>
+        <th>Data Verif.</th>
+        <th>Status</th>
+      </tr>`,
+      row: v => `
         <td class="vessel-name">${v.name}</td>
-        <td class="col-imo">${v.imo}</td>
+        <td style="font-family:'Geist Mono',monospace;font-size:12px">${v.imo}</td>
         <td>${v.type}</td>
         <td>${v.flag}</td>
-        <td class="col-gt">${v.gt}</td>
-        <td class="col-cii"><span class="cii-badge ${ciiClass(v.cii)}">${v.cii}</span></td>
+        <td style="text-align:right;font-family:'Geist Mono',monospace;font-size:12px">${v.gt}</td>
         <td><span class="reg-badge ${statusClass(v.s2)}">${v.s2}</span></td>
         <td><span class="reg-badge ${statusClass(v.s3)}">${v.s3}</span></td>
         <td><span class="reg-badge ${statusClass(v.dv)}">${v.dv}</span></td>
+        <td><span class="reg-badge ${statusClass(v.s2 === 'Approved' && v.s3 === 'Approved' && v.dv === 'Approved' ? 'Approved' : v.dv)}">${v.s2 === 'Approved' && v.s3 === 'Approved' && v.dv === 'Approved' ? 'Complete' : 'In Progress'}</span></td>`,
+    },
+    cii: {
+      colgroup: `
+        <col style="width:auto">
+        <col style="width:96px">
+        <col style="width:110px">
+        <col style="width:100px">
+        <col style="width:80px">
+        <col style="width:52px">
+        <col style="width:108px">
+        <col style="width:108px">
+        <col style="width:96px">`,
+      head: `<tr>
+        <th><span class="th-sort" data-col="name">Vessel Name${sortIcon()}</span></th>
+        <th>IMO No.</th>
+        <th><span class="th-sort" data-col="type">Type${sortIcon()}</span></th>
+        <th>Flag</th>
+        <th style="text-align:right"><span class="th-sort" data-col="gt">GT${sortIcon()}</span></th>
+        <th style="text-align:center">CII</th>
+        <th style="text-align:right">Attained CII</th>
+        <th style="text-align:right">Required CII</th>
+        <th>Status</th>
+      </tr>`,
+      row: v => `
+        <td class="vessel-name">${v.name}</td>
+        <td style="font-family:'Geist Mono',monospace;font-size:12px">${v.imo}</td>
+        <td>${v.type}</td>
+        <td>${v.flag}</td>
+        <td style="text-align:right;font-family:'Geist Mono',monospace;font-size:12px">${v.gt}</td>
+        <td style="text-align:center"><span class="cii-badge ${ciiClass(v.cii)}">${v.cii}</span></td>
+        <td style="text-align:right;font-family:'Geist Mono',monospace;font-size:12px">${v.attained}</td>
+        <td style="text-align:right;font-family:'Geist Mono',monospace;font-size:12px">${v.required}</td>
+        <td><span class="reg-badge ${statusClass(v.ciiSt)}">${v.ciiSt}</span></td>`,
+    },
+  };
+
+  function sortIcon() {
+    return `<span class="sort-icon"><svg class="sort-asc" width="8" height="5" viewBox="0 0 8 5" fill="currentColor"><path d="M4 0L8 5H0z"/></svg><svg class="sort-desc" width="8" height="5" viewBox="0 0 8 5" fill="currentColor"><path d="M4 5L0 0h8z"/></svg></span>`;
+  }
+
+  // ─── Render table ───
+  function renderRows(list) {
+    const cfg   = tabConfig[currentTab];
+    const tbody = document.getElementById('fleetTbody');
+    document.getElementById('tblColgroup').innerHTML = cfg.colgroup;
+    document.getElementById('tblHead').innerHTML     = cfg.head;
+    tbody.innerHTML = list.map(v => `
+      <tr class="fleet-row" data-idx="${vessels.indexOf(v)}">
+        ${cfg.row(v)}
       </tr>`).join('');
     document.getElementById('totalCount').textContent = list.length;
     document.querySelectorAll('.fleet-row').forEach(row => {
       row.addEventListener('click', () => openDrawer(vessels[+row.dataset.idx]));
     });
+    // re-attach sort listeners
+    document.querySelectorAll('.th-sort').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.col;
+        if (!col) return;
+        const wasDesc = th.classList.contains('desc');
+        document.querySelectorAll('.th-sort').forEach(t => t.classList.remove('asc', 'desc'));
+        th.classList.add(wasDesc ? 'asc' : 'desc');
+        const dir = wasDesc ? 1 : -1;
+        const sorted = [...currentList].sort((a, b) => {
+          const av = col === 'gt' ? parseInt(a[col].replace(/,/g, '')) : a[col];
+          const bv = col === 'gt' ? parseInt(b[col].replace(/,/g, '')) : b[col];
+          return av < bv ? dir : av > bv ? -dir : 0;
+        });
+        renderRows(sorted);
+      });
+    });
   }
-  renderRows(vessels);
+
+  let currentList = [...vessels];
+  renderRows(currentList);
+
+  // ─── Tab switching ───
+  document.querySelectorAll('.card-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.card-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentTab = tab.dataset.tab;
+      renderRows(currentList);
+    });
+  });
 
   // ─── Drawer ───
   const drawer         = document.getElementById('vesselDrawer');
@@ -811,14 +933,14 @@
   function applyFilters() {
     const q    = searchInput.value.trim().toLowerCase();
     const type = typeFilter.value;
-    let list = vessels.filter(v => {
+    currentList = vessels.filter(v => {
       if (q && !v.name.toLowerCase().includes(q) && !v.imo.includes(q)) return false;
       if (type && v.type !== type) return false;
       if (activeCii  && v.cii  !== activeCii) return false;
       if (activeFlag && !v.flag.toLowerCase().includes(activeFlag.toLowerCase())) return false;
       return true;
     });
-    renderRows(list);
+    renderRows(currentList);
   }
 
   searchInput.addEventListener('input', applyFilters);
@@ -855,23 +977,6 @@
     filterBadge.classList.remove('visible');
     filterBtn.classList.remove('is-active');
     applyFilters();
-  });
-
-  // ─── Column sort ───
-  document.querySelectorAll('.th-sort').forEach(th => {
-    th.addEventListener('click', () => {
-      const col    = th.dataset.col;
-      const wasDesc = th.classList.contains('desc');
-      document.querySelectorAll('.th-sort').forEach(t => t.classList.remove('asc', 'desc'));
-      th.classList.add(wasDesc ? 'asc' : 'desc');
-      const dir = wasDesc ? 1 : -1;
-      const sorted = [...vessels].sort((a, b) => {
-        const av = col === 'gt' ? parseInt(a[col].replace(/,/g, '')) : a[col];
-        const bv = col === 'gt' ? parseInt(b[col].replace(/,/g, '')) : b[col];
-        return av < bv ? dir : av > bv ? -dir : 0;
-      });
-      renderRows(sorted);
-    });
   });
 
   // ─── Sidebar toggle ───
