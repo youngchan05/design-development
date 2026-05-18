@@ -31,7 +31,7 @@
 
       --text-1:     #1a2420;
       --text-2:     #405950;
-      --text-3:     #7a9590;
+      --text-3:     #4a6660;
 
       --nav-h:      52px;
       --sidebar-w:  220px;
@@ -551,7 +551,7 @@
     .page-header__actions { display: flex; gap: 8px; align-items: center; }
 
     /* ─── Design token: all interactive elements share one height ─── */
-    :root { --ctrl-h: 32px; --ctrl-px: 12px; --ctrl-fs: 13.5px; --ctrl-r: 6px; }
+    :root { --ctrl-h: 38px; --ctrl-px: 12px; --ctrl-fs: 13.5px; --ctrl-r: 6px; }
 
     /* ─── Shared control baseline ─── */
     .btn,
@@ -709,31 +709,33 @@
     }
     .status-kpi-breakdown {
       display: flex;
-      gap: 0;
+      gap: 4px;
     }
     .status-kpi-dot {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
       flex: 1;
+      padding: 4px 2px;
+      border-radius: 6px;
     }
     .status-kpi-dot .status-indicator {
-      width: 7px;
-      height: 7px;
-      margin-bottom: 1px;
+      width: 8px;
+      height: 8px;
+      margin-bottom: 0;
     }
     .status-kpi-dot__num {
-      font-size: 13px;
+      font-size: 14px;
       font-variant-numeric: tabular-nums;
       font-weight: 700;
       color: var(--text-1);
       line-height: 1;
     }
     .status-kpi-dot__label {
-      font-size: 9.5px;
-      font-weight: 400;
-      color: var(--text-3);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-2);
       text-align: center;
       line-height: 1.2;
     }
@@ -781,7 +783,7 @@
     .card__actions { flex-shrink: 0; }
     .card__title {
       white-space: nowrap;
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 600;
       color: var(--text-1);
       letter-spacing: -.1px;
@@ -800,7 +802,7 @@
       border-collapse: collapse;
     }
     .price-table th {
-      font-size: 10.5px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--text-2);
       text-transform: uppercase;
@@ -811,14 +813,14 @@
     }
     .price-table th:first-child { text-align: left; }
     .price-table td {
-      font-size: 12.5px;
+      font-size: 13px;
       color: var(--text-1);
       padding: 9px 10px;
       text-align: right;
       font-variant-numeric: tabular-nums;
       border-bottom: 1px solid rgba(255,255,255,.035);
     }
-    .price-table td:first-child { text-align: left; color: var(--text-2); font-size: 12.5px; }
+    .price-table td:first-child { text-align: left; color: var(--text-2); font-size: 13px; }
     .price-table tr:last-child td { border-bottom: none; }
     .price-table .holiday { color: var(--text-3); font-size: 12px; }
 
@@ -854,7 +856,7 @@
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .form-field { display: flex; flex-direction: column; gap: 4px; }
     .form-field--full { grid-column: 1 / -1; }
-    .form-label { font-size: 11.5px; font-weight: 500; color: var(--text-2); text-transform: uppercase; letter-spacing: .5px; }
+    .form-label { font-size: 12px; font-weight: 500; color: var(--text-2); text-transform: uppercase; letter-spacing: .5px; }
     .form-select, .form-input {
       background: var(--surface);
       color: var(--text-1);
@@ -917,7 +919,7 @@
     }
     .notice-dot--dim { background: var(--text-3); }
     .notice-item__title {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-1);
       flex: 1;
       line-height: 1.4;
