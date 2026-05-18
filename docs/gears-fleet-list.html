@@ -264,6 +264,64 @@
     .table-meta__total strong { color: var(--text-1); font-weight: 600; }
     .table-meta__actions { display: flex; gap: 6px; }
 
+    /* ─── Checkbox ─── */
+    .col-check { width: 44px; }
+    .cb-wrap { display: flex; align-items: center; justify-content: center; }
+    .cb {
+      width: 16px; height: 16px;
+      border: 1.5px solid var(--border-md);
+      border-radius: 4px; cursor: pointer;
+      appearance: none; -webkit-appearance: none;
+      background: var(--surface);
+      position: relative;
+      transition: all .12s; flex-shrink: 0;
+    }
+    .cb:checked { background: var(--teal); border-color: var(--teal); }
+    .cb:checked::after {
+      content: ''; position: absolute;
+      left: 4px; top: 1px;
+      width: 4px; height: 7px;
+      border: 1.5px solid #fff; border-top: none; border-left: none;
+      transform: rotate(45deg);
+    }
+    .cb:indeterminate { background: var(--teal); border-color: var(--teal); }
+    .cb:indeterminate::after {
+      content: ''; position: absolute;
+      left: 3px; top: 6px;
+      width: 8px; height: 1.5px;
+      background: #fff; border-radius: 1px;
+    }
+    .tbl tbody tr.selected { background: rgba(61,139,110,.06); }
+    .tbl tbody tr.selected .vessel-name { color: var(--teal); }
+
+    /* ─── Selection bar ─── */
+    .sel-bar {
+      display: none; align-items: center; justify-content: space-between;
+      padding: 10px 16px;
+      border-top: 1px solid var(--teal-mid);
+      background: var(--teal-dim);
+      min-height: 44px;
+    }
+    .sel-bar.visible { display: flex; }
+    .sel-bar__info { font-size: 12.5px; color: var(--teal); font-weight: 500; }
+    .sel-bar__info strong { font-weight: 700; }
+    .sel-bar__actions { display: flex; gap: 6px; }
+    .sel-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: var(--radius-sm);
+      font-size: 11.5px; font-weight: 500; font-family: inherit;
+      background: var(--surface); border: 1px solid var(--teal-mid);
+      color: var(--teal); cursor: pointer; transition: all .12s;
+    }
+    .sel-btn:hover { border-color: var(--teal); }
+    .sel-btn--danger { color: #e05252; border-color: rgba(224,82,82,.3); }
+    .sel-btn--danger:hover { border-color: #e05252; }
+
+    /* ─── Danger button ─── */
+    .btn--danger { background: #e05252; border-color: #e05252; color: #fff; }
+    .btn--danger:hover { background: #c0392b; border-color: #c0392b; color: #fff; }
+    .modal--sm { width: 400px; }
+
     /* ─── Table ─── */
     .tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; table-layout: fixed; }
 
@@ -679,6 +737,18 @@
           <!-- rows rendered by JS -->
         </tbody>
       </table>
+
+      <!-- Selection action bar -->
+      <div class="sel-bar" id="selBar">
+        <span class="sel-bar__info"><strong id="selCount">0</strong> vessel(s) selected</span>
+        <div class="sel-bar__actions">
+          <button class="sel-btn" id="selDeselectAll">Deselect All</button>
+          <button class="sel-btn sel-btn--danger" id="selDeleteBtn">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Pagination -->
@@ -779,6 +849,36 @@
       <button class="btn btn--primary" id="modalAdd">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 2v12M2 8h12"/></svg>
         Add Vessel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-backdrop" id="deleteBackdrop">
+  <div class="modal modal--sm" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <span class="modal-title">Delete Vessels</span>
+      <button class="modal-close" id="deleteModalClose" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:flex-start;gap:14px;">
+        <div style="width:36px;height:36px;border-radius:9px;background:rgba(224,82,82,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#e05252" stroke-width="1.8"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--text-1);margin-bottom:5px;"><span id="deleteCount">0</span>척의 선박을 삭제하시겠습니까?</div>
+          <div style="font-size:12px;color:var(--text-3);line-height:1.6;">삭제한 데이터는 복구할 수 없습니다.<br>계속하려면 <strong style="color:var(--text-2)">Delete</strong>를 클릭하세요.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="deleteCancelBtn">Cancel</button>
+      <button class="btn btn--danger" id="deleteConfirmBtn">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
+        Delete
       </button>
     </div>
   </div>
@@ -911,6 +1011,7 @@
   const tabConfig = {
     mrv: {
       colgroup: `
+        <col style="width:44px">
         <col style="width:auto">
         <col style="width:96px">
         <col style="width:110px">
@@ -921,6 +1022,7 @@
         <col style="width:92px">
         <col style="width:88px">`,
       head: `<tr>
+        <th class="col-check"><div class="cb-wrap"><input type="checkbox" class="cb cb-all"></div></th>
         <th><span class="th-sort" data-col="name">Vessel Name${sortIcon()}</span></th>
         <th>IMO No.</th>
         <th><span class="th-sort" data-col="type">Type${sortIcon()}</span></th>
@@ -932,6 +1034,7 @@
         <th>Status</th>
       </tr>`,
       row: v => `
+        <td class="col-check"><div class="cb-wrap"><input type="checkbox" class="cb cb-row"></div></td>
         <td class="vessel-name">${v.name}</td>
         <td style="font-family:'Geist Mono',monospace;font-size:12px">${v.imo}</td>
         <td>${v.type}</td>
@@ -944,6 +1047,7 @@
     },
     cii: {
       colgroup: `
+        <col style="width:44px">
         <col style="width:auto">
         <col style="width:96px">
         <col style="width:110px">
@@ -954,6 +1058,7 @@
         <col style="width:108px">
         <col style="width:96px">`,
       head: `<tr>
+        <th class="col-check"><div class="cb-wrap"><input type="checkbox" class="cb cb-all"></div></th>
         <th><span class="th-sort" data-col="name">Vessel Name${sortIcon()}</span></th>
         <th>IMO No.</th>
         <th><span class="th-sort" data-col="type">Type${sortIcon()}</span></th>
@@ -965,6 +1070,7 @@
         <th>Status</th>
       </tr>`,
       row: v => `
+        <td class="col-check"><div class="cb-wrap"><input type="checkbox" class="cb cb-row"></div></td>
         <td class="vessel-name">${v.name}</td>
         <td style="font-family:'Geist Mono',monospace;font-size:12px">${v.imo}</td>
         <td>${v.type}</td>
@@ -993,8 +1099,12 @@
       </tr>`).join('');
     document.getElementById('totalCount').textContent = list.length;
     document.querySelectorAll('.fleet-row').forEach(row => {
-      row.addEventListener('click', () => openDrawer(vessels[+row.dataset.idx]));
+      row.addEventListener('click', e => {
+        if (e.target.closest('.cb-wrap')) return;
+        openDrawer(vessels[+row.dataset.idx]);
+      });
     });
+    initCheckboxes();
     // re-attach sort listeners
     document.querySelectorAll('.th-sort').forEach(th => {
       th.addEventListener('click', () => {
@@ -1015,6 +1125,63 @@
   }
 
   let currentList = [...vessels];
+  let selectedIdx = new Set();
+
+  // ─── Checkbox logic ───
+  function initCheckboxes() {
+    const cbAll  = document.querySelector('.cb-all');
+    const cbRows = document.querySelectorAll('.cb-row');
+
+    // restore persisted selection
+    cbRows.forEach(cb => {
+      const idx = +cb.closest('tr').dataset.idx;
+      cb.checked = selectedIdx.has(idx);
+      cb.closest('tr').classList.toggle('selected', cb.checked);
+    });
+    syncHeaderCb(cbAll, cbRows);
+
+    if (cbAll) {
+      cbAll.addEventListener('click', e => {
+        e.stopPropagation();
+        cbRows.forEach(cb => {
+          cb.checked = cbAll.checked;
+          const idx = +cb.closest('tr').dataset.idx;
+          cb.closest('tr').classList.toggle('selected', cbAll.checked);
+          if (cbAll.checked) selectedIdx.add(idx);
+          else selectedIdx.delete(idx);
+        });
+        updateSelBar();
+      });
+    }
+
+    cbRows.forEach(cb => {
+      cb.addEventListener('click', e => {
+        e.stopPropagation();
+        const idx = +cb.closest('tr').dataset.idx;
+        cb.closest('tr').classList.toggle('selected', cb.checked);
+        if (cb.checked) selectedIdx.add(idx);
+        else selectedIdx.delete(idx);
+        syncHeaderCb(cbAll, cbRows);
+        updateSelBar();
+      });
+    });
+  }
+
+  function syncHeaderCb(cbAll, cbRows) {
+    if (!cbAll) return;
+    const total   = cbRows.length;
+    const checked = [...cbRows].filter(c => c.checked).length;
+    cbAll.checked       = total > 0 && checked === total;
+    cbAll.indeterminate = checked > 0 && checked < total;
+  }
+
+  function updateSelBar() {
+    const bar = document.getElementById('selBar');
+    const n   = selectedIdx.size;
+    bar.classList.toggle('visible', n > 0);
+    if (n > 0) document.getElementById('selCount').textContent = n;
+  }
+
   renderRows(currentList);
 
   // ─── Tab switching ───
@@ -1023,6 +1190,7 @@
       document.querySelectorAll('.card-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       currentTab = tab.dataset.tab;
+      selectedIdx.clear();
       renderRows(currentList);
     });
   });
@@ -1180,6 +1348,52 @@
     if (btn.textContent.trim().includes('Add Vessel')) {
       btn.addEventListener('click', openModal);
     }
+  });
+
+  // ─── Selection bar buttons ───
+  document.getElementById('selDeselectAll').addEventListener('click', () => {
+    selectedIdx.clear();
+    document.querySelectorAll('.cb-row').forEach(cb => {
+      cb.checked = false;
+      cb.closest('tr').classList.remove('selected');
+    });
+    const cbAll = document.querySelector('.cb-all');
+    if (cbAll) { cbAll.checked = false; cbAll.indeterminate = false; }
+    updateSelBar();
+  });
+
+  document.getElementById('selDeleteBtn').addEventListener('click', () => {
+    document.getElementById('deleteCount').textContent = selectedIdx.size;
+    document.getElementById('deleteBackdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  });
+
+  // ─── Delete modal ───
+  function closeDeleteModal() {
+    document.getElementById('deleteBackdrop').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('deleteModalClose').addEventListener('click', closeDeleteModal);
+  document.getElementById('deleteCancelBtn').addEventListener('click', closeDeleteModal);
+  document.getElementById('deleteBackdrop').addEventListener('click', e => {
+    if (e.target === document.getElementById('deleteBackdrop')) closeDeleteModal();
+  });
+
+  document.getElementById('deleteConfirmBtn').addEventListener('click', () => {
+    // remove selected from vessels array
+    const toRemove = new Set(selectedIdx);
+    for (let i = vessels.length - 1; i >= 0; i--) {
+      if (toRemove.has(i)) vessels.splice(i, 1);
+    }
+    selectedIdx.clear();
+    currentList = [...vessels];
+    closeDeleteModal();
+    renderRows(currentList);
+    updateSelBar();
+    // update tab counts
+    document.getElementById('tabCountMrv').textContent = vessels.length;
+    document.getElementById('tabCountCii').textContent = vessels.length;
   });
 
   // ─── Sidebar toggle ───
