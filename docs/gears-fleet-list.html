@@ -120,9 +120,8 @@
     .sidebar-collapse-btn.is-collapsed svg { transform: rotate(180deg); }
 
     /* ─── Main ─── */
-    .main { margin-left: var(--sidebar-w); flex: 1; padding: 28px 28px 0; min-width: 0; display: flex; flex-direction: column; align-items: center; min-height: calc(100vh - var(--nav-h)); transition: margin-left .25s cubic-bezier(.4,0,.2,1); }
+    .main { margin-left: var(--sidebar-w); flex: 1; padding: 28px 28px 0; min-width: 0; display: flex; flex-direction: column; align-items: center; height: calc(100vh - var(--nav-h)); overflow: hidden; transition: margin-left .25s cubic-bezier(.4,0,.2,1); }
     .main > * { width: 100%; max-width: 1280px; }
-    .main > .footer { max-width: 100%; }
     .main.sidebar-collapsed { margin-left: 56px; }
 
     /* ─── Buttons ─── */
@@ -220,8 +219,18 @@
       border-radius: var(--radius-sm);
       overflow: hidden;
       display: flex; flex-direction: column;
-      flex: 1;
+      flex: 1; min-height: 0;
     }
+
+    /* ─── Scrollable table wrapper ─── */
+    .tbl-scroll {
+      flex: 1; min-height: 0;
+      overflow-y: auto;
+      display: flex; flex-direction: column;
+    }
+    .tbl-scroll::-webkit-scrollbar { width: 5px; }
+    .tbl-scroll::-webkit-scrollbar-track { background: transparent; }
+    .tbl-scroll::-webkit-scrollbar-thumb { background: var(--border-md); border-radius: 3px; }
 
     /* ─── Card tabs ─── */
     .card-tabs {
@@ -266,7 +275,9 @@
 
     /* ─── Checkbox ─── */
     .col-check { width: 44px; }
-    .cb-wrap { display: flex; align-items: center; justify-content: center; }
+    .tbl th.col-check,
+    .tbl td.col-check { padding: 0; }
+    .cb-wrap { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
     .cb {
       width: 16px; height: 16px;
       border: 1.5px solid var(--border-md);
@@ -299,8 +310,12 @@
       display: none; align-items: center; justify-content: space-between;
       padding: 10px 16px;
       border-top: 1px solid var(--teal-mid);
-      background: var(--teal-dim);
+      background: rgba(61,139,110,.11);
       min-height: 44px;
+      margin-top: auto; flex-shrink: 0;
+      position: sticky; bottom: 0;
+      z-index: 6;
+      box-shadow: 0 -2px 8px rgba(61,139,110,.08);
     }
     .sel-bar.visible { display: flex; }
     .sel-bar__info { font-size: 12.5px; color: var(--teal); font-weight: 500; }
@@ -323,7 +338,7 @@
     .modal--sm { width: 400px; }
 
     /* ─── Table ─── */
-    .tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; table-layout: fixed; }
+    .tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; table-layout: fixed; flex-shrink: 0; align-self: flex-start; }
 
     .col-vessel { width: auto; }
     .col-imo    { width: 96px; }
@@ -335,7 +350,7 @@
     .col-s3     { width: 96px; }
     .col-dv     { width: 96px; }
 
-    .tbl thead tr { background: var(--surface-2); border-bottom: 1px solid var(--border); }
+    .tbl thead tr { background: var(--surface-2); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
     .tbl th {
       padding: 10px 12px;
       font-size: 11px; font-weight: 600;
@@ -425,7 +440,7 @@
     .page-btn--arrow:hover { color: var(--teal); }
 
     /* ─── Footer ─── */
-    .footer { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 20px 0 8px; border-top: 1px solid var(--border); margin-top: 8px; text-align: center; }
+    .footer { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 20px 0 8px; border-top: 1px solid var(--border); margin-top: 8px; text-align: center; flex-shrink: 0; }
     .footer__address { font-size: 11.5px; color: var(--text-2); }
     .footer__copy    { font-size: 11px; color: var(--text-3); }
 
@@ -730,48 +745,42 @@
         <span class="table-meta__total">Total <strong id="totalCount">8</strong> vessels</span>
       </div>
 
-      <table class="tbl">
-        <colgroup id="tblColgroup"></colgroup>
-        <thead id="tblHead"></thead>
-        <tbody id="fleetTbody">
-          <!-- rows rendered by JS -->
-        </tbody>
-      </table>
+      <div class="tbl-scroll" id="tblScroll">
+        <table class="tbl">
+          <colgroup id="tblColgroup"></colgroup>
+          <thead id="tblHead"></thead>
+          <tbody id="fleetTbody">
+            <!-- rows rendered by JS -->
+          </tbody>
+        </table>
 
-      <!-- Selection action bar -->
-      <div class="sel-bar" id="selBar">
-        <span class="sel-bar__info"><strong id="selCount">0</strong> vessel(s) selected</span>
-        <div class="sel-bar__actions">
-          <button class="sel-btn" id="selDeselectAll">Deselect All</button>
-          <button class="sel-btn sel-btn--danger" id="selDeleteBtn">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
-            Delete
-          </button>
+        <!-- Selection action bar (sticky bottom of scroll) -->
+        <div class="sel-bar" id="selBar">
+          <span class="sel-bar__info"><strong id="selCount">0</strong> vessel(s) selected</span>
+          <div class="sel-bar__actions">
+            <button class="sel-btn" id="selDeselectAll">Deselect All</button>
+            <button class="sel-btn sel-btn--danger" id="selDeleteBtn">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
+              Delete
+            </button>
+          </div>
+        </div>
+      </div><!-- /tbl-scroll -->
+
+      <!-- Pagination -->
+      <div class="pagination-wrap" style="border-top:1px solid var(--border);padding:14px 0;flex-shrink:0;">
+        <div class="pagination">
+          <button class="page-btn page-btn--arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L6 8l4 5"/></svg></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn page-btn--arrow"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l4 5-4 5"/></svg></button>
+        </div>
+        <div class="page-limit-wrap">
+          <span class="page-limit-label">Rows per page</span>
+          <select class="page-limit-sel"><option>10</option><option>30</option><option>50</option></select>
         </div>
       </div>
-    </div>
-
-    <!-- Pagination -->
-    <div class="pagination-wrap">
-      <div class="pagination">
-        <button class="page-btn page-btn--arrow">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L6 8l4 5"/></svg>
-        </button>
-        <button class="page-btn active">1</button>
-        <button class="page-btn">2</button>
-        <button class="page-btn page-btn--arrow">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l4 5-4 5"/></svg>
-        </button>
-      </div>
-      <div class="page-limit-wrap">
-        <span class="page-limit-label">Rows per page</span>
-        <select class="page-limit-sel">
-          <option>10</option>
-          <option>30</option>
-          <option>50</option>
-        </select>
-      </div>
-    </div>
+    </div><!-- /list-card -->
 
     <footer class="footer">
       <span class="footer__address">36, Myeongji ocean city 9-ro, Gangseo-gu, Busan, 46762 Republic of Korea</span>
@@ -857,26 +866,26 @@
 <!-- Delete Confirm Modal -->
 <div class="modal-backdrop" id="deleteBackdrop">
   <div class="modal modal--sm" role="dialog" aria-modal="true">
-    <div class="modal-head">
+    <div class="modal-head" style="padding:14px 16px;">
       <span class="modal-title">Delete Vessels</span>
       <button class="modal-close" id="deleteModalClose" aria-label="Close">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
       </button>
     </div>
-    <div class="modal-body">
-      <div style="display:flex;align-items:flex-start;gap:14px;">
-        <div style="width:36px;height:36px;border-radius:9px;background:rgba(224,82,82,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#e05252" stroke-width="1.8"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
+    <div class="modal-body" style="padding:16px;">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:34px;height:34px;border-radius:8px;background:rgba(224,82,82,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#e05252" stroke-width="1.8"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
         </div>
         <div>
-          <div style="font-size:13px;font-weight:600;color:var(--text-1);margin-bottom:5px;"><span id="deleteCount">0</span>척의 선박을 삭제하시겠습니까?</div>
-          <div style="font-size:12px;color:var(--text-3);line-height:1.6;">삭제한 데이터는 복구할 수 없습니다.<br>계속하려면 <strong style="color:var(--text-2)">Delete</strong>를 클릭하세요.</div>
+          <div style="font-size:13px;font-weight:600;color:var(--text-1);margin-bottom:4px;"><span id="deleteCount">0</span> vessel(s) will be permanently deleted.</div>
+          <div style="font-size:12px;color:var(--text-3);line-height:1.6;">This action cannot be undone. Click <strong style="color:var(--text-2)">Delete</strong> to confirm.</div>
         </div>
       </div>
     </div>
-    <div class="modal-foot">
-      <button class="btn" id="deleteCancelBtn">Cancel</button>
-      <button class="btn btn--danger" id="deleteConfirmBtn">
+    <div class="modal-foot" style="padding:12px 16px;">
+      <button class="btn" id="deleteCancelBtn" style="min-width:80px;justify-content:center;">Cancel</button>
+      <button class="btn btn--danger" id="deleteConfirmBtn" style="min-width:80px;justify-content:center;">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
         Delete
       </button>
