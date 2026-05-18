@@ -203,8 +203,24 @@
 
     /* File field */
     .wf-file-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 28px;
       border-bottom: 1px solid var(--border);
     }
+    .wf-file-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--text-3); text-transform: uppercase; letter-spacing: .5px;
+      flex-shrink: 0; min-width: 72px;
+    }
+    .wf-file-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: var(--radius-sm);
+      font-size: 12px; font-weight: 500; color: var(--text-2);
+      background: var(--surface); border: 1px solid var(--border-md);
+      cursor: pointer; transition: all .15s;
+    }
+    .wf-file-btn:hover { color: var(--teal); background: var(--teal-dim); border-color: var(--teal-mid); }
+    .wf-file-chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .wf-file-chip {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 5px 10px; border-radius: var(--radius-sm);
@@ -225,40 +241,12 @@
     }
     .wf-file-chip__remove:hover { color: #e05252; background: rgba(224,82,82,.1); }
 
-    /* ─── Meta row (category / visibility) ─── */
-    .wf-meta-row {
-      display: flex; align-items: center; gap: 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .wf-meta-cell {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 28px;
-      flex: 1;
-    }
-    .wf-meta-cell + .wf-meta-cell {
-      border-left: 1px solid var(--border);
-    }
-    .wf-meta-label {
-      font-size: 11px; font-weight: 600; color: var(--text-3);
-      text-transform: uppercase; letter-spacing: .5px; flex-shrink: 0;
-    }
-    .wf-meta-sel {
-      height: 30px; padding: 0 28px 0 10px;
-      border: 1px solid var(--border-md); border-radius: var(--radius-sm);
-      font-family: 'Geist', system-ui, sans-serif;
-      font-size: 12px; color: var(--text-2);
-      background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none' stroke='%239eb0aa' stroke-width='2'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 8px center;
-      appearance: none; -webkit-appearance: none;
-      cursor: pointer; outline: none; transition: border-color .15s;
-    }
-    .wf-meta-sel:focus { border-color: var(--teal-mid); }
-
     /* ─── Editor toolbar ─── */
     .editor-toolbar {
       display: flex; align-items: center; gap: 2px;
       padding: 8px 20px;
       border-bottom: 1px solid var(--border);
-      background: var(--surface-2);
+      background: var(--surface);
       flex-wrap: wrap;
     }
     .tb-sep { width: 1px; height: 18px; background: var(--border-md); margin: 0 4px; flex-shrink: 0; }
@@ -282,44 +270,10 @@
       cursor: pointer; outline: none;
     }
 
-    /* ─── File drop zone ─── */
-    .wf-file-row {
-      position: relative;
-    }
-    .wf-dropzone {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 6px; padding: 18px 28px;
-      border: 1.5px dashed var(--border-md);
-      border-radius: var(--radius-sm);
-      margin: 12px 28px;
-      background: var(--surface-2);
-      cursor: pointer; transition: border-color .15s, background .15s;
-      text-align: center;
-    }
-    .wf-dropzone:hover { border-color: var(--teal-mid); background: var(--teal-dim); }
-    .wf-dropzone.drag-over { border-color: var(--teal); background: var(--teal-dim); }
-    .wf-dropzone__icon { color: var(--text-3); }
-    .wf-dropzone__text { font-size: 12.5px; font-weight: 500; color: var(--text-2); }
-    .wf-dropzone__sub { font-size: 11px; color: var(--text-3); }
-    .wf-chips-wrap { padding: 8px 28px 12px; display: flex; flex-wrap: wrap; gap: 6px; }
-    .wf-chips-wrap:empty { display: none; }
-
     /* ─── Editor area ─── */
-    .editor-wrap {
-      padding: 0 28px 8px;
-      display: flex; flex-direction: column;
-      position: relative;
-    }
-    .editor-wrap::before {
-      content: '';
-      position: absolute; left: 0; top: 12px; bottom: 12px;
-      width: 3px; border-radius: 0 2px 2px 0;
-      background: transparent;
-      transition: background .2s;
-    }
-    .editor-wrap:focus-within::before { background: var(--teal-mid); }
+    .editor-wrap { padding: 4px 28px 8px; display: flex; flex-direction: column; }
     .editor-body {
-      min-height: 300px;
+      min-height: 320px;
       padding: 20px 0;
       outline: none;
       font-size: 13.5px; line-height: 1.8; color: var(--text-2);
@@ -534,34 +488,15 @@
         <input type="text" class="wf-title-input" placeholder="Post title" id="titleInput" maxlength="200">
       </div>
 
-      <!-- Meta: category + visibility -->
-      <div class="wf-meta-row">
-        <div class="wf-meta-cell">
-          <span class="wf-meta-label">Category</span>
-          <select class="wf-meta-sel">
-            <option>Community Info</option>
-            <option>Notice</option>
-            <option>Update</option>
-          </select>
-        </div>
-        <div class="wf-meta-cell">
-          <span class="wf-meta-label">Visibility</span>
-          <select class="wf-meta-sel">
-            <option>Public</option>
-            <option>Members only</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- File / Drop zone -->
+      <!-- File -->
       <div class="wf-file-row">
+        <span class="wf-file-label">Attachment</span>
+        <button class="wf-file-btn" id="fileBtn" onclick="document.getElementById('fileInput').click()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 10l-4-4-4 4M8 6v8"/><path d="M14 12v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1"/></svg>
+          Upload file
+        </button>
         <input type="file" id="fileInput" style="display:none" multiple>
-        <div class="wf-dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
-          <svg class="wf-dropzone__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <span class="wf-dropzone__text">Click to upload or drag &amp; drop files here</span>
-          <span class="wf-dropzone__sub">PDF, DOCX, XLSX, ZIP — up to 20 MB each</span>
-        </div>
-        <div class="wf-chips-wrap" id="fileChips"></div>
+        <div class="wf-file-chips" id="fileChips"></div>
       </div>
 
       <!-- Toolbar -->
@@ -693,18 +628,9 @@
   // File upload
   const fileInput = document.getElementById('fileInput');
   const fileChips = document.getElementById('fileChips');
-  const dropzone  = document.getElementById('dropzone');
-
   fileInput.addEventListener('change', () => {
     Array.from(fileInput.files).forEach(file => addFileChip(file.name));
     fileInput.value = '';
-  });
-
-  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
-  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
-  dropzone.addEventListener('drop', e => {
-    e.preventDefault(); dropzone.classList.remove('drag-over');
-    Array.from(e.dataTransfer.files).forEach(file => addFileChip(file.name));
   });
 
   function addFileChip(name) {
