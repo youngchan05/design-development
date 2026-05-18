@@ -138,35 +138,37 @@
       top: 50%;
       transform: translateY(-50%);
       left: var(--sidebar-w);
-      translate: -50% 0;
-      width: 18px;
-      height: 36px;
+      width: 14px;
+      height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
       background: var(--surface);
       border: 1px solid var(--border-2);
+      border-left: none;
       border-radius: 0 6px 6px 0;
       cursor: pointer;
       z-index: 95;
+      opacity: 0;
+      box-shadow: 3px 0 8px rgba(0,0,0,.06);
       transition: left .25s cubic-bezier(.4,0,.2,1),
-                  translate .25s cubic-bezier(.4,0,.2,1),
                   background .15s,
-                  box-shadow .15s;
-      box-shadow: 2px 0 6px rgba(0,0,0,.07);
+                  opacity .15s;
     }
+    .sidebar:hover ~ .sidebar-collapse-btn,
+    .sidebar-collapse-btn:hover { opacity: 1; }
     .sidebar-collapse-btn:hover {
       background: var(--teal-dim);
-      box-shadow: 2px 0 10px rgba(61,139,110,.15);
     }
     .sidebar.collapsed + .sidebar-collapse-btn,
     .sidebar-collapse-btn.is-collapsed {
       left: 56px;
+      opacity: 1;
     }
     .sidebar-collapse-btn svg {
-      width: 11px;
-      height: 11px;
-      color: var(--text-3);
+      width: 10px;
+      height: 10px;
+      color: var(--text-2);
       transition: transform .25s cubic-bezier(.4,0,.2,1), color .15s;
       flex-shrink: 0;
     }
@@ -1721,7 +1723,7 @@
             <div class="card__title">Fuel Consumption Analysis</div>
             <div class="card__subtitle">2025 total · verification type &amp; vessel filter</div>
           </div>
-          <div class="card__actions" style="margin-left:0;">
+          <div class="card__actions" style="margin-left:auto;">
             <select class="select-sm"><option>2020</option><option>2021</option><option>2022</option><option>2023</option><option>2024</option><option selected>2025</option></select>
             <select class="select-sm"><option>All types</option></select>
             <select class="select-sm" style="width:160px;"><option>All vessels</option></select>
