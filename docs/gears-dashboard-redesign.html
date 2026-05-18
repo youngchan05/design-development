@@ -30,8 +30,8 @@
       --blue-dim:   rgba(37,99,168,.09);
 
       --text-1:     #1a2420;
-      --text-2:     #5a6e68;
-      --text-3:     #9eb0aa;
+      --text-2:     #405950;
+      --text-3:     #7a9590;
 
       --nav-h:      52px;
       --sidebar-w:  220px;
@@ -59,13 +59,13 @@
       --blue-dim:  rgba(91,156,214,.13);
 
       --text-1:    #e4e6ea;
-      --text-2:    #8a9299;
-      --text-3:    #464c52;
+      --text-2:    #a2adb6;
+      --text-3:    #656f78;
     }
 
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      font-size: 13px;
+      font-size: 14px;
       background: var(--bg);
       color: var(--text-1);
       line-height: 1.5;
@@ -384,7 +384,7 @@
       border-radius: var(--radius-sm);
       color: var(--text-2);
       text-decoration: none;
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 500;
       transition: color .15s, background .15s;
       cursor: pointer;
@@ -436,7 +436,7 @@
       padding: 7px 10px;
       border-radius: var(--radius-sm);
       color: var(--text-2);
-      font-size: 12.5px;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
       border: none;
@@ -471,7 +471,7 @@
       display: flex;
       align-items: center;
       padding: 5px 10px 5px 33px;
-      font-size: 12px;
+      font-size: 12.5px;
       color: var(--text-2);
       text-decoration: none;
       border-radius: var(--radius-sm);
@@ -544,14 +544,14 @@
       line-height: 1.2;
     }
     .page-header__sub {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--text-2);
       margin-top: 3px;
     }
     .page-header__actions { display: flex; gap: 8px; align-items: center; }
 
     /* ─── Design token: all interactive elements share one height ─── */
-    :root { --ctrl-h: 32px; --ctrl-px: 12px; --ctrl-fs: 12.5px; --ctrl-r: 6px; }
+    :root { --ctrl-h: 32px; --ctrl-px: 12px; --ctrl-fs: 13.5px; --ctrl-r: 6px; }
 
     /* ─── Shared control baseline ─── */
     .btn,
@@ -605,7 +605,7 @@
       gap: 0;
     }
     .status-section__title {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--text-3);
       text-transform: uppercase;
@@ -649,14 +649,14 @@
       margin-bottom: 10px;
     }
     .status-kpi-card__name {
-      font-size: 10.5px;
+      font-size: 11.5px;
       font-weight: 600;
       color: var(--text-3);
       text-transform: uppercase;
       letter-spacing: .5px;
     }
     .status-kpi-card__pct {
-      font-size: 10.5px;
+      font-size: 11.5px;
       font-weight: 600;
       color: var(--teal);
       background: var(--teal-dim);
@@ -671,7 +671,7 @@
       margin-bottom: 10px;
     }
     .status-kpi-card__num {
-      font-size: 32px;
+      font-size: 34px;
       font-weight: 700;
       color: var(--text-1);
       font-variant-numeric: tabular-nums;
@@ -787,7 +787,7 @@
       letter-spacing: -.1px;
     }
     .card__subtitle {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-2);
       margin-top: 1px;
     }
@@ -818,9 +818,9 @@
       font-variant-numeric: tabular-nums;
       border-bottom: 1px solid rgba(255,255,255,.035);
     }
-    .price-table td:first-child { text-align: left; color: var(--text-2); font-size: 11.5px; }
+    .price-table td:first-child { text-align: left; color: var(--text-2); font-size: 12.5px; }
     .price-table tr:last-child td { border-bottom: none; }
-    .price-table .holiday { color: var(--text-3); font-size: 11px; }
+    .price-table .holiday { color: var(--text-3); font-size: 12px; }
 
     /* ─── Sparkline SVG ─── */
     .chart-wrap {
@@ -854,7 +854,7 @@
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .form-field { display: flex; flex-direction: column; gap: 4px; }
     .form-field--full { grid-column: 1 / -1; }
-    .form-label { font-size: 10.5px; font-weight: 500; color: var(--text-2); text-transform: uppercase; letter-spacing: .5px; }
+    .form-label { font-size: 11.5px; font-weight: 500; color: var(--text-2); text-transform: uppercase; letter-spacing: .5px; }
     .form-select, .form-input {
       background: var(--surface);
       color: var(--text-1);
@@ -884,7 +884,7 @@
       align-items: center;
       justify-content: space-between;
     }
-    .metric-bar__label { font-size: 11.5px; color: var(--text-2); }
+    .metric-bar__label { font-size: 12.5px; color: var(--text-2); }
     .metric-bar__val { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
     .metric-bar--teal .metric-bar__val { color: var(--teal); }
     .metric-bar--amber .metric-bar__val { color: var(--amber); }
@@ -917,12 +917,12 @@
     }
     .notice-dot--dim { background: var(--text-3); }
     .notice-item__title {
-      font-size: 12.5px;
+      font-size: 13px;
       color: var(--text-1);
       flex: 1;
       line-height: 1.4;
     }
-    .notice-item__date { font-size: 11px; color: var(--text-3); white-space: nowrap; }
+    .notice-item__date { font-size: 11.5px; color: var(--text-3); white-space: nowrap; }
 
     /* ─── Fuel Charts ─── */
     .fuel-section {
@@ -939,7 +939,7 @@
       gap: 20px;
     }
     .donut-legend { display: flex; flex-direction: column; gap: 8px; flex: 1; }
-    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--text-2); }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--text-2); }
     .legend-swatch { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
     .legend-val { margin-left: auto; font-weight: 600; color: var(--text-1); font-variant-numeric: tabular-nums; }
 
@@ -947,8 +947,8 @@
     .bar-chart { display: flex; flex-direction: column; gap: 10px; }
     .bar-row { display: flex; flex-direction: column; gap: 3px; }
     .bar-row__label { display: flex; justify-content: space-between; align-items: center; }
-    .bar-row__name { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: .4px; }
-    .bar-row__vals { display: flex; gap: 8px; font-size: 11px; font-variant-numeric: tabular-nums; }
+    .bar-row__name { font-size: 12px; color: var(--text-2); text-transform: uppercase; letter-spacing: .4px; }
+    .bar-row__vals { display: flex; gap: 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
     .bar-row__vals .v24 { color: var(--text-3); }
     .bar-row__vals .v25 { color: var(--teal); font-weight: 500; }
     .bar-track {
@@ -974,14 +974,14 @@
       gap: 14px;
       margin-bottom: 8px;
     }
-    .line-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-2); }
+    .line-legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-2); }
     .line-legend-dot { width: 8px; height: 2px; border-radius: 1px; }
 
     /* ─── Tab group ─── */
     .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 0; }
     .tab {
       padding: 8px 14px;
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 500;
       color: var(--text-2);
       cursor: pointer;
@@ -1533,8 +1533,8 @@
           </div>
           <div class="card__actions">
             <div class="tabs" style="border-bottom:none; margin-bottom:0;">
-              <div class="tab active" style="padding:4px 10px; font-size:11.5px;">Board</div>
-              <div class="tab" style="padding:4px 10px; font-size:11.5px;">FAQs</div>
+              <div class="tab active" style="padding:4px 10px; font-size:12.5px;">Board</div>
+              <div class="tab" style="padding:4px 10px; font-size:12.5px;">FAQs</div>
             </div>
           </div>
         </div>
