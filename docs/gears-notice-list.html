@@ -438,6 +438,45 @@
     .sidebar-collapse-btn svg { width: 11px; height: 11px; color: var(--text-3); transition: transform .25s cubic-bezier(.4,0,.2,1), color .15s; flex-shrink: 0; }
     .sidebar-collapse-btn:hover svg { color: var(--teal); }
     .sidebar-collapse-btn.is-collapsed svg { transform: rotate(180deg); }
+
+    /* ─── Modal ─── */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500;
+      opacity: 0; pointer-events: none;
+      transition: opacity .15s;
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border-md);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      width: 100%;
+      transform: translateY(8px) scale(.98); transition: transform .18s cubic-bezier(.4,0,.2,1);
+    }
+    .modal-backdrop.open .modal { transform: translateY(0) scale(1); }
+    .modal--sm { max-width: 400px; }
+    .modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+    }
+    .modal-title { font-size: 13px; font-weight: 600; color: var(--text-1); }
+    .modal-close {
+      width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+      border: none; background: none; border-radius: var(--radius-sm);
+      color: var(--text-3); cursor: pointer; transition: all .12s;
+    }
+    .modal-close:hover { background: var(--surface-2); color: var(--text-1); }
+    .modal-body { padding: 16px; }
+    .modal-foot {
+      display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+      padding: 12px 16px; border-top: 1px solid var(--border);
+    }
+    .btn--danger { background: #e05252; border-color: #e05252; color: #fff; }
+    .btn--danger:hover { background: #c0392b; border-color: #c0392b; color: #fff; }
   </style>
 </head>
 <body>
@@ -730,19 +769,10 @@
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 13h10M8 3v7M5 7l3 3 3-3"/></svg>
             Export
           </button>
-          <button class="sel-btn sel-btn--filled" id="selPinBtn">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2l5 5-2 2-3-1-4 4v2H3v-2l4-4-1-3z"/><path d="M7 9L2 14"/></svg>
-            Pin
+          <button class="sel-btn sel-btn--danger" id="selDeleteBtn">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
+            Delete
           </button>
-          <div class="sel-overflow" id="selOverflow">
-            <button class="sel-btn sel-btn--more" id="selMoreBtn" aria-label="More actions">•••</button>
-            <div class="sel-overflow__menu" id="selOverflowMenu">
-              <button class="sel-overflow__item sel-overflow__item--danger" id="selDeleteBtn">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
-                Delete Selected
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -779,6 +809,36 @@
     </footer>
 
   </main>
+</div>
+
+<!-- ─── Delete Modal ─── -->
+<div class="modal-backdrop" id="deleteBackdrop">
+  <div class="modal modal--sm" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <span class="modal-title">Delete Posts</span>
+      <button class="modal-close" id="deleteModalClose" aria-label="Close">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3l10 10M13 3L3 13"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="width:34px;height:34px;border-radius:8px;background:rgba(224,82,82,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#e05252" stroke-width="1.8"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
+        </div>
+        <div style="padding-top:1px;">
+          <div style="font-size:13px;font-weight:600;color:var(--text-1);margin-bottom:6px;"><span id="deleteCount">0</span> post(s) will be permanently deleted.</div>
+          <div style="font-size:12.5px;color:var(--text-2);line-height:1.55;">This action cannot be undone. Click <strong>Delete</strong> to confirm.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="deleteCancelBtn" style="min-width:80px;justify-content:center;">Cancel</button>
+      <button class="btn btn--danger" id="deleteConfirmBtn" style="min-width:80px;justify-content:center;">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h10M6 4V3h4v1M5 4v9h6V4"/><path d="M7 7v4M9 7v4"/></svg>
+        Delete
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -821,11 +881,12 @@
   });
 
   function updateSelected() {
-    const n = [...rowCbs].filter(c => c.checked).length;
+    const alive = [...rowCbs].filter(c => document.contains(c));
+    const n = alive.filter(c => c.checked).length;
     document.getElementById('selectedCount').textContent = n;
     document.getElementById('selBar').classList.toggle('visible', n > 0);
-    cbAll.indeterminate = n > 0 && n < rowCbs.length;
-    cbAll.checked = n === rowCbs.length;
+    cbAll.indeterminate = n > 0 && n < alive.length;
+    cbAll.checked = alive.length > 0 && n === alive.length;
   }
 
   // ─── Sel-bar buttons ───
@@ -835,33 +896,39 @@
     updateSelected();
   });
 
-  // More (···) overflow
-  const selMoreBtn      = document.getElementById('selMoreBtn');
-  const selOverflowMenu = document.getElementById('selOverflowMenu');
-  selMoreBtn.addEventListener('click', e => { e.stopPropagation(); selOverflowMenu.classList.toggle('open'); });
-  document.addEventListener('click', () => selOverflowMenu.classList.remove('open'));
-
   document.getElementById('selExportBtn').addEventListener('click', () => {
     const n = [...rowCbs].filter(c => c.checked).length;
     showToast(`Exporting ${n} post${n > 1 ? 's' : ''} as CSV…`, 'success');
   });
 
-  document.getElementById('selPinBtn').addEventListener('click', () => {
-    const n = [...rowCbs].filter(c => c.checked).length;
-    rowCbs.forEach(cb => { if (cb.checked) cb.closest('tr').classList.add('pinned'); });
-    rowCbs.forEach(cb => { cb.checked = false; cb.closest('tr').classList.remove('selected'); });
-    cbAll.checked = false; cbAll.indeterminate = false;
-    updateSelected();
-    showToast(`${n} post${n > 1 ? 's' : ''} pinned.`, 'success');
-  });
+  // ─── Delete modal ───
+  const deleteBackdrop  = document.getElementById('deleteBackdrop');
+  const deleteCountEl   = document.getElementById('deleteCount');
 
-  document.getElementById('selDeleteBtn').addEventListener('click', () => {
-    selOverflowMenu.classList.remove('open');
+  function openDeleteModal() {
+    const n = [...rowCbs].filter(c => document.contains(c) && c.checked).length;
+    deleteCountEl.textContent = n;
+    deleteBackdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDeleteModal() {
+    deleteBackdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('selDeleteBtn').addEventListener('click', openDeleteModal);
+  document.getElementById('deleteModalClose').addEventListener('click', closeDeleteModal);
+  document.getElementById('deleteCancelBtn').addEventListener('click', closeDeleteModal);
+  deleteBackdrop.addEventListener('click', e => { if (e.target === deleteBackdrop) closeDeleteModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDeleteModal(); });
+
+  document.getElementById('deleteConfirmBtn').addEventListener('click', () => {
     const checked = [...rowCbs].filter(c => c.checked);
     const n = checked.length;
     checked.forEach(cb => cb.closest('tr').remove());
     cbAll.checked = false; cbAll.indeterminate = false;
     updateSelected();
+    closeDeleteModal();
     showToast(`${n} post${n > 1 ? 's' : ''} deleted.`, 'danger');
   });
 
