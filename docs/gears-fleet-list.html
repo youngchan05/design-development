@@ -371,6 +371,79 @@
     .footer__address { font-size: 11.5px; color: var(--text-2); }
     .footer__copy    { font-size: 11px; color: var(--text-3); }
 
+    /* ─── Modal ─── */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.35);
+      z-index: 300;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .18s;
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 480px; max-width: calc(100vw - 32px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.18), 0 4px 16px rgba(0,0,0,.08);
+      display: flex; flex-direction: column;
+      transform: translateY(8px) scale(.98);
+      transition: transform .18s cubic-bezier(.4,0,.2,1);
+    }
+    .modal-backdrop.open .modal { transform: translateY(0) scale(1); }
+
+    .modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 20px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-title { font-size: 14px; font-weight: 700; color: var(--text-1); letter-spacing: -.2px; }
+    .modal-close {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: none; border: none; cursor: pointer; color: var(--text-3);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .12s, color .12s;
+    }
+    .modal-close:hover { background: var(--surface-2); color: var(--text-1); }
+
+    .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-field { display: flex; flex-direction: column; gap: 5px; }
+    .form-field--full { grid-column: 1 / -1; }
+    .form-label { font-size: 11.5px; font-weight: 600; color: var(--text-2); }
+    .form-label span { color: #e05252; margin-left: 2px; }
+    .form-input {
+      height: 36px; padding: 0 11px;
+      border: 1px solid var(--border-md); border-radius: var(--radius-sm);
+      font-family: 'Geist', system-ui, sans-serif; font-size: 12.5px; color: var(--text-1);
+      background: var(--surface); outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form-input::placeholder { color: var(--text-3); }
+    .form-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-dim); }
+    .form-input:read-only { background: var(--surface-2); color: var(--text-2); cursor: default; }
+    .form-sel {
+      height: 36px; padding: 0 32px 0 11px;
+      border: 1px solid var(--border-md); border-radius: var(--radius-sm);
+      font-family: 'Geist', system-ui, sans-serif; font-size: 12.5px; color: var(--text-1);
+      background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16' fill='none' stroke='%239eb0aa' stroke-width='2'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 10px center;
+      appearance: none; -webkit-appearance: none; outline: none; cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form-sel:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-dim); }
+    .form-hint { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+
+    .modal-foot {
+      display: flex; justify-content: flex-end; gap: 8px;
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      background: var(--surface-2);
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
     /* ─── Side drawer ─── */
     .drawer-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,.3);
@@ -636,6 +709,79 @@
     </footer>
 
   </main>
+</div>
+
+<!-- Add Vessel Modal -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <span class="modal-title" id="modalTitle">Add Vessel</span>
+      <button class="modal-close" id="modalClose" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M3 3l10 10M13 3L3 13"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Report Year <span>*</span></label>
+          <select class="form-sel" id="fYear">
+            <option value="">Select year</option>
+            <option selected>2025</option>
+            <option>2024</option>
+            <option>2023</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Vessel Type <span>*</span></label>
+          <select class="form-sel" id="fType">
+            <option value="">Select type</option>
+            <option>Bulk Carrier</option>
+            <option>Tanker</option>
+            <option>Container</option>
+            <option>LNG Carrier</option>
+            <option>RORO</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">IMO No. <span>*</span></label>
+        <input type="text" class="form-input" id="fImo" placeholder="e.g. 9876543" maxlength="7">
+        <span class="form-hint">7-digit IMO number</span>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Vessel Name</label>
+        <input type="text" class="form-input" id="fName" placeholder="Auto-filled from IMO lookup" readonly>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Flag State</label>
+          <select class="form-sel" id="fFlag">
+            <option value="">Select flag</option>
+            <option>Panama</option>
+            <option>Marshall Is.</option>
+            <option>Liberia</option>
+            <option>Bahamas</option>
+            <option>Singapore</option>
+            <option>Hong Kong</option>
+            <option>Cayman Is.</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Gross Tonnage</label>
+          <input type="text" class="form-input" id="fGt" placeholder="e.g. 82,400">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="modalCancel">Cancel</button>
+      <button class="btn btn--primary" id="modalAdd">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 2v12M2 8h12"/></svg>
+        Add Vessel
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- Drawer overlay -->
@@ -977,6 +1123,63 @@
     filterBadge.classList.remove('visible');
     filterBtn.classList.remove('is-active');
     applyFilters();
+  });
+
+  // ─── Add Vessel modal ───
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const addVesselBtn  = document.querySelector('.btn--primary[onclick], .btn--primary');
+
+  function openModal() {
+    modalBackdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('fYear').value = '2025';
+    document.getElementById('fType').value = '';
+    document.getElementById('fImo').value  = '';
+    document.getElementById('fName').value = '';
+    document.getElementById('fFlag').value = '';
+    document.getElementById('fGt').value   = '';
+    setTimeout(() => document.getElementById('fImo').focus(), 80);
+  }
+
+  function closeModal() {
+    modalBackdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // IMO → auto-fill name (demo lookup)
+  const imoLookup = { '9876543':'KR OCEAN STAR', '9543210':'HARMONY QUEEN', '9112233':'SEOUL PIONEER', '9334455':'BUSAN TRADER', '9667788':'GREEN HORIZON', '9889900':'ATLANTIC BRIDGE', '9221144':'EAST WIND GLORY', '9445566':'PACIFIC SHIELD' };
+  document.getElementById('fImo').addEventListener('input', e => {
+    const v = imoLookup[e.target.value.trim()];
+    document.getElementById('fName').value = v || '';
+  });
+
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalCancel').addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && modalBackdrop.classList.contains('open')) closeModal(); });
+
+  document.getElementById('modalAdd').addEventListener('click', () => {
+    const imo  = document.getElementById('fImo').value.trim();
+    const name = document.getElementById('fName').value.trim();
+    const type = document.getElementById('fType').value;
+    const flag = document.getElementById('fFlag').value;
+    const gt   = document.getElementById('fGt').value.trim();
+    if (!imo || !type) {
+      document.getElementById(imo ? 'fType' : 'fImo').focus();
+      return;
+    }
+    const newVessel = { name: name || '(unnamed)', imo, type, flag: flag || '—', gt: gt || '—', cii:'—', built:'—', cls:'—', s2:'Saved', s3:'Saved', dv:'Saved', attained:'—', required:'—', ciiSt:'Saved' };
+    vessels.unshift(newVessel);
+    currentList = [...vessels];
+    renderRows(currentList);
+    closeModal();
+  });
+
+  // Wire "Add Vessel" page header button
+  document.querySelectorAll('.btn--primary').forEach(btn => {
+    if (btn.textContent.trim().includes('Add Vessel')) {
+      btn.addEventListener('click', openModal);
+    }
   });
 
   // ─── Sidebar toggle ───
