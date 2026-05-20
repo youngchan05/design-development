@@ -216,6 +216,51 @@
     .pop-apply { flex: 2; height: 32px; border: none; border-radius: var(--radius-sm); background: var(--teal); font-family: 'Geist', system-ui, sans-serif; font-size: 12px; font-weight: 500; color: #fff; cursor: pointer; transition: background .15s; }
     .pop-apply:hover { background: #34775e; }
 
+    /* ─── Column visibility ─── */
+    .col-vis-wrap { position: relative; flex-shrink: 0; }
+    .col-vis-btn {
+      height: 34px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px;
+      border: 1px solid var(--border-md); border-radius: var(--radius-sm);
+      font-family: 'Geist', system-ui, sans-serif; font-size: 12.5px; font-weight: 500;
+      color: var(--text-2); background: var(--surface); cursor: pointer; transition: all .15s;
+    }
+    .col-vis-btn:hover { color: var(--teal); background: var(--teal-dim); border-color: var(--teal-mid); }
+    .col-vis-btn.is-active { color: var(--teal); background: var(--teal-dim); border-color: var(--teal-mid); }
+    .col-vis-badge {
+      display: none; align-items: center; justify-content: center;
+      min-width: 16px; height: 16px; padding: 0 4px;
+      background: var(--teal); color: #fff; font-size: 10px; font-weight: 700; border-radius: 8px;
+    }
+    .col-vis-badge.visible { display: flex; }
+    .col-vis-panel {
+      position: absolute; top: calc(100% + 8px); right: 0; width: 220px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: 0 12px 32px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.06);
+      opacity: 0; pointer-events: none; transform: translateY(-6px);
+      transition: opacity .15s, transform .15s; z-index: 200; overflow: hidden;
+    }
+    .col-vis-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .col-vis-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-bottom: 1px solid var(--border);
+    }
+    .col-vis-title { font-size: 12px; font-weight: 600; color: var(--text-1); }
+    .col-vis-reset {
+      font-size: 11px; font-weight: 500; color: var(--teal);
+      background: none; border: none; cursor: pointer; font-family: inherit; padding: 0;
+    }
+    .col-vis-reset:hover { text-decoration: underline; }
+    .col-vis-list { padding: 6px 0; max-height: 280px; overflow-y: auto; }
+    .col-vis-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 7px 14px; cursor: pointer; transition: background .1s;
+    }
+    .col-vis-item:hover { background: var(--teal-dim); }
+    .col-vis-item input[type="checkbox"] {
+      width: 14px; height: 14px; accent-color: var(--teal); cursor: pointer; flex-shrink: 0;
+    }
+    .col-vis-item__label { font-size: 12.5px; color: var(--text-1); user-select: none; }
+
     /* ─── List card ─── */
     .list-card {
       background: var(--surface);
@@ -748,6 +793,24 @@
         <option>LNG Carrier</option>
         <option>RORO</option>
       </select>
+      <div class="col-vis-wrap" id="colVisWrap">
+        <button class="col-vis-btn" id="colVisBtn">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="1" y="3" width="14" height="10" rx="1.5"/>
+            <path d="M5 3v10M11 3v10"/>
+          </svg>
+          Columns
+          <span class="col-vis-badge" id="colVisBadge"></span>
+        </button>
+        <div class="col-vis-panel" id="colVisPanel">
+          <div class="col-vis-head">
+            <span class="col-vis-title">Toggle Columns</span>
+            <button class="col-vis-reset" id="colVisReset">Reset all</button>
+          </div>
+          <div class="col-vis-list" id="colVisList"></div>
+        </div>
+      </div>
+
       <div class="filter-btn-wrap">
         <button class="filter-btn" id="filterBtn">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
@@ -1247,6 +1310,7 @@
       currentTab = tab.dataset.tab;
       selectedIdx.clear();
       renderRows(currentList);
+      applyColVisibility();
     });
   });
 
@@ -1478,6 +1542,98 @@
     t.classList.add('hide');
     setTimeout(() => t.remove(), 220);
   }
+
+  // ─── Column visibility ───
+  const colDefs = {
+    mrv: [
+      { label: 'IMO No.',       col: 3 },
+      { label: 'Type',          col: 4 },
+      { label: 'Flag',          col: 5 },
+      { label: 'GT',            col: 6 },
+      { label: 'SEEMP II',      col: 7 },
+      { label: 'SEEMP III',     col: 8 },
+      { label: 'Data Verif.',   col: 9 },
+      { label: 'Status',        col: 10 },
+    ],
+    cii: [
+      { label: 'IMO No.',       col: 3 },
+      { label: 'Type',          col: 4 },
+      { label: 'Flag',          col: 5 },
+      { label: 'GT',            col: 6 },
+      { label: 'CII',           col: 7 },
+      { label: 'Attained CII',  col: 8 },
+      { label: 'Required CII',  col: 9 },
+      { label: 'Status',        col: 10 },
+    ],
+  };
+
+  const colVisible = {
+    mrv: { 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 9:true, 10:true },
+    cii: { 3:true, 4:true, 5:true, 6:true, 7:true, 8:true, 9:true, 10:true },
+  };
+
+  const colStyleEl = document.createElement('style');
+  colStyleEl.id = 'colVisStyles';
+  document.head.appendChild(colStyleEl);
+
+  function applyColVisibility() {
+    const defs = colDefs[currentTab];
+    const vis  = colVisible[currentTab];
+    let css = '';
+    defs.forEach(d => {
+      if (!vis[d.col]) {
+        css += `.tbl th:nth-child(${d.col}), .tbl td:nth-child(${d.col}) { display: none; }\n`;
+      }
+    });
+    colStyleEl.textContent = css;
+    // update badge
+    const hidden = defs.filter(d => !vis[d.col]).length;
+    const badge  = document.getElementById('colVisBadge');
+    badge.textContent = hidden || '';
+    badge.classList.toggle('visible', hidden > 0);
+    document.getElementById('colVisBtn').classList.toggle('is-active', hidden > 0);
+  }
+
+  function renderColVisPanel() {
+    const defs = colDefs[currentTab];
+    const vis  = colVisible[currentTab];
+    const list = document.getElementById('colVisList');
+    list.innerHTML = defs.map(d => `
+      <label class="col-vis-item">
+        <input type="checkbox" ${vis[d.col] ? 'checked' : ''} data-col="${d.col}">
+        <span class="col-vis-item__label">${d.label}</span>
+      </label>
+    `).join('');
+    list.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', () => {
+        colVisible[currentTab][parseInt(cb.dataset.col)] = cb.checked;
+        applyColVisibility();
+      });
+    });
+  }
+
+  const colVisBtn   = document.getElementById('colVisBtn');
+  const colVisPanel = document.getElementById('colVisPanel');
+
+  colVisBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    const opening = !colVisPanel.classList.contains('open');
+    colVisPanel.classList.toggle('open', opening);
+    if (opening) renderColVisPanel();
+  });
+
+  document.getElementById('colVisReset').addEventListener('click', () => {
+    const defs = colDefs[currentTab];
+    defs.forEach(d => { colVisible[currentTab][d.col] = true; });
+    renderColVisPanel();
+    applyColVisibility();
+  });
+
+  document.addEventListener('click', e => {
+    if (!document.getElementById('colVisWrap').contains(e.target)) {
+      colVisPanel.classList.remove('open');
+    }
+  });
 
   // ─── Sidebar toggle ───
   const sidebarToggle = document.getElementById('sidebarToggle');
