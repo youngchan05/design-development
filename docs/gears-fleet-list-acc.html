@@ -216,50 +216,25 @@
     .pop-apply { flex: 2; height: 32px; border: none; border-radius: var(--radius-sm); background: var(--teal); font-family: 'Geist', system-ui, sans-serif; font-size: 12px; font-weight: 500; color: #fff; cursor: pointer; transition: background .15s; }
     .pop-apply:hover { background: #34775e; }
 
-    /* ─── Column visibility ─── */
-    .col-vis-wrap { position: relative; flex-shrink: 0; }
-    .col-vis-btn {
-      height: 34px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px;
-      border: 1px solid var(--border-md); border-radius: var(--radius-sm);
-      font-family: 'Geist', system-ui, sans-serif; font-size: 12.5px; font-weight: 500;
-      color: var(--text-2); background: var(--surface); cursor: pointer; transition: all .15s;
-    }
-    .col-vis-btn:hover { color: var(--teal); background: var(--teal-dim); border-color: var(--teal-mid); }
-    .col-vis-btn.is-active { color: var(--teal); background: var(--teal-dim); border-color: var(--teal-mid); }
-    .col-vis-badge {
-      display: none; align-items: center; justify-content: center;
-      min-width: 16px; height: 16px; padding: 0 4px;
-      background: var(--teal); color: #fff; font-size: 10px; font-weight: 700; border-radius: 8px;
-    }
-    .col-vis-badge.visible { display: flex; }
-    .col-vis-panel {
-      position: absolute; top: calc(100% + 8px); right: 0; width: 220px;
-      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-      box-shadow: 0 12px 32px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.06);
-      opacity: 0; pointer-events: none; transform: translateY(-6px);
-      transition: opacity .15s, transform .15s; z-index: 200; overflow: hidden;
-    }
-    .col-vis-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
-    .col-vis-head {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 14px; border-bottom: 1px solid var(--border);
-    }
-    .col-vis-title { font-size: 12px; font-weight: 600; color: var(--text-1); }
-    .col-vis-reset {
+    /* ─── Column visibility (inside filter panel) ─── */
+    .pop-divider { height: 1px; background: var(--border); margin: 0 -16px; }
+    .pop-col-head { display: flex; align-items: center; justify-content: space-between; }
+    .pop-col-reset {
       font-size: 11px; font-weight: 500; color: var(--teal);
       background: none; border: none; cursor: pointer; font-family: inherit; padding: 0;
     }
-    .col-vis-reset:hover { text-decoration: underline; }
-    .col-vis-list { padding: 6px 0; max-height: 280px; overflow-y: auto; }
-    .col-vis-item {
+    .pop-col-reset:hover { text-decoration: underline; }
+    .pop-col-list { display: flex; flex-direction: column; gap: 2px; }
+    .pop-col-item {
       display: flex; align-items: center; gap: 9px;
-      padding: 7px 14px; cursor: pointer; transition: background .1s;
+      padding: 5px 8px; border-radius: var(--radius-sm);
+      cursor: pointer; transition: background .1s;
     }
-    .col-vis-item:hover { background: var(--teal-dim); }
-    .col-vis-item input[type="checkbox"] {
+    .pop-col-item:hover { background: var(--teal-dim); }
+    .pop-col-item input[type="checkbox"] {
       width: 14px; height: 14px; accent-color: var(--teal); cursor: pointer; flex-shrink: 0;
     }
-    .col-vis-item__label { font-size: 12.5px; color: var(--text-1); user-select: none; }
+    .pop-col-item__label { font-size: 12.5px; color: var(--text-1); user-select: none; }
 
     /* ─── List card ─── */
     .list-card {
@@ -793,24 +768,6 @@
         <option>LNG Carrier</option>
         <option>RORO</option>
       </select>
-      <div class="col-vis-wrap" id="colVisWrap">
-        <button class="col-vis-btn" id="colVisBtn">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
-            <rect x="1" y="3" width="14" height="10" rx="1.5"/>
-            <path d="M5 3v10M11 3v10"/>
-          </svg>
-          Columns
-          <span class="col-vis-badge" id="colVisBadge"></span>
-        </button>
-        <div class="col-vis-panel" id="colVisPanel">
-          <div class="col-vis-head">
-            <span class="col-vis-title">Toggle Columns</span>
-            <button class="col-vis-reset" id="colVisReset">Reset all</button>
-          </div>
-          <div class="col-vis-list" id="colVisList"></div>
-        </div>
-      </div>
-
       <div class="filter-btn-wrap">
         <button class="filter-btn" id="filterBtn">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
@@ -819,7 +776,7 @@
         </button>
         <div class="filter-popover" id="filterPopover">
           <div class="pop-header">
-            <span class="pop-title">Advanced Filters</span>
+            <span class="pop-title">Filters &amp; Columns</span>
             <button class="pop-close" id="popClose">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3l10 10M13 3L3 13"/></svg>
             </button>
@@ -839,6 +796,14 @@
             <div class="pop-field">
               <label class="pop-label">Flag State</label>
               <input type="text" class="pop-input" id="popFlag" placeholder="e.g. Panama">
+            </div>
+            <div class="pop-divider"></div>
+            <div class="pop-field">
+              <div class="pop-col-head">
+                <label class="pop-label">Columns</label>
+                <button class="pop-col-reset" id="popColReset">Reset all</button>
+              </div>
+              <div class="pop-col-list" id="colVisList"></div>
             </div>
           </div>
           <div class="pop-footer">
@@ -1344,13 +1309,14 @@
 
   function closePop() {
     filterPop.classList.remove('open');
-    filterBtn.classList.toggle('is-active', filterBadge.classList.contains('visible'));
+    updateFilterBadge();
   }
   filterBtn.addEventListener('click', e => {
     e.stopPropagation();
     const opening = !filterPop.classList.contains('open');
     filterPop.classList.toggle('open', opening);
-    filterBtn.classList.toggle('is-active', opening || filterBadge.classList.contains('visible'));
+    if (opening) renderColVisPanel();
+    updateFilterBadge();
   });
   document.getElementById('popClose').addEventListener('click', closePop);
   document.addEventListener('click', e => {
@@ -1359,9 +1325,6 @@
   document.getElementById('popApply').addEventListener('click', () => {
     activeCii  = popCii.value;
     activeFlag = popFlag.value.trim();
-    const count = (activeCii ? 1 : 0) + (activeFlag ? 1 : 0);
-    filterBadge.textContent = count || '';
-    filterBadge.classList.toggle('visible', count > 0);
     applyFilters();
     closePop();
   });
@@ -1369,10 +1332,13 @@
     popCii.value = '';
     popFlag.value = '';
     activeCii = ''; activeFlag = '';
-    filterBadge.textContent = '';
-    filterBadge.classList.remove('visible');
-    filterBtn.classList.remove('is-active');
+    // also reset columns
+    const defs = colDefs[currentTab];
+    defs.forEach(d => { colVisible[currentTab][d.col] = true; });
+    renderColVisPanel();
+    applyColVisibility();
     applyFilters();
+    updateFilterBadge();
   });
 
   // ─── Add Vessel modal ───
@@ -1612,9 +1578,17 @@
     // update badge
     const hidden = defs.filter(d => !vis[d.col]).length;
     const badge  = document.getElementById('colVisBadge');
-    badge.textContent = hidden || '';
-    badge.classList.toggle('visible', hidden > 0);
-    document.getElementById('colVisBtn').classList.toggle('is-active', hidden > 0);
+    // update filter button badge (filters + hidden cols)
+    updateFilterBadge();
+  }
+
+  function updateFilterBadge() {
+    const filterCount = (activeCii ? 1 : 0) + (activeFlag ? 1 : 0);
+    const hiddenCols  = colDefs[currentTab].filter(d => !colVisible[currentTab][d.col]).length;
+    const total = filterCount + hiddenCols;
+    filterBadge.textContent = total || '';
+    filterBadge.classList.toggle('visible', total > 0);
+    filterBtn.classList.toggle('is-active', filterPop.classList.contains('open') || total > 0);
   }
 
   function renderColVisPanel() {
@@ -1622,9 +1596,9 @@
     const vis  = colVisible[currentTab];
     const list = document.getElementById('colVisList');
     list.innerHTML = defs.map(d => `
-      <label class="col-vis-item">
+      <label class="pop-col-item">
         <input type="checkbox" ${vis[d.col] ? 'checked' : ''} data-col="${d.col}">
-        <span class="col-vis-item__label">${d.label}</span>
+        <span class="pop-col-item__label">${d.label}</span>
       </label>
     `).join('');
     list.querySelectorAll('input[type="checkbox"]').forEach(cb => {
@@ -1635,27 +1609,11 @@
     });
   }
 
-  const colVisBtn   = document.getElementById('colVisBtn');
-  const colVisPanel = document.getElementById('colVisPanel');
-
-  colVisBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    const opening = !colVisPanel.classList.contains('open');
-    colVisPanel.classList.toggle('open', opening);
-    if (opening) renderColVisPanel();
-  });
-
-  document.getElementById('colVisReset').addEventListener('click', () => {
+  document.getElementById('popColReset').addEventListener('click', () => {
     const defs = colDefs[currentTab];
     defs.forEach(d => { colVisible[currentTab][d.col] = true; });
     renderColVisPanel();
     applyColVisibility();
-  });
-
-  document.addEventListener('click', e => {
-    if (!document.getElementById('colVisWrap').contains(e.target)) {
-      colVisPanel.classList.remove('open');
-    }
   });
 
   // ─── Sidebar toggle ───
