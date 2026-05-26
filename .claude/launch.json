@@ -6,6 +6,12 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["serve", "-l", "3300", "docs"],
       "port": 3300
+    },
+    {
+      "name": "gears-dashboard-v2",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-l", "3301", "dashboard-v2"],
+      "port": 3301
     }
   ]
 }
