@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GEARS — Fleet Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* ── New Palette ── */
+      /* Primary  : #0F766E  Deep Teal   */
+      /* Second   : #22C55E  Emerald Green */
+      /* Accent   : #38BDF8  Sky Cyan    */
+      /* Neutral  : #334155  Slate       */
+      /* BG       : #F8FAFC  Ghost White */
+
+      --bg:       #F8FAFC;
+      --white:    #ffffff;
+
+      --primary:   #0F766E;
+      --primary-2: #0D6460;
+      --second:    #22C55E;
+      --accent:    #38BDF8;
+      --neutral:   #334155;
+
+      /* Aliases (기존 --green 계열 → primary) */
+      --green:    #0F766E;
+      --green-2:  #0D6460;
+      --green-lt: rgba(15,118,110,.08);
+      --green-md: rgba(15,118,110,.18);
+      --green-bd: rgba(15,118,110,.25);
+
+      /* Text (Neutral 기반) */
+      --t1: #0F172A;
+      --t2: #475569;
+      --t3: #94A3B8;
+
+      --border:   rgba(51,65,85,.08);
+      --border-2: rgba(51,65,85,.14);
+
+      --blue:   #38BDF8;
+      --amber:  #F59E0B;
+      --red:    #EF4444;
+
+      --shadow-sm: 0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04);
+      --shadow-md: 0 4px 12px rgba(15,23,42,.08), 0 2px 4px rgba(15,23,42,.04);
+    }
+
+    body { font-family: 'Geist', system-ui, sans-serif; background: var(--bg); color: var(--t1); min-height: 100vh; font-size: 14px; }
+
+    /* ── Nav ── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; height: 52px;
+      background: var(--white); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 24px; gap: 12px; z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 9px; }
+    .nav-logo-mark {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: var(--green); display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; color: #fff; letter-spacing: -.5px;
+    }
+    .nav-logo-text { font-size: 15px; font-weight: 700; color: var(--t1); letter-spacing: -.3px; }
+    .nav-logo-sub { font-size: 10px; color: var(--t3); }
+    .nav-sep { width: 1px; height: 18px; background: var(--border-2); margin: 0 4px; }
+    .nav-crumb { font-size: 12.5px; color: var(--t3); display: flex; align-items: center; gap: 5px; }
+    .nav-crumb span { color: var(--t2); font-weight: 500; }
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .nav-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      height: 28px; padding: 0 11px; border-radius: 14px;
+      background: var(--green-lt); border: 1px solid var(--green-bd);
+      font-size: 11px; font-weight: 600; color: var(--green); cursor: pointer;
+    }
+    .nav-icon {
+      width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-2);
+      background: transparent; display: flex; align-items: center; justify-content: center;
+      color: var(--t3); cursor: pointer; position: relative;
+    }
+    .nav-icon:hover { background: var(--green-lt); color: var(--green); border-color: var(--green-bd); }
+    .nav-notif { position: absolute; top: 4px; right: 4px; width: 7px; height: 7px; border-radius: 50%; background: var(--red); border: 2px solid var(--white); }
+    .nav-user { display: flex; align-items: center; gap: 8px; padding: 0 4px; cursor: pointer; }
+    .nav-avatar { width: 30px; height: 30px; border-radius: 8px; background: var(--green-lt); border: 1.5px solid var(--green-bd); color: var(--green); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .nav-user-name { font-size: 12px; font-weight: 600; color: var(--t1); }
+    .nav-user-role { font-size: 10px; color: var(--t3); }
+
+    /* ── Layout ── */
+    .layout { display: flex; padding-top: 52px; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 230px; flex-shrink: 0; position: fixed; top: 52px; bottom: 0; left: 0;
+      background: var(--white); border-right: 1px solid var(--border);
+      padding: 16px 10px; display: flex; flex-direction: column; gap: 1px; overflow-y: auto;
+    }
+    .sb-lbl { font-size: 9.5px; font-weight: 700; color: var(--t3); letter-spacing: .8px; text-transform: uppercase; padding: 10px 8px 4px; }
+    .sb-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 7px; font-size: 12.5px; font-weight: 500; color: var(--t2); cursor: pointer; transition: background .12s, color .12s; }
+    .sb-item:hover { background: var(--green-lt); color: var(--green); }
+    .sb-item.active { background: var(--green-lt); color: var(--green); font-weight: 600; }
+    .sb-item.sb-parent { color: var(--green); font-weight: 600; background: var(--green-lt); }
+    .sb-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .sb-caret { margin-left: auto; opacity: .5; transition: transform .2s; }
+    .sb-item.sb-parent .sb-caret { transform: rotate(180deg); opacity: .7; }
+    .sb-sub { display: flex; flex-direction: column; gap: 1px; margin: 1px 0 2px; }
+    .sb-sub-item { display: flex; align-items: center; gap: 7px; padding: 5px 10px 5px 30px; border-radius: 7px; font-size: 12px; font-weight: 500; color: var(--t2); cursor: pointer; position: relative; }
+    .sb-sub-item::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--border-2); flex-shrink: 0; position: absolute; left: 16px; }
+    .sb-sub-item:hover { color: var(--green); background: var(--green-lt); }
+    .sb-sub-item:hover::before { background: var(--green); }
+    .sb-sub-item.active { color: var(--green); font-weight: 600; background: rgba(15,118,110,.05); }
+    .sb-sub-item.active::before { background: var(--green); }
+    .sb-chip { margin-left: auto; font-size: 9px; font-weight: 700; background: rgba(220,69,69,.1); color: var(--red); padding: 1px 5px; border-radius: 3px; }
+    .sb-chip--amber { background: rgba(245,158,11,.1); color: var(--amber); }
+    .sb-footer { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border); }
+
+    /* ── Main ── */
+    .main { margin-left: 230px; flex: 1; min-width: 0; }
+
+    /* ── Hero Band ── */
+    .hero {
+      background: var(--green);
+      background: linear-gradient(135deg, #0D6460 0%, #0F766E 55%, #0EA5A0 100%);
+      padding: 32px 36px 0;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 280px; height: 280px; border-radius: 50%;
+      background: rgba(255,255,255,.05);
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: -40px; right: 200px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: rgba(255,255,255,.04);
+    }
+    .hero-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; position: relative; z-index: 1; }
+    .hero-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.65); letter-spacing: .3px; text-transform: uppercase; margin-bottom: 4px; }
+    .hero-h1 { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -.8px; }
+    .hero-sub { font-size: 12px; color: rgba(255,255,255,.55); margin-top: 4px; }
+    .hero-period { display: flex; gap: 4px; }
+    .hero-tab { padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.55); cursor: pointer; border: 1px solid transparent; }
+    .hero-tab.active { background: rgba(255,255,255,.15); color: #fff; border-color: rgba(255,255,255,.2); }
+
+    /* Dashboard sub-tabs */
+    .dash-tabs { display: flex; gap: 2px; padding: 0 36px; background: rgba(0,0,0,.12); position: relative; z-index: 1; border-top: 1px solid rgba(255,255,255,.08); }
+    .dash-tab { padding: 10px 16px; font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,.5); cursor: pointer; position: relative; border-bottom: 2px solid transparent; transition: color .15s; }
+    .dash-tab:hover { color: rgba(255,255,255,.8); }
+    .dash-tab.active { color: #fff; font-weight: 600; border-bottom-color: rgba(255,255,255,.9); }
+
+    /* KPI row inside hero */
+    .hero-kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255,.12); border-radius: 12px 12px 0 0; overflow: hidden; position: relative; z-index: 1; }
+    .hkpi {
+      background: rgba(255,255,255,.08);
+      padding: 18px 20px;
+      display: flex; flex-direction: column; gap: 4px;
+      transition: background .15s; cursor: pointer;
+    }
+    .hkpi:hover { background: rgba(255,255,255,.14); }
+    .hkpi.active { background: rgba(255,255,255,.18); }
+    .hkpi__lbl { font-size: 10.5px; font-weight: 600; color: rgba(255,255,255,.55); letter-spacing: .3px; text-transform: uppercase; }
+    .hkpi__num { font-size: 30px; font-weight: 700; color: #fff; letter-spacing: -1.2px; line-height: 1; }
+    .hkpi__num sup { font-size: 14px; font-weight: 500; margin-left: 2px; opacity: .7; }
+    .hkpi__meta { font-size: 11px; color: rgba(255,255,255,.5); }
+    .hkpi__badge {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 10px; width: fit-content; margin-top: 2px;
+    }
+    .hkpi__badge--up { background: rgba(255,255,255,.2); color: #fff; }
+    .hkpi__badge--down { background: rgba(255,100,100,.25); color: #ffc0c0; }
+    .hkpi__badge--warn { background: rgba(255,190,50,.2); color: #ffe08a; }
+
+    /* ── Content ── */
+    .content { padding: 24px 36px 60px; display: flex; flex-direction: column; gap: 20px; }
+
+    /* ── Section label ── */
+    .sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .sec-title { font-size: 12px; font-weight: 600; color: var(--t2); text-transform: uppercase; letter-spacing: .5px; display: flex; align-items: center; gap: 8px; }
+    .sec-title::before { content: ''; display: block; width: 3px; height: 14px; background: var(--green); border-radius: 2px; }
+    .sec-link { font-size: 12px; color: var(--green); font-weight: 500; cursor: pointer; }
+
+    /* ── Card base ── */
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-sm); }
+    .card-head { padding: 16px 20px 0; display: flex; align-items: center; justify-content: space-between; }
+    .card-label { font-size: 11.5px; font-weight: 600; color: var(--t2); }
+    .card-body { padding: 16px 20px 20px; }
+
+    /* ── Main grid (row 1) ── */
+    .grid-main { display: grid; grid-template-columns: 1fr; gap: 16px; }
+
+    /* ── Fleet map ── */
+    .map-card { position: relative; display: flex; flex-direction: column; }
+    .map-header { padding: 14px 18px 10px; }
+    .map-header-top { display: flex; align-items: flex-start; justify-content: space-between; }
+    .map-title { font-size: 14px; font-weight: 700; color: var(--t1); line-height: 1.3; }
+    .map-live-badge { font-size: 10.5px; color: var(--t3); white-space: nowrap; display: flex; align-items: center; gap: 5px; padding-top: 2px; }
+    .map-live-badge span.dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; flex-shrink: 0; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    .map-body { display: flex; flex: 1; border-top: 1px solid var(--border); }
+    .map-inner { flex: 1; position: relative; background: linear-gradient(155deg, #C5DFEE 0%, #D2E9F6 28%, #DCF0F8 60%, #CEEBF5 100%); overflow: hidden; min-height: 340px; }
+    .map-grid-lines {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(70,120,165,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(70,120,165,.055) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .map-equator { position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: rgba(70,120,165,.28); }
+    .map-meridian { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(70,120,165,.16); }
+
+    /* Tropic reference lines */
+    .map-tropic { position: absolute; left: 0; right: 0; pointer-events: none; border-top: 1px dashed rgba(100,145,190,.28); }
+    .map-tropic--cancer { top: 34%; }
+    .map-tropic--capricorn { top: 66%; }
+    .map-tropic-lbl { position: absolute; right: 6px; top: -14px; font-size: 7px; color: rgba(80,125,170,.6); font-style: italic; white-space: nowrap; letter-spacing: .2px; }
+
+    /* Risk zones — breathing radial gradient */
+    .rz { position: absolute; border-radius: 50%; pointer-events: none; transform: translate(-50%,-50%); }
+    .rz--high  { border: 1.5px solid rgba(239,68,68,.45); background: radial-gradient(ellipse at center, rgba(239,68,68,.16) 0%, rgba(239,68,68,.06) 55%, transparent 100%); animation: rz-breathe 3.5s ease-in-out infinite; }
+    .rz--med   { border: 1.5px solid rgba(249,115,22,.42); background: radial-gradient(ellipse at center, rgba(249,115,22,.13) 0%, rgba(249,115,22,.04) 55%, transparent 100%); animation: rz-breathe 4.5s ease-in-out infinite .8s; }
+    .rz--watch { border: 1.5px dashed rgba(234,179,8,.65); background: radial-gradient(ellipse at center, rgba(234,179,8,.11) 0%, transparent 70%); animation: rz-breathe 5s ease-in-out infinite 1.5s; }
+    @keyframes rz-breathe { 0%,100%{ opacity:1; transform:translate(-50%,-50%) scale(1); } 50%{ opacity:.72; transform:translate(-50%,-50%) scale(1.09); } }
+
+    /* Risk zone map labels */
+    .rz-lbl { position: absolute; pointer-events: none; transform: translateX(-50%); font-size: 7.5px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; white-space: nowrap; }
+    .rz-lbl--high  { color: rgba(220,50,50,.82); }
+    .rz-lbl--med   { color: rgba(230,100,20,.78); }
+    .rz-lbl--watch { color: rgba(170,128,0,.88); }
+
+    /* Vessel dots with pulsing rings */
+    .vd { position: absolute; cursor: pointer; transform: translate(-50%,-50%); z-index: 10; }
+    .vd-inner { position: relative; width: 11px; height: 11px; display: flex; align-items: center; justify-content: center; }
+    .vd-dot { width: 9px; height: 9px; border-radius: 50%; transition: transform .15s; position: relative; z-index: 2; flex-shrink: 0; }
+    .vd-dot--low   { background: #22C55E; border: 1.5px solid rgba(34,197,94,.5);   box-shadow: 0 0 0 3px rgba(34,197,94,.18); }
+    .vd-dot--med   { background: #F97316; border: 1.5px solid rgba(249,115,22,.5);  box-shadow: 0 0 0 3px rgba(249,115,22,.18); }
+    .vd-dot--high  { background: #EF4444; border: 1.5px solid rgba(239,68,68,.5);   box-shadow: 0 0 0 3px rgba(239,68,68,.18); }
+    .vd-ring { position: absolute; top: 50%; left: 50%; border-radius: 50%; opacity: 0; pointer-events: none; }
+    .vd-ring--high  { width: 26px; height: 26px; border: 1.5px solid rgba(239,68,68,.72); animation: vd-ring-expand 2s ease-out infinite; }
+    .vd-ring--high2 { width: 26px; height: 26px; border: 1.5px solid rgba(239,68,68,.5);  animation: vd-ring-expand 2s ease-out infinite 1s; }
+    .vd-ring--med   { width: 22px; height: 22px; border: 1.5px solid rgba(249,115,22,.68); animation: vd-ring-expand 2.5s ease-out infinite .3s; }
+    @keyframes vd-ring-expand {
+      0%   { transform: translate(-50%,-50%) scale(.35); opacity: .85; }
+      100% { transform: translate(-50%,-50%) scale(2.5); opacity: 0; }
+    }
+    .vd:hover .vd-dot { transform: scale(1.5); }
+    .vd-tooltip {
+      position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+      background: var(--t1); color: #fff; font-size: 10px; font-weight: 500;
+      padding: 3px 8px; border-radius: 4px; white-space: nowrap; pointer-events: none; opacity: 0;
+      transition: opacity .12s; z-index: 10;
+    }
+    .vd:hover .vd-tooltip { opacity: 1; }
+
+    /* Port city markers */
+    .pm { position: absolute; transform: translate(-50%,-50%); z-index: 8; cursor: default; }
+    .pm-diamond { width: 8px; height: 8px; background: var(--primary); transform: rotate(45deg); border: 1.5px solid rgba(255,255,255,.9); box-shadow: 0 0 0 2.5px rgba(15,118,110,.35); }
+    .pm-lbl { position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); font-size: 7.5px; font-weight: 700; color: rgba(10,90,84,.95); white-space: nowrap; letter-spacing: .3px; text-shadow: 0 1px 3px rgba(255,255,255,.95), 0 0 6px rgba(255,255,255,.7); pointer-events: none; text-transform: uppercase; }
+
+    /* Animated shipping routes */
+    .route-line { animation: route-flow 4s linear infinite; }
+    .route-line-b { animation: route-flow 4s linear infinite -2s; }
+    @keyframes route-flow { to { stroke-dashoffset: -4; } }
+
+    /* Legend panel */
+    .map-legend { width: 192px; flex-shrink: 0; padding: 14px 16px; border-left: 1px solid var(--border); background: var(--white); display: flex; flex-direction: column; gap: 14px; }
+    .map-leg-group { display: flex; flex-direction: column; gap: 7px; }
+    .map-leg-head { font-size: 10px; font-weight: 700; color: var(--t1); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 1px; }
+    .map-leg-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--t2); }
+    .leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .leg-zone { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
+    .leg-route { width: 18px; height: 0; border-top: 2px dashed #60A5FA; flex-shrink: 0; }
+    .leg-port { width: 9px; height: 9px; background: var(--primary); transform: rotate(45deg); flex-shrink: 0; border: 1.5px solid rgba(255,255,255,.75); box-shadow: 0 0 0 2px rgba(15,118,110,.3); }
+
+    /* Stats bar */
+    .map-stats { display: flex; border-top: 1px solid var(--border); background: var(--white); }
+    .map-stat { flex: 1; text-align: center; padding: 10px 4px; border-right: 1px solid var(--border); }
+    .map-stat:last-child { border-right: none; }
+    .map-stat-val { font-size: 15px; font-weight: 700; color: var(--t2); display: block; font-family: 'Geist Mono', monospace; }
+    .map-stat-val--total { color: var(--t1); }
+    .map-stat-val--high  { color: #EF4444; }
+    .map-stat-val--med   { color: #F97316; }
+    .map-stat-val--low   { color: #22C55E; }
+    .map-stat-lbl { font-size: 9.5px; color: var(--t3); margin-top: 1px; display: block; }
+
+    /* ── Compliance card ── */
+    .comp-card { display: flex; flex-direction: column; }
+    .comp-list { display: flex; flex-direction: column; gap: 6px; }
+    .comp-item { display: flex; flex-direction: column; gap: 5px; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border); background: #fafbfa; }
+    .comp-item-top { display: flex; align-items: center; gap: 8px; }
+    .comp-icon { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .comp-icon--green { background: rgba(15,118,110,.1); color: var(--green); }
+    .comp-icon--blue  { background: rgba(56,189,248,.12); color: var(--blue); }
+    .comp-icon--amber { background: rgba(245,158,11,.1); color: var(--amber); }
+    .comp-icon--red   { background: rgba(239,68,68,.1);  color: var(--red); }
+    .comp-name { font-size: 12px; font-weight: 500; color: var(--t2); flex: 1; }
+    .comp-val { font-size: 12px; font-weight: 700; color: var(--t1); font-family: 'Geist Mono', monospace; }
+    .comp-pct { font-size: 10.5px; color: var(--t3); }
+    .comp-track { height: 4px; background: var(--bg); border-radius: 2px; overflow: hidden; }
+    .comp-fill { height: 100%; border-radius: 2px; }
+
+    /* ── Bottom row ── */
+    .grid-bottom { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+    /* ── Fuel chart ── */
+    .donut-row { display: flex; align-items: center; gap: 20px; margin-bottom: 14px; }
+    .donut-leg { display: flex; flex-direction: column; gap: 7px; }
+    .d-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .d-color { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+    .d-label { color: var(--t2); flex: 1; }
+    .d-pct { font-family: 'Geist Mono', monospace; font-size: 11.5px; color: var(--t1); font-weight: 500; }
+    .d-delta { font-size: 10.5px; font-weight: 600; }
+    .d-delta--up { color: var(--green); }
+    .d-delta--dn { color: var(--red); }
+
+    /* ── GHG Emission Trend card ── */
+    .ghg-summary { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 12px; }
+    .ghg-total { display: flex; flex-direction: column; }
+    .ghg-total-num { font-size: 28px; font-weight: 700; color: var(--t1); letter-spacing: -1px; font-family: 'Geist Mono', monospace; line-height: 1; }
+    .ghg-total-unit { font-size: 11px; color: var(--t3); margin-top: 2px; }
+    .ghg-badges { display: flex; flex-direction: column; gap: 4px; padding-bottom: 2px; }
+    .ghg-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+    .ghg-badge--good { background: rgba(15,118,110,.1); color: var(--green); }
+    .ghg-badge--warn { background: rgba(245,158,11,.1); color: var(--amber); }
+    .ghg-badge--red  { background: rgba(239,68,68,.08); color: var(--red); }
+    .ghg-chart-legend { display: flex; gap: 14px; margin-bottom: 6px; }
+    .ghg-leg { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--t3); }
+    .ghg-leg-bar { width: 10px; height: 8px; border-radius: 2px; }
+    .ghg-leg-line { width: 14px; height: 0; border-top: 2px dashed; }
+    .ghg-month-labels { display: flex; justify-content: space-between; padding: 0 1px; margin-top: 4px; }
+    .ghg-month-lbl { font-size: 8.5px; color: var(--t3); }
+
+    /* ── ETS Cost Exposure card ── */
+    .ets-exp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .ets-exp-item { background: var(--bg); border-radius: 8px; padding: 10px 12px; border: 1px solid var(--border); }
+    .ets-exp-lbl { font-size: 9.5px; color: var(--t3); text-transform: uppercase; letter-spacing: .3px; margin-bottom: 4px; }
+    .ets-exp-val { font-size: 15px; font-weight: 700; color: var(--t1); font-family: 'Geist Mono', monospace; }
+    .ets-exp-val--warn { color: var(--red); }
+    .ets-exp-val--cost { color: var(--amber); }
+    .ets-exp-sub { font-size: 9.5px; color: var(--t3); margin-top: 2px; }
+    .ets-gauge-wrap { margin-bottom: 12px; }
+    .ets-gauge-track { height: 7px; background: rgba(15,118,110,.1); border-radius: 4px; overflow: hidden; margin-bottom: 5px; }
+    .ets-gauge-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--green), #0EA5A0); }
+    .ets-gauge-labels { display: flex; justify-content: space-between; font-size: 9.5px; color: var(--t3); }
+    .ets-gauge-labels strong { color: var(--t2); font-weight: 600; }
+    .ets-price-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--border); }
+    .ets-price-lbl { font-size: 11px; color: var(--t3); }
+    .ets-price-val { font-size: 13px; font-weight: 700; color: var(--t1); font-family: 'Geist Mono', monospace; }
+    .ets-price-chg { font-size: 10.5px; font-weight: 600; padding: 1px 6px; border-radius: 4px; background: rgba(220,69,69,.08); color: var(--red); }
+
+    /* ── Notice card ── */
+    .notice-list { display: flex; flex-direction: column; }
+    .n-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .n-item:last-child { border-bottom: none; }
+    .n-item:hover .n-title { color: var(--green); }
+    .n-left { display: flex; flex-direction: column; align-items: center; padding-top: 3px; }
+    .n-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--t3); flex-shrink: 0; }
+    .n-dot--new { background: var(--green); box-shadow: 0 0 0 3px rgba(15,118,110,.18); }
+    .n-line { flex: 1; width: 1px; background: var(--border); margin-top: 5px; min-height: 10px; }
+    .n-chip { font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 3px; background: var(--green-lt); color: var(--green); display: inline-block; margin-bottom: 3px; }
+    .n-chip--reg { background: rgba(59,114,240,.08); color: var(--blue); }
+    .n-title { font-size: 12px; font-weight: 500; color: var(--t1); line-height: 1.45; margin-bottom: 2px; transition: color .12s; }
+    .n-date { font-size: 10.5px; color: var(--t3); }
+
+    /* ── Misc ── */
+    .tag { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+    .tag--green { background: var(--green-lt); color: var(--green); border: 1px solid var(--green-bd); }
+    .tag--blue { background: rgba(59,114,240,.08); color: var(--blue); }
+    .tag--amber { background: rgba(217,119,6,.08); color: var(--amber); }
+
+    .icon-btn { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--t3); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .icon-btn:hover { background: var(--green-lt); color: var(--green); border-color: var(--green-bd); }
+
+    /* CII mini badges */
+    .cii-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .cii-pill { display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600; border: 1px solid; }
+    .cii-a  { background: rgba(15,118,110,.1);  color: #0F766E; border-color: rgba(15,118,110,.25); }
+    .cii-b  { background: rgba(34,197,94,.1);   color: #16A34A; border-color: rgba(34,197,94,.25); }
+    .cii-c  { background: rgba(245,158,11,.1);  color: #B45309; border-color: rgba(245,158,11,.25); }
+    .cii-de { background: rgba(239,68,68,.1);   color: #B91C1C; border-color: rgba(239,68,68,.25); }
+    .cii-pill span { font-size: 16px; font-weight: 800; letter-spacing: -.5px; }
+
+    /* Sparkline bar */
+    .spark-row { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    .spark-item { display: flex; align-items: center; gap: 10px; }
+    .spark-lbl { font-size: 11.5px; color: var(--t2); width: 70px; flex-shrink: 0; }
+    .spark-track { flex: 1; height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+    .spark-fill { height: 100%; border-radius: 3px; }
+    .spark-val { font-size: 10.5px; font-weight: 600; width: 34px; text-align: right; flex-shrink: 0; }
+    .spark-val--up { color: var(--green); }
+    .spark-val--dn { color: var(--red); }
+  </style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-mark">G</div>
+    <div>
+      <div class="nav-logo-text">GEARS</div>
+      <div class="nav-logo-sub">GHG Reporting System</div>
+    </div>
+  </div>
+  <div class="nav-sep"></div>
+  <div class="nav-crumb">
+    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+    Dashboard
+    <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+    <span>Fleet Overview</span>
+  </div>
+  <div class="nav-right">
+    <div class="nav-pill">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 6h12M6 2v4M10 2v4"/></svg>
+      2025 Compliance Year
+    </div>
+    <div class="nav-icon">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1a5 5 0 0 1 5 5v2.5l1 2H2l1-2V6a5 5 0 0 1 5-5z"/><path d="M6.5 13a1.5 1.5 0 0 0 3 0"/></svg>
+      <div class="nav-notif"></div>
+    </div>
+    <div class="nav-icon">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.1 3.1l1 1M11.9 11.9l1 1"/></svg>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-user">
+      <div class="nav-avatar">PS</div>
+      <div>
+        <div class="nav-user-name">POS SM test</div>
+        <div class="nav-user-role">기부사 · POS SM(GEARS)</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+
+    <!-- Dashboard (expanded) -->
+    <div class="sb-item sb-parent">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Dashboard
+      <svg class="sb-caret" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+    </div>
+    <div class="sb-sub">
+      <div class="sb-sub-item active">Performance Overview</div>
+      <div class="sb-sub-item">Risk Overview</div>
+      <div class="sb-sub-item">Cost Analysis</div>
+      <div class="sb-sub-item">Strategic Actions</div>
+    </div>
+
+    <!-- Fleet & Company -->
+    <div class="sb-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 11l2-6h10l2 6H1z"/><path d="M4 11v3M12 11v3M1 11h14"/></svg>
+      Fleet &amp; Company
+      <svg class="sb-caret" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+    </div>
+
+    <!-- Data Hub -->
+    <div class="sb-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1h6l4 4v10H4V1z"/><path d="M10 1v4h4"/></svg>
+      Data Hub
+      <svg class="sb-caret" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+    </div>
+
+    <!-- Simulation -->
+    <div class="sb-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg>
+      Simulation
+      <span class="sb-chip sb-chip--amber">3</span>
+      <svg class="sb-caret" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+    </div>
+
+    <!-- GHG Insights -->
+    <div class="sb-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-6"/></svg>
+      GHG Insights
+    </div>
+
+    <div class="sb-lbl">Community</div>
+    <div class="sb-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="14" height="12" rx="1.5"/><path d="M4 6h8M4 9h5"/></svg>
+      Notice
+      <span class="sb-chip">4</span>
+    </div>
+
+    <div class="sb-footer">
+      <div class="sb-item">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><path d="M8 1v1.5M14 8h1.5M8 13.5V15M1.5 8H3"/></svg>
+        Settings
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Hero Band -->
+    <div class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="hero-title">Dashboard · Performance Overview</div>
+          <div class="hero-h1">60 Vessels — 2025 Compliance</div>
+          <div class="hero-sub">IMO DCS · MRV · EU ETS · CII — All status at a glance</div>
+        </div>
+        <div class="hero-period">
+          <div class="hero-tab">Q1</div>
+          <div class="hero-tab">Q2</div>
+          <div class="hero-tab active">YTD</div>
+          <div class="hero-tab">Full Year</div>
+        </div>
+      </div>
+
+      <div class="hero-kpi">
+        <div class="hkpi active">
+          <div class="hkpi__lbl">Total Fleet</div>
+          <div class="hkpi__num">60<sup>vessels</sup></div>
+          <div class="hkpi__badge hkpi__badge--up">▲ +3 YoY</div>
+          <div class="hkpi__meta">5 pending registration</div>
+        </div>
+        <div class="hkpi">
+          <div class="hkpi__lbl">SEEMP Compliance</div>
+          <div class="hkpi__num">78<sup>%</sup></div>
+          <div class="hkpi__badge hkpi__badge--up">▲ +6% from last year</div>
+          <div class="hkpi__meta">47 / 60 approved</div>
+        </div>
+        <div class="hkpi">
+          <div class="hkpi__lbl">EU ETS Price</div>
+          <div class="hkpi__num">73.8<sup>EUR/t</sup></div>
+          <div class="hkpi__badge hkpi__badge--down">▼ −1.2% 7d avg</div>
+          <div class="hkpi__meta">Spot · 2026-05-13</div>
+        </div>
+        <div class="hkpi">
+          <div class="hkpi__lbl">CII Non-Compliant</div>
+          <div class="hkpi__num">7<sup>vessels</sup></div>
+          <div class="hkpi__badge hkpi__badge--warn">⚠ D·E rated</div>
+          <div class="hkpi__meta">Action required</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Content area -->
+    <div class="content">
+
+      <!-- Row 1: Map + Compliance -->
+      <div>
+        <div class="sec-head">
+          <div class="sec-title">Risk Map</div>
+          <a class="sec-link">View fleet list →</a>
+        </div>
+        <div class="grid-main">
+
+          <!-- Risk Map -->
+          <div class="card map-card">
+            <div class="map-header">
+              <div class="map-header-top">
+                <div class="map-title">Global Vessel Operations &amp; Regulatory Risk Map</div>
+                <div class="map-live-badge">
+                  <span class="dot"></span>
+                  Live Update | Dec 2026
+                </div>
+              </div>
+            </div>
+
+            <div class="map-body">
+              <!-- Map area -->
+              <div class="map-inner">
+                <div class="map-grid-lines"></div>
+                <div class="map-equator"></div>
+                <div class="map-meridian"></div>
+                <!-- Tropic reference lines -->
+                <div class="map-tropic map-tropic--cancer"><span class="map-tropic-lbl">Tropic of Cancer</span></div>
+                <div class="map-tropic map-tropic--capricorn"><span class="map-tropic-lbl">Tropic of Capricorn</span></div>
+
+                <!-- World map SVG (continents) -->
+                <svg viewBox="0 0 800 380" style="position:absolute;inset:0;width:100%;height:100%;" fill="none">
+                  <defs>
+                    <linearGradient id="land-grad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="rgba(188,214,232,.62)"/>
+                      <stop offset="100%" stop-color="rgba(162,198,220,.45)"/>
+                    </linearGradient>
+                    <filter id="land-shadow" x="-15%" y="-15%" width="130%" height="130%">
+                      <feDropShadow dx="1" dy="2" stdDeviation="3.5" flood-color="rgba(50,100,145,.18)"/>
+                    </filter>
+                  </defs>
+                  <!-- North America -->
+                  <path d="M95 75 L135 65 L165 72 L180 88 L184 112 L172 135 L158 158 L148 185 L136 208 L118 222 L98 218 L82 200 L72 172 L66 138 L70 102 Z" fill="url(#land-grad)" stroke="rgba(115,155,185,.6)" stroke-width=".8" filter="url(#land-shadow)"/>
+                  <!-- South America -->
+                  <path d="M148 225 L168 218 L182 232 L186 258 L184 290 L174 318 L160 338 L146 344 L130 338 L120 316 L118 288 L122 260 L132 240 Z" fill="url(#land-grad)" stroke="rgba(115,155,185,.6)" stroke-width=".8" filter="url(#land-shadow)"/>
+                  <!-- Northern Europe (Scandinavia + UK) -->
+                  <path d="M308 55 L332 48 L356 50 L372 58 L380 70 L376 82 L362 90 L346 96 L328 92 L315 80 L308 68 Z" fill="url(#land-grad)" stroke="rgba(115,155,185,.6)" stroke-width=".8" filter="url(#land-shadow)"/>
+                  <!-- Africa -->
+                  <path d="M318 112 L358 110 L378 118 L390 138 L393 170 L388 200 L374 225 L358 244 L340 252 L320 248 L306 232 L298 206 L296 174 L300 145 L310 123 Z" fill="url(#land-grad)" stroke="rgba(115,155,185,.6)" stroke-width=".8" filter="url(#land-shadow)"/>
+                  <!-- Europe / Russia / Central Asia -->
+                  <path d="M378 56 L440 50 L500 54 L548 62 L585 72 L600 85 L595 105 L575 118 L548 126 L515 126 L485 120 L458 112 L435 100 L414 88 L396 80 L380 70 Z" fill="url(#land-grad)" stroke="rgba(115,155,185,.6)" stroke-width=".8" filter="url(#land-shadow)"/>
+                  <!-- Middle East / Arabian Peninsula -->
+                  <path d="M400 125 L426 122 L445 130 L455 148 L450 165 L435 172 L418 168 L406 155 L398 140 Z" fill="url(#land-grad)" stroke="rgba(115,155,185,.6)" stroke-width=".8" filter="url(#land-shadow)"/>
+                  <!-- South Asia -->
+                  <path d="M458 118 L482 114 L498 126 L502 146 L494 166 L480 178 L464 174 L453 158 L450 136 Z" fill="url(#land-grad)" stroke="rgba(115,155,185,.6)" stroke-width=".8" filter="url(#land-shadow)"/>
+                  <!-- SE Asia + Indochina -->
+                  <path d="M518 108 L550 104 L566 116 L572 132 L564 148 L548 154 L530 148 L518 132 Z" fill="url(#land-grad)" stroke="rgba(115,155,185,.6)" stroke-width=".8" filter="url(#land-shadow)"/>
+                  <!-- East Asia (China/Korea/Japan) -->
+                  <path d="M554 64 L600 60 L635 66 L648 80 L640 96 L620 108 L595 112 L568 106 L554 92 L550 76 Z" fill="url(#land-grad)" stroke="rgba(115,155,185,.6)" stroke-width=".8" filter="url(#land-shadow)"/>
+                  <!-- Australia -->
+                  <path d="M572 208 L618 202 L650 212 L660 234 L652 258 L632 272 L602 270 L578 256 L566 234 L564 217 Z" fill="url(#land-grad)" stroke="rgba(115,155,185,.6)" stroke-width=".8" filter="url(#land-shadow)"/>
+                </svg>
+
+                <!-- Shipping routes (animated flowing dashes) -->
+                <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <!-- Asia-Europe main artery (via Suez) -->
+                  <path class="route-line" d="M18 42 Q30 36 44 32 Q56 30 62 38 Q66 44 72 40 Q78 35 85 38" stroke="#48A8F8" stroke-width=".55" fill="none" stroke-dasharray="2 2" opacity=".7"/>
+                  <!-- Sub-route: Europe to Indian Ocean -->
+                  <path class="route-line-b" d="M44 32 Q48 44 52 50 Q55 56 59 59" stroke="#48A8F8" stroke-width=".5" fill="none" stroke-dasharray="2 2" opacity=".65"/>
+                  <!-- Cape of Good Hope route (North Atlantic to South Africa) -->
+                  <path class="route-line" d="M38 42 Q40 50 42 58 Q44 66 46 73 Q48 80 50 87" stroke="#48A8F8" stroke-width=".5" fill="none" stroke-dasharray="2 2" opacity=".55"/>
+                  <!-- Indian Ocean to SE Asia -->
+                  <path class="route-line-b" d="M62 38 Q64 47 66 55 Q67 62 68 68 Q70 76 72 82" stroke="#48A8F8" stroke-width=".5" fill="none" stroke-dasharray="2 2" opacity=".6"/>
+                  <!-- Asia-Pacific intra-regional -->
+                  <path class="route-line" d="M72 40 Q74 48 76 54 Q78 61 80 68" stroke="#48A8F8" stroke-width=".5" fill="none" stroke-dasharray="2 2" opacity=".55"/>
+                  <!-- Transpacific (Asia to North America west coast) -->
+                  <path class="route-line-b" d="M82 36 Q78 34 70 33 Q60 32 50 34 Q36 37 24 40" stroke="#48A8F8" stroke-width=".45" fill="none" stroke-dasharray="2 2" opacity=".45"/>
+                  <!-- Mediterranean -->
+                  <path class="route-line" d="M40 30 Q44 28 48 30 Q51 31 52 35" stroke="#48A8F8" stroke-width=".45" fill="none" stroke-dasharray="2 2" opacity=".5"/>
+                </svg>
+
+                <!-- Risk Zones — animated radial gradient zones -->
+                <!-- EU ETS High-Risk Zone (North Atlantic / North Sea) -->
+                <div class="rz rz--high" style="left:40%;top:28%;width:100px;height:76px;border-radius:44%;"></div>
+                <div class="rz-lbl rz-lbl--high" style="left:40%;top:calc(28% + 41px);">EU ETS Zone</div>
+                <!-- Indian Ocean Medium-Risk Zone -->
+                <div class="rz rz--med" style="left:57%;top:52%;width:76px;height:60px;border-radius:50%;"></div>
+                <div class="rz-lbl rz-lbl--med" style="left:57%;top:calc(52% + 33px);">Indian Ocean</div>
+                <!-- Suez Watch Zone -->
+                <div class="rz rz--watch" style="left:50%;top:38%;width:34px;height:34px;"></div>
+                <div class="rz-lbl rz-lbl--watch" style="left:50%;top:calc(38% + 19px);">Suez</div>
+
+                <!-- Vessels: Low Risk (green) -->
+                <div class="vd" style="left:22%;top:43%;"><div class="vd-dot vd-dot--low"></div><div class="vd-tooltip">KR OCEAN STAR</div></div>
+                <div class="vd" style="left:27%;top:50%;"><div class="vd-dot vd-dot--low"></div><div class="vd-tooltip">HARMONY QUEEN</div></div>
+                <div class="vd" style="left:60%;top:47%;"><div class="vd-dot vd-dot--low"></div><div class="vd-tooltip">EAST WIND GLORY</div></div>
+                <div class="vd" style="left:63%;top:43%;"><div class="vd-dot vd-dot--low"></div><div class="vd-tooltip">OCEAN QUEEN</div></div>
+                <div class="vd" style="left:72%;top:35%;"><div class="vd-dot vd-dot--low"></div><div class="vd-tooltip">STAR GEARS I</div></div>
+                <div class="vd" style="left:76%;top:40%;"><div class="vd-dot vd-dot--low"></div><div class="vd-tooltip">POSEIDON ACE</div></div>
+                <div class="vd" style="left:74%;top:48%;"><div class="vd-dot vd-dot--low"></div><div class="vd-tooltip">OCEAN BREEZE</div></div>
+                <div class="vd" style="left:85%;top:42%;"><div class="vd-dot vd-dot--low"></div><div class="vd-tooltip">PACIFIC STAR</div></div>
+                <div class="vd" style="left:80%;top:30%;"><div class="vd-dot vd-dot--low"></div><div class="vd-tooltip">BUSAN EXPRESS</div></div>
+                <div class="vd" style="left:68%;top:56%;"><div class="vd-dot vd-dot--low"></div><div class="vd-tooltip">SEOUL TRADER</div></div>
+                <div class="vd" style="left:34%;top:58%;"><div class="vd-dot vd-dot--low"></div><div class="vd-tooltip">CAPE GLORY</div></div>
+                <!-- Medium Risk (orange) — pulsing ring -->
+                <div class="vd" style="left:46%;top:40%;"><div class="vd-inner"><div class="vd-ring vd-ring--med"></div><div class="vd-dot vd-dot--med"></div></div><div class="vd-tooltip">SEOUL PIONEER ⚠</div></div>
+                <div class="vd" style="left:52%;top:40%;"><div class="vd-inner"><div class="vd-ring vd-ring--med"></div><div class="vd-dot vd-dot--med"></div></div><div class="vd-tooltip">PACIFIC SHIELD ⚠</div></div>
+                <div class="vd" style="left:56%;top:54%;"><div class="vd-inner"><div class="vd-ring vd-ring--med"></div><div class="vd-dot vd-dot--med"></div></div><div class="vd-tooltip">HORIZON STAR ⚠</div></div>
+                <div class="vd" style="left:60%;top:57%;"><div class="vd-inner"><div class="vd-ring vd-ring--med"></div><div class="vd-dot vd-dot--med"></div></div><div class="vd-tooltip">INDO PACIFIC ⚠</div></div>
+                <div class="vd" style="left:42%;top:34%;"><div class="vd-inner"><div class="vd-ring vd-ring--med"></div><div class="vd-dot vd-dot--med"></div></div><div class="vd-tooltip">ATLANTIC BRIDGE ⚠</div></div>
+                <div class="vd" style="left:38%;top:29%;"><div class="vd-inner"><div class="vd-ring vd-ring--med"></div><div class="vd-dot vd-dot--med"></div></div><div class="vd-tooltip">NORTH SEA ACE ⚠</div></div>
+                <!-- High Risk (red) — double pulsing ring -->
+                <div class="vd" style="left:44%;top:27%;"><div class="vd-inner"><div class="vd-ring vd-ring--high"></div><div class="vd-ring vd-ring--high2"></div><div class="vd-dot vd-dot--high"></div></div><div class="vd-tooltip">STAR GEARS IV ✕</div></div>
+                <div class="vd" style="left:47%;top:32%;"><div class="vd-inner"><div class="vd-ring vd-ring--high"></div><div class="vd-ring vd-ring--high2"></div><div class="vd-dot vd-dot--high"></div></div><div class="vd-tooltip">BUSAN TRADER ✕</div></div>
+                <div class="vd" style="left:50%;top:38%;"><div class="vd-inner"><div class="vd-ring vd-ring--high"></div><div class="vd-ring vd-ring--high2"></div><div class="vd-dot vd-dot--high"></div></div><div class="vd-tooltip">SUEZ GUARDIAN ✕</div></div>
+                <div class="vd" style="left:58%;top:52%;"><div class="vd-inner"><div class="vd-ring vd-ring--high"></div><div class="vd-ring vd-ring--high2"></div><div class="vd-dot vd-dot--high"></div></div><div class="vd-tooltip">GREEN HORIZON ✕</div></div>
+
+                <!-- Port city markers -->
+                <div class="pm" style="left:40%;top:21%;"><div class="pm-diamond"></div><div class="pm-lbl">Rotterdam</div></div>
+                <div class="pm" style="left:56%;top:37%;"><div class="pm-diamond"></div><div class="pm-lbl">Dubai</div></div>
+                <div class="pm" style="left:68%;top:51%;"><div class="pm-diamond"></div><div class="pm-lbl">Singapore</div></div>
+                <div class="pm" style="left:77%;top:30%;"><div class="pm-diamond"></div><div class="pm-lbl">Shanghai</div></div>
+                <div class="pm" style="left:80%;top:26%;"><div class="pm-diamond"></div><div class="pm-lbl">Busan</div></div>
+              </div>
+
+              <!-- Legend panel -->
+              <div class="map-legend">
+                <div class="map-leg-group">
+                  <div class="map-leg-head">Legend</div>
+                </div>
+                <div class="map-leg-group">
+                  <div class="map-leg-head">Vessel Risk Level</div>
+                  <div class="map-leg-item"><div class="leg-dot" style="background:#EF4444;box-shadow:0 0 0 2px rgba(239,68,68,.2);"></div>High Risk</div>
+                  <div class="map-leg-item"><div class="leg-dot" style="background:#F97316;box-shadow:0 0 0 2px rgba(249,115,22,.2);"></div>Medium Risk</div>
+                  <div class="map-leg-item"><div class="leg-dot" style="background:#22C55E;box-shadow:0 0 0 2px rgba(34,197,94,.2);"></div>Low Risk</div>
+                </div>
+                <div class="map-leg-group">
+                  <div class="map-leg-head">Regulatory Risk Zone</div>
+                  <div class="map-leg-item">
+                    <div class="leg-zone" style="border:2px solid rgba(239,68,68,.5);background:rgba(239,68,68,.08);"></div>
+                    <span>High-Risk Zone (EU ETS)</span>
+                  </div>
+                  <div class="map-leg-item">
+                    <div class="leg-zone" style="border:2px solid rgba(249,115,22,.45);background:rgba(249,115,22,.07);"></div>
+                    <span>Medium-Risk Zone</span>
+                  </div>
+                  <div class="map-leg-item">
+                    <div class="leg-zone" style="border:2px dashed rgba(234,179,8,.6);background:rgba(234,179,8,.06);"></div>
+                    <span>Watch Zone (Suez etc.)</span>
+                  </div>
+                </div>
+                <div class="map-leg-group">
+                  <div class="map-leg-head">Shipping Routes</div>
+                  <div class="map-leg-item"><div class="leg-route"></div>Major Trade Lanes</div>
+                </div>
+                <div class="map-leg-group">
+                  <div class="map-leg-head">Key Ports</div>
+                  <div class="map-leg-item"><div class="leg-port"></div>Major Port City</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats bar -->
+            <div class="map-stats">
+              <div class="map-stat">
+                <span class="map-stat-val map-stat-val--total">65</span>
+                <span class="map-stat-lbl">Total Vessels</span>
+              </div>
+              <div class="map-stat">
+                <span class="map-stat-val map-stat-val--high">11</span>
+                <span class="map-stat-lbl">High-Risk</span>
+              </div>
+              <div class="map-stat">
+                <span class="map-stat-val map-stat-val--med">22</span>
+                <span class="map-stat-lbl">Medium-Risk</span>
+              </div>
+              <div class="map-stat">
+                <span class="map-stat-val map-stat-val--low">32</span>
+                <span class="map-stat-lbl">Low-Risk</span>
+              </div>
+              <div class="map-stat">
+                <span class="map-stat-val" style="color:var(--t2);">5</span>
+                <span class="map-stat-lbl">Risk Zones</span>
+              </div>
+              <div class="map-stat">
+                <span class="map-stat-val" style="color:#60A5FA;">6</span>
+                <span class="map-stat-lbl">Trade Lanes</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Row 2: Fuel + ETS + Notices -->
+      <div>
+        <div class="sec-head">
+          <div class="sec-title">Emissions & Market</div>
+        </div>
+        <div class="grid-bottom">
+
+          <!-- Fuel Composition -->
+          <!-- GHG Emission Trend -->
+          <!-- GHG Emission Trend -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-label">GHG Emission Trend</span>
+              <span class="tag tag--green">2026 YTD</span>
+            </div>
+            <div class="card-body">
+              <!-- Hero stat -->
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px;">
+                <div>
+                  <div style="font-size:26px;font-weight:700;color:var(--t1);letter-spacing:-1px;line-height:1;font-family:'Geist Mono',monospace;">189.2 <span style="font-size:12px;font-weight:500;color:var(--t3);letter-spacing:0;">kt CO₂e</span></div>
+                  <div style="font-size:11px;color:var(--t3);margin-top:4px;">Jan–May · actual emissions</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                  <span class="ghg-badge ghg-badge--good">▼ 3.2% vs target</span>
+                  <span class="ghg-badge ghg-badge--warn">Jun forecast +1.4%</span>
+                </div>
+              </div>
+              <!-- Legend -->
+              <div class="ghg-chart-legend" style="margin-bottom:8px;">
+                <div class="ghg-leg"><div class="ghg-leg-bar" style="background:var(--green);"></div>Actual</div>
+                <div class="ghg-leg"><div class="ghg-leg-bar" style="background:rgba(15,118,110,.22);"></div>Forecast</div>
+                <div class="ghg-leg"><div class="ghg-leg-line" style="border-color:var(--amber);"></div>IMO Target</div>
+              </div>
+              <!-- Bar chart -->
+              <svg viewBox="0 0 280 96" style="width:100%;height:96px;" fill="none">
+                <line x1="0" y1="32" x2="280" y2="32" stroke="#F59E0B" stroke-width="1.2" stroke-dasharray="4 3" opacity=".65"/>
+                <rect x="3"   y="26" width="16" height="68" rx="2" fill="#0F766E" opacity=".85"/>
+                <rect x="26"  y="35" width="16" height="59" rx="2" fill="#0F766E" opacity=".85"/>
+                <rect x="49"  y="16" width="16" height="78" rx="2" fill="#0F766E" opacity=".85"/>
+                <rect x="72"  y="30" width="16" height="64" rx="2" fill="#0F766E" opacity=".85"/>
+                <rect x="95"  y="37" width="16" height="57" rx="2" fill="#0F766E" opacity=".85"/>
+                <rect x="118" y="35" width="16" height="59" rx="2" fill="rgba(15,118,110,.22)"/>
+                <rect x="141" y="39" width="16" height="55" rx="2" fill="rgba(15,118,110,.22)"/>
+                <rect x="164" y="39" width="16" height="55" rx="2" fill="rgba(15,118,110,.22)"/>
+                <rect x="187" y="35" width="16" height="59" rx="2" fill="rgba(15,118,110,.22)"/>
+                <rect x="210" y="32" width="16" height="62" rx="2" fill="rgba(15,118,110,.22)"/>
+                <rect x="233" y="37" width="16" height="57" rx="2" fill="rgba(15,118,110,.22)"/>
+                <rect x="256" y="42" width="16" height="52" rx="2" fill="rgba(15,118,110,.22)"/>
+                <line x1="113" y1="0" x2="113" y2="94" stroke="var(--border-2)" stroke-width="1" stroke-dasharray="3 3"/>
+                <text x="3" y="28" fill="#F59E0B" font-size="7" font-family="Geist,sans-serif" opacity=".75">37.4 kt/mo</text>
+              </svg>
+              <div class="ghg-month-labels">
+                <span class="ghg-month-lbl">Jan</span><span class="ghg-month-lbl">Feb</span>
+                <span class="ghg-month-lbl">Mar</span><span class="ghg-month-lbl">Apr</span>
+                <span class="ghg-month-lbl">May</span><span class="ghg-month-lbl">Jun</span>
+                <span class="ghg-month-lbl">Jul</span><span class="ghg-month-lbl">Aug</span>
+                <span class="ghg-month-lbl">Sep</span><span class="ghg-month-lbl">Oct</span>
+                <span class="ghg-month-lbl">Nov</span><span class="ghg-month-lbl">Dec</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- EU ETS Cost Exposure -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-label">EU ETS Cost Exposure</span>
+              <span class="tag tag--amber">2026</span>
+            </div>
+            <div class="card-body">
+              <!-- Hero stat -->
+              <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px;">
+                <div>
+                  <div style="font-size:26px;font-weight:700;color:var(--amber);letter-spacing:-1px;line-height:1;font-family:'Geist Mono',monospace;">€317K <span style="font-size:12px;font-weight:500;color:var(--t3);letter-spacing:0;">est. add. cost</span></div>
+                  <div style="font-size:11px;color:var(--t3);margin-top:4px;">Shortfall 4,300 t CO₂ @ €73.8/t</div>
+                </div>
+                <span class="ghg-badge ghg-badge--warn">⚠ Action needed</span>
+              </div>
+              <!-- 3-col stats -->
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px;">
+                <div style="text-align:center;padding:9px 6px;background:var(--bg);border-radius:8px;border:1px solid var(--border);">
+                  <div style="font-size:13px;font-weight:700;color:var(--t1);font-family:'Geist Mono',monospace;">42,500</div>
+                  <div style="font-size:9px;color:var(--t3);margin-top:3px;text-transform:uppercase;letter-spacing:.3px;">Required (t)</div>
+                </div>
+                <div style="text-align:center;padding:9px 6px;background:var(--bg);border-radius:8px;border:1px solid var(--border);">
+                  <div style="font-size:13px;font-weight:700;color:var(--green);font-family:'Geist Mono',monospace;">38,200</div>
+                  <div style="font-size:9px;color:var(--t3);margin-top:3px;text-transform:uppercase;letter-spacing:.3px;">Held (t)</div>
+                </div>
+                <div style="text-align:center;padding:9px 6px;background:rgba(239,68,68,.04);border-radius:8px;border:1px solid rgba(239,68,68,.14);">
+                  <div style="font-size:13px;font-weight:700;color:var(--red);font-family:'Geist Mono',monospace;">4,300</div>
+                  <div style="font-size:9px;color:var(--t3);margin-top:3px;text-transform:uppercase;letter-spacing:.3px;">Shortfall (t)</div>
+                </div>
+              </div>
+              <!-- Coverage gauge -->
+              <div style="margin-bottom:14px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                  <span style="font-size:10.5px;color:var(--t2);font-weight:600;">Allowance Coverage</span>
+                  <span style="font-size:11px;font-weight:700;color:var(--green);font-family:'Geist Mono',monospace;">90%</span>
+                </div>
+                <div class="ets-gauge-track">
+                  <div class="ets-gauge-fill" style="width:90%;"></div>
+                </div>
+                <div class="ets-gauge-labels" style="margin-top:4px;">
+                  <span>0%</span><span style="color:var(--green);font-weight:600;">38,200 held</span><span>42,500</span>
+                </div>
+              </div>
+              <!-- ETS price -->
+              <div class="ets-price-row">
+                <span class="ets-price-lbl">ETS Spot · 2026-05-13</span>
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <span class="ets-price-val">73.8 EUR/t</span>
+                  <span class="ets-price-chg">▼ 1.2%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Notices -->
+          <div class="card">
+            <div class="card-head">
+              <span class="card-label">Recent Notices</span>
+              <a class="sec-link" style="font-size:11px;">View all</a>
+            </div>
+            <div class="card-body">
+              <div class="notice-list">
+                <div class="n-item">
+                  <div class="n-left"><div class="n-dot n-dot--new"></div><div class="n-line"></div></div>
+                  <div>
+                    <div class="n-chip">NEW</div>
+                    <div class="n-title">[New] User Guideline for Flexibility/Pooling</div>
+                    <div class="n-date">2026-02-25</div>
+                  </div>
+                </div>
+                <div class="n-item">
+                  <div class="n-left"><div class="n-dot"></div><div class="n-line"></div></div>
+                  <div>
+                    <div class="n-chip n-chip--reg">[EU Reg.]</div>
+                    <div class="n-title">Notice on Port Country Code for French Outermost Regions (THETIS Upload)</div>
+                    <div class="n-date">2026-01-28</div>
+                  </div>
+                </div>
+                <div class="n-item">
+                  <div class="n-left"><div class="n-dot"></div><div class="n-line" style="display:none;"></div></div>
+                  <div>
+                    <div class="n-chip">[KR]</div>
+                    <div class="n-title">CII Calculator update (excel version, rev 2.0)</div>
+                    <div class="n-date">2025-08-13</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

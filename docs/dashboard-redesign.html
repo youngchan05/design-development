@@ -1,0 +1,2614 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Modern GEARS dashboard redesign for vessel emissions, EU ETS simulation, allowance prices, and fuel analytics."
+    />
+    <title>GEARS Dashboard Redesign</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="assets/logo.png" />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f7f5;
+        --shell: #ffffff;
+        --panel: #ffffff;
+        --panel-soft: #f8faf8;
+        --line: #e4ebe5;
+        --line-strong: #ccd9d0;
+        --ink: #17231d;
+        --muted: #637168;
+        --faint: #909b94;
+        --brand: #107a57;
+        --brand-2: #1fb883;
+        --brand-soft: #e2f3eb;
+        --blue: #356fd8;
+        --blue-soft: #e7eefc;
+        --red: #e35f5a;
+        --red-soft: #fde8e5;
+        --yellow: #b7791f;
+        --yellow-soft: #fff4d8;
+        --nav: #10231b;
+        --shadow: 0 24px 70px rgba(19, 48, 35, 0.12);
+        --shadow-soft: 0 10px 30px rgba(19, 48, 35, 0.08);
+        --radius: 18px;
+        --radius-sm: 12px;
+        --sans:
+          "Outfit", "Geist", "Satoshi", "SF Pro Display", "Segoe UI", sans-serif;
+        --mono: "Geist Mono", "SF Mono", "JetBrains Mono", Consolas, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        color: var(--ink);
+        font-family: var(--sans);
+        background:
+          radial-gradient(
+            circle at 18% -8%,
+            rgba(31, 184, 131, 0.16),
+            transparent 34%
+          ),
+          linear-gradient(
+            135deg,
+            rgba(16, 122, 87, 0.08) 0 1px,
+            transparent 1px
+          ),
+          var(--bg);
+        background-size:
+          auto,
+          22px 22px,
+          auto;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image: radial-gradient(
+          rgba(23, 35, 29, 0.11) 0.6px,
+          transparent 0.6px
+        );
+        background-size: 5px 5px;
+        opacity: 0.06;
+        z-index: 20;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      :focus-visible {
+        outline: 3px solid rgba(16, 122, 87, 0.24);
+        outline-offset: 2px;
+      }
+
+      .skip-link {
+        position: fixed;
+        left: 16px;
+        top: 16px;
+        z-index: 30;
+        transform: translateY(-150%);
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: var(--ink);
+        color: #fff;
+        font-weight: 800;
+        transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: 252px minmax(0, 1fr);
+        gap: 18px;
+        width: min(1480px, calc(100vw - 28px));
+        margin: 14px auto 36px;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 14px;
+        height: calc(100dvh - 28px);
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
+        border-radius: 24px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 32%),
+          var(--nav);
+        color: rgba(255, 255, 255, 0.86);
+        box-shadow: var(--shadow);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        padding: 6px 6px 18px;
+      }
+
+      .brand-logo {
+        display: block;
+        width: 154px;
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 10px 22px rgba(31, 184, 131, 0.16));
+      }
+
+      .nav {
+        display: grid;
+        gap: 4px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 42px;
+        padding: 0 12px;
+        border-radius: 13px;
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 0.88rem;
+        font-weight: 760;
+        transition:
+          background-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+          color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+          transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .nav a:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateX(2px);
+      }
+
+      .nav a[aria-current="page"] {
+        color: #fff;
+        background: rgba(31, 184, 131, 0.2);
+      }
+
+      .nav svg {
+        flex: 0 0 auto;
+      }
+
+      .sidebar-card {
+        margin-top: auto;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar-user {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr);
+        gap: 10px;
+        align-items: center;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar-user-avatar {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 900;
+      }
+
+      .sidebar-user strong {
+        display: block;
+        overflow: hidden;
+        color: #fff;
+        font-size: 0.82rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .sidebar-user span {
+        display: block;
+        overflow: hidden;
+        margin-top: 2px;
+        color: rgba(255, 255, 255, 0.48);
+        font-size: 0.72rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .sidebar-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .sidebar-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 38px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.07);
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.76rem;
+        font-weight: 900;
+        transition:
+          background-color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+          color 180ms cubic-bezier(0.16, 1, 0.3, 1),
+          transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .sidebar-action:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        transform: translateY(-1px);
+      }
+
+      .sidebar-action:active {
+        transform: scale(0.98);
+      }
+
+      .sidebar-action.logout {
+        border-color: rgba(227, 95, 90, 0.28);
+        color: #ffd4cf;
+      }
+
+      .progress {
+        height: 8px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .progress i {
+        display: block;
+        width: 68%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--brand-2), #d4f781);
+      }
+
+      .main {
+        min-width: 0;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 14px;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        min-height: 68px;
+        padding: 12px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.72);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.84);
+        backdrop-filter: blur(18px);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .topbar h1 {
+        margin: 0;
+        font-size: 1.25rem;
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+
+      .topbar p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .account-chip {
+        display: grid;
+        grid-template-columns: 36px minmax(0, 1fr);
+        gap: 10px;
+        align-items: center;
+        min-height: 46px;
+        padding: 5px 12px 5px 5px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--panel);
+        box-shadow: 0 8px 20px rgba(19, 48, 35, 0.05);
+      }
+
+      .account-avatar {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--brand-2), var(--brand));
+        color: #fff;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 900;
+      }
+
+      .account-chip strong {
+        display: block;
+        color: var(--ink);
+        font-size: 0.82rem;
+        line-height: 1.1;
+      }
+
+      .account-chip span {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        line-height: 1.1;
+        white-space: nowrap;
+      }
+
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: min(320px, 28vw);
+        min-height: 40px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--panel-soft);
+        color: var(--faint);
+      }
+
+      .search input {
+        width: 100%;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        color: var(--ink);
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 40px;
+        padding: 0 12px;
+        border: 1px solid rgba(16, 122, 87, 0.16);
+        border-radius: 14px;
+        background: var(--brand-soft);
+        color: var(--brand);
+        font-size: 0.82rem;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .status-pill.danger {
+        border-color: rgba(227, 95, 90, 0.18);
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--brand-2);
+        box-shadow: 0 0 0 5px rgba(31, 184, 131, 0.14);
+      }
+
+      .dashboard {
+        display: grid;
+        gap: 18px;
+        padding-top: 18px;
+      }
+
+      .filterbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.84);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.78);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .filter-left,
+      .filter-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 34px;
+        padding: 0 11px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--panel);
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 820;
+      }
+
+      .filter-chip strong {
+        color: var(--ink);
+      }
+
+      .hero-strip {
+        display: grid;
+        grid-template-columns: minmax(320px, 0.82fr) minmax(0, 1.18fr);
+        gap: 18px;
+        align-items: stretch;
+      }
+
+      .dcs-status {
+        overflow: hidden;
+        padding: 0;
+        border: 1px solid rgba(255, 255, 255, 0.84);
+        border-radius: var(--radius);
+        background:
+          linear-gradient(135deg, rgba(31, 184, 131, 0.08), transparent 44%),
+          var(--panel);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .dcs-status-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 18px 10px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .dcs-status-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink);
+        font-size: 0.9rem;
+        font-weight: 900;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+
+      .dcs-status-title::before {
+        content: "";
+        width: 3px;
+        height: 18px;
+        border-radius: 999px;
+        background: var(--brand);
+      }
+
+      .dcs-status-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .dcs-compact {
+        display: grid;
+        gap: 1px;
+        overflow: hidden;
+        background: var(--line);
+      }
+
+      .dcs-compact-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 18px;
+        background: rgba(255, 255, 255, 0.76);
+      }
+
+      .dcs-compact-name {
+        min-width: 118px;
+      }
+
+      .dcs-compact-name strong {
+        display: block;
+        font-size: 0.86rem;
+      }
+
+      .dcs-compact-name span {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 0.72rem;
+      }
+
+      .dcs-compact-progress {
+        flex: 1;
+        display: grid;
+        gap: 6px;
+      }
+
+      .dcs-compact-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 900;
+      }
+
+      .dcs-compact-track {
+        height: 7px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #e7ede8;
+      }
+
+      .dcs-compact-track i {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--brand), var(--brand-2));
+      }
+
+      .dcs-compact-track .w-78 {
+        width: 78%;
+      }
+
+      .dcs-compact-track .w-70 {
+        width: 70%;
+      }
+
+      .dcs-compact-track .w-73 {
+        width: 73%;
+      }
+
+      .dcs-compact-chips {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .dcs-mini-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        min-height: 22px;
+        padding: 0 8px;
+        border-radius: 999px;
+        background: var(--panel-soft);
+        color: var(--muted);
+        font-size: 0.68rem;
+        font-weight: 900;
+      }
+
+      .dcs-mini-chip.approved {
+        background: var(--brand-soft);
+        color: var(--brand);
+      }
+
+      .dcs-mini-chip.revision {
+        background: var(--yellow-soft);
+        color: var(--yellow);
+      }
+
+      .panel h2 {
+        margin: 0;
+        font-size: 1rem;
+        letter-spacing: 0;
+      }
+
+      .panel p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.5;
+      }
+
+      .panel {
+        min-width: 0;
+        border: 1px solid rgba(255, 255, 255, 0.84);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: var(--shadow-soft);
+        overflow: hidden;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 18px 18px 14px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-body {
+        padding: 18px;
+      }
+
+      .notice-list {
+        display: grid;
+        gap: 0;
+      }
+
+      .notice {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .notice:first-child {
+        padding-top: 0;
+      }
+
+      .notice:last-child {
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
+
+      .notice-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .notice strong {
+        display: block;
+        overflow: hidden;
+        font-size: 0.86rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .notice-kicker {
+        flex: 0 0 auto;
+        color: var(--brand);
+        font-size: 0.68rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .notice-kicker.warn {
+        color: var(--yellow);
+      }
+
+      .notice-kicker.info {
+        color: var(--blue);
+      }
+
+      .notice time {
+        color: var(--faint);
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .tab-group,
+      .segment {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--panel-soft);
+      }
+
+      .tab-group button,
+      .segment button {
+        min-height: 30px;
+        border: 0;
+        border-radius: 10px;
+        padding: 0 10px;
+        background: transparent;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 900;
+      }
+
+      .tab-group button[aria-selected="true"],
+      .segment button[aria-pressed="true"] {
+        background: var(--panel);
+        color: var(--ink);
+        box-shadow: 0 4px 12px rgba(19, 48, 35, 0.06);
+      }
+
+      .work-grid {
+        display: grid;
+        grid-template-columns: 410px minmax(0, 1fr);
+        gap: 18px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 900;
+      }
+
+      input,
+      select {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid var(--line-strong);
+        border-radius: 13px;
+        padding: 0 12px;
+        background: var(--panel);
+        color: var(--ink);
+        font-size: 0.86rem;
+      }
+
+      .helper {
+        display: block;
+        margin-top: 6px;
+        color: var(--faint);
+        font-size: 0.72rem;
+      }
+
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .calc-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+
+      .calc-actions span {
+        color: var(--muted);
+        font-size: 0.76rem;
+        line-height: 1.45;
+      }
+
+      .button.secondary {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--ink);
+      }
+
+      .button.secondary:hover {
+        background: var(--panel-soft);
+      }
+
+      .result {
+        padding: 14px;
+        border-radius: 14px;
+        background: var(--brand-soft);
+      }
+
+      .result.blue {
+        background: var(--blue-soft);
+      }
+
+      .result span {
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 800;
+      }
+
+      .result strong {
+        display: block;
+        margin-top: 8px;
+        font-family: var(--mono);
+        font-size: 1rem;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 38px;
+        border: 0;
+        border-radius: 13px;
+        padding: 0 13px;
+        background: var(--ink);
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 900;
+        transition:
+          transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+          background-color 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .button:hover {
+        background: var(--brand);
+        transform: translateY(-1px);
+      }
+
+      .button:active {
+        transform: scale(0.98);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+      }
+
+      table {
+        width: 100%;
+        min-width: 720px;
+        border-collapse: collapse;
+        background: var(--panel);
+        font-size: 0.8rem;
+      }
+
+      th,
+      td {
+        padding: 11px 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: right;
+      }
+
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+
+      th {
+        background: var(--panel-soft);
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-weight: 900;
+      }
+
+      td {
+        font-family: var(--mono);
+        font-variant-numeric: tabular-nums;
+      }
+
+      tbody tr:last-child th,
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .chart-card {
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--panel-soft);
+        overflow: hidden;
+      }
+
+      .chart-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 14px 0;
+      }
+
+      .chart-top strong {
+        font-size: 0.86rem;
+      }
+
+      .chart-top span {
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+
+      .chart-card svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .table-footnote {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 10px;
+        color: var(--faint);
+        font-size: 0.74rem;
+      }
+
+      .analytics {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1.1fr;
+        gap: 18px;
+      }
+
+      .analytics-card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--panel-soft);
+        overflow: hidden;
+      }
+
+      .analytics-card h3 {
+        margin: 0;
+        padding: 16px 16px 0;
+        font-size: 0.94rem;
+      }
+
+      .analytics-card p {
+        margin: 5px 0 0;
+        padding: 0 16px;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .donut-wrap {
+        display: grid;
+        grid-template-columns: 150px minmax(0, 1fr);
+        gap: 16px;
+        align-items: center;
+        padding: 18px 16px 16px;
+      }
+
+      .donut {
+        position: relative;
+        width: 150px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: conic-gradient(
+          var(--brand) 0 58%,
+          var(--blue) 58% 84%,
+          #303b35 84% 100%
+        );
+        box-shadow: inset 0 0 0 1px rgba(23, 35, 29, 0.08);
+      }
+
+      .donut::after {
+        content: "38.4k";
+        position: absolute;
+        inset: 34px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--panel);
+        font-family: var(--mono);
+        font-weight: 900;
+      }
+
+      .legend {
+        display: grid;
+        gap: 10px;
+      }
+
+      .legend-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+
+      .legend-row strong {
+        color: var(--ink);
+        font-family: var(--mono);
+      }
+
+      .legend-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .swatch {
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+        background: var(--brand);
+      }
+
+      .swatch.blue {
+        background: var(--blue);
+      }
+
+      .swatch.dark {
+        background: #303b35;
+      }
+
+      .bars {
+        display: grid;
+        gap: 12px;
+        padding: 20px 16px 16px;
+      }
+
+      .bar-row {
+        display: grid;
+        grid-template-columns: 74px minmax(0, 1fr) 56px;
+        gap: 10px;
+        align-items: center;
+        font-size: 0.78rem;
+      }
+
+      .bar-row span {
+        color: var(--muted);
+        font-weight: 900;
+      }
+
+      .bar-track {
+        height: 10px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #e7ede8;
+      }
+
+      .bar-fill {
+        height: 100%;
+        border-radius: inherit;
+        background: var(--brand);
+      }
+
+      .bar-fill.red {
+        background: var(--red);
+      }
+
+      .bar-fill.blue {
+        background: var(--blue);
+      }
+
+      .w-92 {
+        width: 92%;
+      }
+
+      .w-56 {
+        width: 56%;
+      }
+
+      .w-34 {
+        width: 34%;
+      }
+
+      .w-22 {
+        width: 22%;
+      }
+
+      .bar-row strong {
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        text-align: right;
+      }
+
+      .footer-states {
+        display: grid;
+        grid-template-columns: 360px minmax(0, 1fr);
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .operations-footer {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .ops-item {
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.62);
+      }
+
+      .ops-item span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-weight: 900;
+      }
+
+      .ops-item strong {
+        display: block;
+        margin-top: 7px;
+        font-family: var(--mono);
+        font-size: 0.95rem;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .site-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 4px 0;
+        color: var(--faint);
+        font-size: 0.78rem;
+        line-height: 1.5;
+      }
+
+      .site-footer address {
+        max-width: 68ch;
+        font-style: normal;
+      }
+
+      .site-footer small {
+        color: var(--muted);
+        font-size: 0.78rem;
+        white-space: nowrap;
+      }
+
+      .state-box {
+        padding: 16px;
+        border: 1px dashed var(--line-strong);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.58);
+      }
+
+      .state-box strong {
+        display: block;
+        font-size: 0.88rem;
+      }
+
+      .state-box span {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.78rem;
+        line-height: 1.5;
+      }
+
+      .skeleton {
+        display: grid;
+        gap: 9px;
+        margin-top: 12px;
+      }
+
+      .skeleton i {
+        display: block;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #e6ece7, #f8faf8, #e6ece7);
+        background-size: 200% 100%;
+        animation: shimmer 1200ms linear infinite;
+      }
+
+      .draw {
+        stroke-dasharray: 520;
+        stroke-dashoffset: 520;
+        animation: draw 1300ms cubic-bezier(0.16, 1, 0.3, 1) forwards 180ms;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(12px);
+        animation: reveal 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .delay-1 {
+        animation-delay: 90ms;
+      }
+
+      .delay-2 {
+        animation-delay: 160ms;
+      }
+
+      .delay-3 {
+        animation-delay: 230ms;
+      }
+
+      @keyframes reveal {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes draw {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+
+      @keyframes shimmer {
+        to {
+          background-position: -200% 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 1ms !important;
+          animation-iteration-count: 1 !important;
+          scroll-behavior: auto !important;
+          transition-duration: 1ms !important;
+        }
+      }
+
+      @media (max-width: 1260px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: static;
+          height: auto;
+        }
+
+        .nav {
+          display: flex;
+          overflow-x: auto;
+          padding-bottom: 4px;
+        }
+
+        .nav a {
+          flex: 0 0 auto;
+        }
+
+        .hero-strip,
+        .work-grid,
+        .analytics,
+        .footer-states,
+        .operations-footer {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .app {
+          width: min(100vw - 20px, 1480px);
+          margin-top: 10px;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .top-actions {
+          width: 100%;
+          flex-wrap: wrap;
+        }
+
+        .search {
+          width: 100%;
+        }
+
+        .form-grid,
+        .result-grid,
+        .donut-wrap {
+          grid-template-columns: 1fr;
+        }
+
+        .dcs-status-head {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .dcs-compact-row {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .dcs-compact-chips {
+          justify-content: flex-start;
+        }
+
+        .notice {
+          grid-template-columns: 1fr;
+        }
+
+        .bar-row {
+          grid-template-columns: 1fr;
+        }
+
+        .filterbar,
+        .calc-actions,
+        .table-footnote,
+        .site-footer {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .site-footer small {
+          white-space: normal;
+        }
+      }
+
+      .chart-tooltip {
+        position: fixed;
+        padding: 8px 13px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--shell);
+        box-shadow: var(--shadow-soft);
+        color: var(--ink);
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 900;
+        pointer-events: none;
+        opacity: 0;
+        transition:
+          opacity 120ms,
+          transform 120ms;
+        transform: translateY(4px);
+        white-space: nowrap;
+        z-index: 100;
+      }
+
+      .chart-tooltip.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      tbody tr:hover td,
+      tbody tr:hover th[scope="row"] {
+        background: var(--panel-soft);
+      }
+
+      tbody td,
+      tbody th[scope="row"] {
+        transition: background-color 120ms;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 18px;
+        border-radius: 14px;
+        background: var(--ink);
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 800;
+        box-shadow: var(--shadow);
+        translate: 0 80px;
+        opacity: 0;
+        transition:
+          translate 300ms cubic-bezier(0.16, 1, 0.3, 1),
+          opacity 300ms;
+        pointer-events: none;
+      }
+
+      .toast.show {
+        translate: 0 0;
+        opacity: 1;
+      }
+
+      .toast svg {
+        flex: 0 0 auto;
+        color: var(--brand-2);
+      }
+
+      .filterbar .filter-chip {
+        cursor: pointer;
+        user-select: none;
+        transition:
+          background-color 140ms,
+          border-color 140ms,
+          color 140ms;
+      }
+
+      .filterbar .filter-chip:hover {
+        border-color: var(--line-strong);
+        background: var(--panel);
+      }
+
+      .filter-chip.active {
+        border-color: var(--brand);
+        background: var(--brand-soft);
+        color: var(--brand);
+      }
+
+      .ops-item {
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.62);
+        transition: box-shadow 160ms;
+      }
+
+      .ops-item:hover {
+        box-shadow: 0 6px 18px rgba(19, 48, 35, 0.07);
+      }
+
+      .ops-item span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-weight: 900;
+      }
+
+      .ops-item strong {
+        display: block;
+        margin-top: 7px;
+        font-family: var(--mono);
+        font-size: 0.95rem;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .ops-item .ops-sub {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 5px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--muted);
+      }
+
+      .ops-item .ops-sub.up {
+        color: var(--brand);
+      }
+
+      .ops-item .ops-sub.down {
+        color: var(--red);
+      }
+
+      #faq-content .notice-list {
+        padding: 0;
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+      }
+
+      /* ── State box: left accent instead of dashed ── */
+      .state-box {
+        position: relative;
+        overflow: hidden;
+        padding: 16px 18px 16px 22px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.82);
+      }
+
+      .state-box::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        border-radius: 16px 0 0 16px;
+        background: var(--brand);
+      }
+
+      .state-box strong {
+        display: block;
+        font-size: 0.9rem;
+        letter-spacing: -0.01em;
+      }
+
+      .state-box span {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.55;
+      }
+
+      /* ── Ops icon ── */
+      .ops-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: var(--brand-soft);
+        color: var(--brand);
+        margin-bottom: 12px;
+      }
+
+      .ops-icon.blue {
+        background: var(--blue-soft);
+        color: var(--blue);
+      }
+
+      .ops-icon.yellow {
+        background: var(--yellow-soft);
+        color: var(--yellow);
+      }
+
+      .ops-icon.red {
+        background: var(--red-soft);
+        color: var(--red);
+      }
+
+      /* ── Enhanced result box ── */
+      .result strong {
+        font-size: 1.15rem;
+        letter-spacing: -0.02em;
+      }
+
+      /* ── Enhanced panel hierarchy ── */
+      .panel,
+      .dcs-status {
+        box-shadow:
+          0 1px 2px rgba(19, 48, 35, 0.04),
+          0 6px 20px rgba(19, 48, 35, 0.07);
+      }
+
+      /* ── DCS compliance score ── */
+      .dcs-score {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin-top: 6px;
+      }
+
+      .dcs-score strong {
+        font-family: var(--mono);
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        color: var(--brand);
+        line-height: 1;
+      }
+
+      .dcs-score span {
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+
+      /* ── Topbar h1 tighter ── */
+      .topbar h1 {
+        font-size: 1.3rem;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+      }
+
+      /* ── Smoother nav transition ── */
+      .nav a[aria-current="page"] {
+        background: rgba(31, 184, 131, 0.18);
+        box-shadow: inset 0 0 0 1px rgba(31, 184, 131, 0.22);
+      }
+
+      /* ── Analytics card inner padding ── */
+      .analytics-card h3 {
+        font-size: 0.88rem;
+        letter-spacing: -0.01em;
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to dashboard</a>
+
+    <div class="app">
+      <aside class="sidebar reveal" aria-label="GEARS navigation">
+        <a class="brand" href="#" aria-label="GEARS home">
+          <img class="brand-logo" src="assets/logo.png" alt="GEARS" />
+        </a>
+
+        <nav class="nav" aria-label="Primary">
+          <a href="#" aria-current="page">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 13h7V4H4v9Zm9 7h7V4h-7v16ZM4 20h7v-5H4v5Z"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Dashboard
+          </a>
+          <a href="#">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 17h16M6 17l2-8h8l2 8M9 9V5h6v4"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            My Vessels
+          </a>
+          <a href="#">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M7 4h7l3 3v13H7V4Z"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M14 4v4h4M9 13h6M9 16h4"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+            Application
+          </a>
+          <a href="#">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M5 19V5h14v14H5Z"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+              <path
+                d="M8 9h8M8 13h8M8 17h5"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+            Manage Plan
+          </a>
+          <a href="#">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M5 7c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3Zm0 0v10c0 1.7 3.1 3 7 3s7-1.3 7-3V7"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+            Manage Data
+          </a>
+          <a href="#">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 12h5l2-6 4 12 2-6h3"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Flexibility
+          </a>
+          <a href="#">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 18 9 9l4 5 3-7 4 11H4Z"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linejoin="round"
+              />
+            </svg>
+            GHG Insight
+          </a>
+          <a href="#">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M5 18h14M7 18V9m5 9V5m5 13v-6"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+            EEOI
+          </a>
+        </nav>
+
+        <div class="sidebar-card">
+          <div class="sidebar-actions" aria-label="Secondary navigation">
+            <a class="sidebar-action" href="#">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4 11.4 12 5l8 6.4V20H6v-6h12"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              KR Home
+            </a>
+            <a class="sidebar-action logout" href="#">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M14 7V5H5v14h9v-2M10 12h10m0 0-3-3m3 3-3 3"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              Logout
+            </a>
+          </div>
+          <div class="sidebar-user">
+            <span class="sidebar-user-avatar">PS</span>
+            <div>
+              <strong>POS SM</strong>
+              <span>test_poscm · Operator</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main" id="main">
+        <header class="topbar reveal delay-1">
+          <div>
+            <h1>Dashboard</h1>
+            <p>EU ETS, CII rating, allowance prices, and fleet consumption.</p>
+          </div>
+          <div class="top-actions">
+            <div class="account-chip" aria-label="Current account">
+              <span class="account-avatar">PS</span>
+              <span>
+                <strong>POS SM</strong>
+                <span>test_poscm - Fleet operator</span>
+              </span>
+            </div>
+          </div>
+        </header>
+
+        <section class="dashboard">
+          <div class="filterbar">
+            <div class="filter-left">
+              <span class="filter-chip"><strong>Year</strong>&nbsp;2025</span>
+              <span class="filter-chip"
+                ><strong>Vessels</strong>&nbsp;All fleet · 60</span
+              >
+              <span class="filter-chip"><strong>Type</strong>&nbsp;All</span>
+              <span class="filter-chip"><strong>Region</strong>&nbsp;All</span>
+            </div>
+            <div class="filter-right">
+              <button class="button secondary" type="button">Reset</button>
+            </div>
+          </div>
+          <section
+            class="hero-strip reveal delay-1"
+            aria-label="Dashboard summary"
+          >
+            <section class="dcs-status" aria-labelledby="dcs-status-title">
+              <div class="dcs-status-head">
+                <div>
+                  <div class="dcs-status-title" id="dcs-status-title">
+                    Status - IMO DCS
+                  </div>
+                  <div class="dcs-score">
+                    <strong>74.8%</strong>
+                    <span>overall fleet compliance</span>
+                  </div>
+                </div>
+                <div class="dcs-status-meta">
+                  <span class="filter-chip"
+                    ><strong>Fleet</strong> 60 vessels</span
+                  >
+                  <span class="filter-chip"
+                    ><strong>Updated</strong> 2026-05-26</span
+                  >
+                </div>
+              </div>
+
+              <div class="dcs-compact">
+                <div class="dcs-compact-row">
+                  <div class="dcs-compact-name">
+                    <strong>SEEMP Part II</strong>
+                    <span>47 / 60 approved</span>
+                  </div>
+                  <div class="dcs-compact-progress">
+                    <div class="dcs-compact-top">
+                      <span>78%</span><span>47/60</span>
+                    </div>
+                    <div class="dcs-compact-track" aria-hidden="true">
+                      <i class="w-78"></i>
+                    </div>
+                  </div>
+                  <div class="dcs-compact-chips">
+                    <span class="dcs-mini-chip">S 3</span>
+                    <span class="dcs-mini-chip revision">R 2</span>
+                    <span class="dcs-mini-chip approved">A 47</span>
+                  </div>
+                </div>
+
+                <div class="dcs-compact-row">
+                  <div class="dcs-compact-name">
+                    <strong>SEEMP Part III</strong>
+                    <span>42 / 60 approved</span>
+                  </div>
+                  <div class="dcs-compact-progress">
+                    <div class="dcs-compact-top">
+                      <span>70%</span><span>42/60</span>
+                    </div>
+                    <div class="dcs-compact-track" aria-hidden="true">
+                      <i class="w-70"></i>
+                    </div>
+                  </div>
+                  <div class="dcs-compact-chips">
+                    <span class="dcs-mini-chip">S 5</span>
+                    <span class="dcs-mini-chip revision">R 1</span>
+                    <span class="dcs-mini-chip approved">A 42</span>
+                  </div>
+                </div>
+
+                <div class="dcs-compact-row">
+                  <div class="dcs-compact-name">
+                    <strong>Data verification</strong>
+                    <span>44 / 60 approved</span>
+                  </div>
+                  <div class="dcs-compact-progress">
+                    <div class="dcs-compact-top">
+                      <span>73%</span><span>44/60</span>
+                    </div>
+                    <div class="dcs-compact-track" aria-hidden="true">
+                      <i class="w-73"></i>
+                    </div>
+                  </div>
+                  <div class="dcs-compact-chips">
+                    <span class="dcs-mini-chip">S 7</span>
+                    <span class="dcs-mini-chip revision">R 3</span>
+                    <span class="dcs-mini-chip approved">A 44</span>
+                  </div>
+                </div>
+
+                <div class="dcs-compact-row">
+                  <div class="dcs-compact-name">
+                    <strong>CII</strong>
+                    <span>47 / 60 approved</span>
+                  </div>
+                  <div class="dcs-compact-progress">
+                    <div class="dcs-compact-top">
+                      <span>78%</span><span>47/60</span>
+                    </div>
+                    <div class="dcs-compact-track" aria-hidden="true">
+                      <i class="w-78"></i>
+                    </div>
+                  </div>
+                  <div class="dcs-compact-chips">
+                    <span class="dcs-mini-chip">S 4</span>
+                    <span class="dcs-mini-chip revision">R 0</span>
+                    <span class="dcs-mini-chip approved">A 47</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>Board and FAQs</h2>
+                  <p>Latest compliance notices.</p>
+                </div>
+                <div class="tab-group" role="tablist" aria-label="Notice view">
+                  <button type="button" role="tab" aria-selected="true">
+                    Board
+                  </button>
+                  <button type="button" role="tab" aria-selected="false">
+                    FAQs
+                  </button>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div id="board-content">
+                  <div class="notice-list">
+                    <article class="notice">
+                      <div class="notice-line">
+                        <span class="notice-kicker">New</span>
+                        <strong>User guideline for Flexibility Pooling</strong>
+                      </div>
+                      <time datetime="2026-02-25">2026-02-25</time>
+                    </article>
+                    <article class="notice">
+                      <div class="notice-line">
+                        <span class="notice-kicker warn">Reg.</span>
+                        <strong
+                          >Port country code notice for French outermost
+                          regions</strong
+                        >
+                      </div>
+                      <time datetime="2026-01-28">2026-01-28</time>
+                    </article>
+                    <article class="notice">
+                      <div class="notice-line">
+                        <span class="notice-kicker info">Tool</span>
+                        <strong
+                          >KR CII Calculator update notice, version 2.0</strong
+                        >
+                      </div>
+                      <time datetime="2025-08-13">2025-08-13</time>
+                    </article>
+                    <article class="notice">
+                      <div class="notice-line">
+                        <span class="notice-kicker info">DCS</span>
+                        <strong
+                          >IMO DCS sample for SEEMP Part III amendment</strong
+                        >
+                      </div>
+                      <time datetime="2025-08-11">2025-08-11</time>
+                    </article>
+                  </div>
+                </div>
+                <div id="faq-content" hidden>
+                  <div class="notice-list">
+                    <article class="notice">
+                      <div class="notice-line">
+                        <span class="notice-kicker info">FAQ</span>
+                        <strong
+                          >How is EU ETS coverage calculated for
+                          vessels?</strong
+                        >
+                      </div>
+                      <time datetime="2023-01-01">Reg. 2023/957</time>
+                    </article>
+                    <article class="notice">
+                      <div class="notice-line">
+                        <span class="notice-kicker">DCS</span>
+                        <strong
+                          >What is the deadline for SEEMP Part III
+                          submission?</strong
+                        >
+                      </div>
+                      <time datetime="2026-12-31">Ongoing</time>
+                    </article>
+                    <article class="notice">
+                      <div class="notice-line">
+                        <span class="notice-kicker warn">CII</span>
+                        <strong
+                          >How is the CII rating corrected for voyage
+                          conditions?</strong
+                        >
+                      </div>
+                      <time datetime="2023-07-01">MEPC 80</time>
+                    </article>
+                    <article class="notice">
+                      <div class="notice-line">
+                        <span class="notice-kicker info">ETS</span>
+                        <strong
+                          >Which voyages are in scope for EU MRV and
+                          ETS?</strong
+                        >
+                      </div>
+                      <time datetime="2024-01-01">Updated 2024</time>
+                    </article>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </section>
+
+          <section class="work-grid reveal delay-2">
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>EU ETS simulation</h2>
+                  <p>Estimate cost from verification data.</p>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="form-grid">
+                  <div>
+                    <label for="verification-year">Verification year</label>
+                    <select id="verification-year">
+                      <option selected>2025</option>
+                      <option>2026</option>
+                      <option>2027</option>
+                    </select>
+                    <span class="helper">Source reporting cycle.</span>
+                  </div>
+                  <div>
+                    <label for="target-year">Target year</label>
+                    <select id="target-year">
+                      <option selected>All</option>
+                      <option>2025</option>
+                      <option>2026</option>
+                    </select>
+                    <span class="helper">Filter by year.</span>
+                  </div>
+                  <div>
+                    <label for="mrv-company">MRV company</label>
+                    <select id="mrv-company">
+                      <option selected>Select</option>
+                      <option>POS SM</option>
+                      <option>KR GEARS</option>
+                    </select>
+                    <span class="helper">Required for ship list.</span>
+                  </div>
+                  <div>
+                    <label for="ship">Ship</label>
+                    <select id="ship">
+                      <option selected>Select</option>
+                      <option>14 selected</option>
+                      <option>Entire fleet</option>
+                    </select>
+                    <span class="helper">Single or fleet selection.</span>
+                  </div>
+                  <div>
+                    <label for="date">Date</label>
+                    <input id="date" type="date" value="2026-05-25" />
+                    <span class="helper">Price reference date.</span>
+                  </div>
+                  <div>
+                    <label for="type">Type</label>
+                    <select id="type">
+                      <option selected>Spot</option>
+                      <option>Forward</option>
+                    </select>
+                    <span class="helper">Allowance price type.</span>
+                  </div>
+                  <div class="field full">
+                    <label for="price">Price</label>
+                    <input id="price" inputmode="decimal" value="75.59" />
+                    <span class="helper"
+                      >Recalculate after changing vessel scope.</span
+                    >
+                  </div>
+                </div>
+
+                <div class="result-grid" aria-label="EU ETS simulation results">
+                  <div class="result">
+                    <span>GHG emissions for EU ETS</span>
+                    <strong>0.00 tCO2eq</strong>
+                  </div>
+                  <div class="result blue">
+                    <span>Estimated cost</span>
+                    <strong>$0.00</strong>
+                  </div>
+                </div>
+                <div class="calc-actions">
+                  <span
+                    >Last calculation used 14 vessels, spot price 75.59, and DCS
+                    verification data.</span
+                  >
+                  <button class="button" type="button">Recalculate</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <div>
+                  <h2>EU allowances prices</h2>
+                  <p>Spot settlement and short-term movement.</p>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="toolbar">
+                  <div class="segment" aria-label="Price type">
+                    <button type="button" aria-pressed="true">Spot</button>
+                    <button type="button" aria-pressed="false">Forward</button>
+                  </div>
+                  <button class="button" type="button">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M12 4v10m0 0 4-4m-4 4-4-4M5 19h14"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    Export
+                  </button>
+                </div>
+
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col">Date</th>
+                        <th scope="col">2026-05-19</th>
+                        <th scope="col">2026-05-20</th>
+                        <th scope="col">2026-05-21</th>
+                        <th scope="col">2026-05-22</th>
+                        <th scope="col">2026-05-23</th>
+                        <th scope="col">2026-05-24</th>
+                        <th scope="col">2026-05-25</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">Settlement</th>
+                        <td>73.74</td>
+                        <td>74.18</td>
+                        <td>73.73</td>
+                        <td>75.72</td>
+                        <td>Holiday</td>
+                        <td>Holiday</td>
+                        <td>75.59</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="table-footnote">
+                  <span
+                    >Holiday cells are excluded from the spot trend
+                    calculation.</span
+                  >
+                  <span>Source: ICE EUA settlement feed</span>
+                </div>
+
+                <div class="chart-card">
+                  <div class="chart-top">
+                    <strong>Five-day spot trend</strong>
+                    <span>High 75.72</span>
+                  </div>
+                  <svg
+                    viewBox="0 0 720 270"
+                    role="img"
+                    aria-label="Line chart showing EUA prices from 2026-05-19 to 2026-05-25"
+                  >
+                    <defs>
+                      <linearGradient id="eua-fill" x1="0" y1="0" x2="0" y2="1">
+                        <stop
+                          offset="0%"
+                          stop-color="#356fd8"
+                          stop-opacity="0.18"
+                        />
+                        <stop
+                          offset="100%"
+                          stop-color="#356fd8"
+                          stop-opacity="0"
+                        />
+                      </linearGradient>
+                    </defs>
+                    <g stroke="#dde7df" stroke-width="1">
+                      <line x1="56" y1="42" x2="684" y2="42" />
+                      <line x1="56" y1="88" x2="684" y2="88" />
+                      <line x1="56" y1="134" x2="684" y2="134" />
+                      <line x1="56" y1="180" x2="684" y2="180" />
+                      <line x1="56" y1="226" x2="684" y2="226" />
+                    </g>
+                    <g fill="#8b9890" font-family="monospace" font-size="11">
+                      <text x="18" y="46">76.0</text>
+                      <text x="18" y="92">75.5</text>
+                      <text x="18" y="138">75.0</text>
+                      <text x="18" y="184">74.5</text>
+                      <text x="18" y="230">74.0</text>
+                      <text x="70" y="252">05-19</text>
+                      <text x="212" y="252">05-20</text>
+                      <text x="354" y="252">05-21</text>
+                      <text x="496" y="252">05-22</text>
+                      <text x="638" y="252">05-25</text>
+                    </g>
+                    <path
+                      d="M92 203 L234 161 L376 203 L518 58 L660 70 L660 228 L92 228 Z"
+                      fill="url(#eua-fill)"
+                      stroke="none"
+                    />
+                    <path
+                      d="M92 203 L234 161 L376 203 L518 58 L660 70"
+                      fill="none"
+                      stroke="#356fd8"
+                      stroke-width="4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="draw"
+                    />
+                    <g fill="#fff" stroke="#356fd8" stroke-width="3">
+                      <circle
+                        cx="92"
+                        cy="203"
+                        r="6"
+                        data-date="05-19"
+                        data-price="73.74"
+                      />
+                      <circle
+                        cx="234"
+                        cy="161"
+                        r="6"
+                        data-date="05-20"
+                        data-price="74.18"
+                      />
+                      <circle
+                        cx="376"
+                        cy="203"
+                        r="6"
+                        data-date="05-21"
+                        data-price="73.73"
+                      />
+                      <circle
+                        cx="518"
+                        cy="58"
+                        r="6"
+                        data-date="05-22"
+                        data-price="75.72"
+                      />
+                      <circle
+                        cx="660"
+                        cy="70"
+                        r="6"
+                        data-date="05-25"
+                        data-price="75.59"
+                      />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </section>
+          </section>
+
+          <section class="panel reveal delay-3">
+            <div class="panel-head">
+              <div>
+                <h2>Fleet consumption analytics</h2>
+                <p>
+                  Fuel mix, reduction rate, and three-year trend for selected
+                  ships.
+                </p>
+              </div>
+              <button class="button" type="button">Search</button>
+            </div>
+            <div class="panel-body">
+              <div class="analytics">
+                <article class="analytics-card">
+                  <h3>2025 total fuel consumption</h3>
+                  <p>Fuel mix ratio across selected vessels.</p>
+                  <div class="donut-wrap">
+                    <div class="donut" aria-hidden="true"></div>
+                    <div class="legend">
+                      <div class="legend-row">
+                        <span class="legend-label"
+                          ><span class="swatch"></span>HFO</span
+                        >
+                        <strong>58.2%</strong>
+                      </div>
+                      <div class="legend-row">
+                        <span class="legend-label"
+                          ><span class="swatch blue"></span>Diesel/Gas</span
+                        >
+                        <strong>25.6%</strong>
+                      </div>
+                      <div class="legend-row">
+                        <span class="legend-label"
+                          ><span class="swatch dark"></span>LFO</span
+                        >
+                        <strong>16.2%</strong>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="analytics-card">
+                  <h3>Growth and reduction rate</h3>
+                  <p>Current year movement by fuel group.</p>
+                  <div class="bars">
+                    <div class="bar-row">
+                      <span>HFO</span>
+                      <div class="bar-track">
+                        <div class="bar-fill red w-92"></div>
+                      </div>
+                      <strong>+18.4%</strong>
+                    </div>
+                    <div class="bar-row">
+                      <span>LFO</span>
+                      <div class="bar-track">
+                        <div class="bar-fill blue w-34"></div>
+                      </div>
+                      <strong>-4.1%</strong>
+                    </div>
+                    <div class="bar-row">
+                      <span>Diesel</span>
+                      <div class="bar-track">
+                        <div class="bar-fill w-56"></div>
+                      </div>
+                      <strong>+7.3%</strong>
+                    </div>
+                    <div class="bar-row">
+                      <span>LNG</span>
+                      <div class="bar-track">
+                        <div class="bar-fill blue w-22"></div>
+                      </div>
+                      <strong>-2.6%</strong>
+                    </div>
+                  </div>
+                </article>
+
+                <article class="analytics-card">
+                  <h3>Fuel trend for last three years</h3>
+                  <p>Annual total in metric tons.</p>
+                  <svg
+                    viewBox="0 0 420 230"
+                    role="img"
+                    aria-label="Fuel consumption trend from 2023 to 2025"
+                  >
+                    <g stroke="#dde7df" stroke-width="1">
+                      <line x1="42" y1="28" x2="388" y2="28" />
+                      <line x1="42" y1="75" x2="388" y2="75" />
+                      <line x1="42" y1="122" x2="388" y2="122" />
+                      <line x1="42" y1="169" x2="388" y2="169" />
+                    </g>
+                    <g fill="#8b9890" font-family="monospace" font-size="10">
+                      <text x="13" y="32">40k</text>
+                      <text x="13" y="79">30k</text>
+                      <text x="13" y="126">20k</text>
+                      <text x="13" y="173">10k</text>
+                      <text x="62" y="210">2023</text>
+                      <text x="190" y="210">2024</text>
+                      <text x="318" y="210">2025</text>
+                    </g>
+                    <path
+                      d="M80 112 L210 164 L340 64"
+                      fill="none"
+                      stroke="#e35f5a"
+                      stroke-width="4"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="draw"
+                    />
+                    <g fill="#fff" stroke="#e35f5a" stroke-width="3">
+                      <circle cx="80" cy="112" r="6" />
+                      <circle cx="210" cy="164" r="6" />
+                      <circle cx="340" cy="64" r="6" />
+                    </g>
+                  </svg>
+                </article>
+              </div>
+            </div>
+          </section>
+          <div class="footer-states">
+            <div class="state-box">
+              <strong>EU ETS · Data collection open</strong>
+              <span
+                >Verification submission window is open until 2026-12-31. All
+                vessels must upload fuel consumption logs before the
+                deadline.</span
+              >
+            </div>
+            <div class="state-box">
+              <strong>SEEMP Part III · 13 pending review</strong>
+              <span
+                >13 vessels are awaiting document review by KR. Expected
+                completion within 14 business days of submission.</span
+              >
+            </div>
+          </div>
+
+          <footer class="site-footer">
+            <address>
+              36, Myeongji ocean city 9-ro, Gangseo-gu, Busan, 46762 Republic of
+              Korea
+            </address>
+            <small>Copyright KR All rights reserved.</small>
+          </footer>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" aria-live="polite" role="status"></div>
+    <div class="chart-tooltip" id="chart-tooltip" aria-hidden="true"></div>
+
+    <script>
+      (() => {
+        // ── Toast ──────────────────────────────────────────
+        const toast = document.getElementById("toast");
+        let toastTimer;
+        function showToast(msg) {
+          toast.innerHTML =
+            '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+            msg;
+          toast.classList.add("show");
+          clearTimeout(toastTimer);
+          toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
+        }
+
+        // ── Tab switching (Board / FAQs) ───────────────────
+        document.querySelectorAll('[role="tablist"]').forEach((tablist) => {
+          tablist.addEventListener("click", (e) => {
+            const tab = e.target.closest('[role="tab"]');
+            if (!tab) return;
+            tablist
+              .querySelectorAll('[role="tab"]')
+              .forEach((t) => t.setAttribute("aria-selected", "false"));
+            tab.setAttribute("aria-selected", "true");
+            const isBoard = tab.textContent.trim() === "Board";
+            const boardEl = document.getElementById("board-content");
+            const faqEl = document.getElementById("faq-content");
+            if (boardEl) boardEl.hidden = !isBoard;
+            if (faqEl) faqEl.hidden = isBoard;
+          });
+        });
+
+        // ── Segment toggle (Spot / Forward) ───────────────
+        document.querySelectorAll(".segment").forEach((seg) => {
+          seg.addEventListener("click", (e) => {
+            const btn = e.target.closest("button");
+            if (!btn) return;
+            seg
+              .querySelectorAll("button")
+              .forEach((b) => b.setAttribute("aria-pressed", "false"));
+            btn.setAttribute("aria-pressed", "true");
+          });
+        });
+
+        // ── Recalculate ────────────────────────────────────
+        const recalcBtn = document.querySelector(".calc-actions .button");
+        const ghgEl = document.querySelector(
+          '[aria-label="EU ETS simulation results"] .result:first-child strong',
+        );
+        const costEl = document.querySelector(
+          '[aria-label="EU ETS simulation results"] .result.blue strong',
+        );
+        const priceInput = document.getElementById("price");
+
+        function recalculate() {
+          const price = parseFloat(priceInput.value) || 0;
+          const ghg = 12487.32;
+          const coverage = 0.5;
+          const cost = ghg * price * coverage;
+          recalcBtn.disabled = true;
+          recalcBtn.textContent = "Calculating…";
+          setTimeout(() => {
+            if (ghgEl)
+              ghgEl.textContent =
+                ghg.toLocaleString("en", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }) + " tCO₂eq";
+            if (costEl)
+              costEl.textContent = "€" + (cost / 1000).toFixed(1) + "K";
+            recalcBtn.disabled = false;
+            recalcBtn.textContent = "Recalculate";
+            showToast("Updated · 14 vessels · spot €" + price.toFixed(2));
+          }, 640);
+        }
+
+        if (recalcBtn) recalcBtn.addEventListener("click", recalculate);
+
+        // ── Chart tooltip ──────────────────────────────────
+        const tooltip = document.getElementById("chart-tooltip");
+        document.querySelectorAll("[data-price]").forEach((el) => {
+          el.style.cursor = "crosshair";
+          el.addEventListener("mouseenter", () => {
+            tooltip.textContent = el.dataset.date + "  ·  €" + el.dataset.price;
+            tooltip.classList.add("visible");
+          });
+          el.addEventListener("mousemove", (e) => {
+            tooltip.style.left = e.clientX - tooltip.offsetWidth / 2 + "px";
+            tooltip.style.top = e.clientY - 46 + "px";
+          });
+          el.addEventListener("mouseleave", () =>
+            tooltip.classList.remove("visible"),
+          );
+        });
+
+        // ── Filter chip toggle ─────────────────────────────
+        document.querySelectorAll(".filterbar .filter-chip").forEach((chip) => {
+          chip.setAttribute("role", "button");
+          chip.setAttribute("tabindex", "0");
+          chip.addEventListener("click", () => chip.classList.toggle("active"));
+          chip.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ")
+              chip.classList.toggle("active");
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

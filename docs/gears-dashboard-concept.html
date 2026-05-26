@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GEARS Dashboard — New Concept</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0f12;
+      --panel:    #141618;
+      --panel-2:  #1a1d21;
+      --border:   rgba(255,255,255,.07);
+      --border-2: rgba(255,255,255,.12);
+      --teal:     #3ecf8e;
+      --teal-dim: rgba(62,207,142,.1);
+      --teal-mid: rgba(62,207,142,.25);
+      --blue:     #5b8df5;
+      --blue-dim: rgba(91,141,245,.1);
+      --amber:    #f5a623;
+      --amber-dim:rgba(245,166,35,.1);
+      --red:      #f55b5b;
+      --red-dim:  rgba(245,91,91,.1);
+      --t1: #f0f2f4;
+      --t2: #8a9299;
+      --t3: #464c52;
+    }
+
+    body {
+      font-family: 'Geist', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--t1);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Top Nav ── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; height: 52px;
+      background: rgba(13,15,18,.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 20px;
+      gap: 14px; z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 8px; }
+    .nav-logo-mark {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: linear-gradient(135deg, #3ecf8e 0%, #2aa870 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; color: #fff; letter-spacing: -.5px;
+    }
+    .nav-logo-text { font-size: 15px; font-weight: 700; color: var(--t1); letter-spacing: -.3px; }
+    .nav-logo-sub { font-size: 10px; color: var(--t3); letter-spacing: .2px; }
+    .nav-divider { width: 1px; height: 20px; background: var(--border-2); }
+    .nav-period {
+      display: inline-flex; align-items: center; gap: 6px;
+      height: 28px; padding: 0 10px;
+      background: var(--panel-2); border: 1px solid var(--border-2);
+      border-radius: 6px; font-size: 12px; font-weight: 500; color: var(--t2); cursor: pointer;
+    }
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .nav-icon-btn {
+      width: 32px; height: 32px; border-radius: 7px;
+      background: var(--panel-2); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--t2); cursor: pointer; position: relative;
+    }
+    .nav-notif-dot {
+      position: absolute; top: 5px; right: 5px;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--red); border: 2px solid var(--bg);
+    }
+    .nav-user { display: flex; align-items: center; gap: 8px; }
+    .nav-avatar {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: var(--teal-dim); border: 1px solid var(--teal-mid);
+      color: var(--teal); font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-user-name { font-size: 12px; font-weight: 600; color: var(--t1); }
+    .nav-user-role { font-size: 10px; color: var(--t3); }
+
+    /* ── Layout ── */
+    .layout { display: flex; padding-top: 52px; min-height: 100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 200px; flex-shrink: 0;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 16px 10px; position: fixed;
+      top: 52px; bottom: 0; left: 0;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .sb-label { font-size: 9.5px; font-weight: 700; color: var(--t3); letter-spacing: .8px; text-transform: uppercase; padding: 10px 8px 4px; }
+    .sb-item {
+      display: flex; align-items: center; gap: 8px; padding: 7px 10px;
+      border-radius: 7px; font-size: 12.5px; font-weight: 500; color: var(--t2);
+      cursor: pointer; white-space: nowrap;
+    }
+    .sb-item:hover { background: rgba(255,255,255,.05); color: var(--t1); }
+    .sb-item.active { background: var(--teal-dim); color: var(--teal); }
+    .sb-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .sb-badge {
+      margin-left: auto; font-size: 9px; font-weight: 700;
+      background: var(--red-dim); color: var(--red); padding: 1px 5px; border-radius: 4px;
+    }
+    .sb-footer { margin-top: auto; border-top: 1px solid var(--border); padding-top: 10px; }
+
+    /* ── Main ── */
+    .main { margin-left: 200px; flex: 1; padding: 24px 28px 60px; min-width: 0; }
+
+    /* ── Page header ── */
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+    .page-title { font-size: 20px; font-weight: 700; color: var(--t1); letter-spacing: -.4px; }
+    .page-sub { font-size: 12px; color: var(--t3); margin-top: 3px; }
+    .period-tabs { display: flex; gap: 4px; }
+    .period-tab {
+      padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
+      color: var(--t3); cursor: pointer; border: 1px solid transparent;
+    }
+    .period-tab.active { background: var(--panel-2); color: var(--t1); border-color: var(--border-2); }
+
+    /* ── KPI Strip ── */
+    .kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+    .kpi {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 8px;
+      position: relative; overflow: hidden;
+    }
+    .kpi::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--accent, var(--teal));
+    }
+    .kpi__label { font-size: 10.5px; font-weight: 600; color: var(--t3); letter-spacing: .3px; text-transform: uppercase; }
+    .kpi__num { font-size: 28px; font-weight: 700; color: var(--t1); letter-spacing: -1px; line-height: 1; }
+    .kpi__num span { font-size: 13px; font-weight: 400; color: var(--t3); margin-left: 4px; }
+    .kpi__foot { display: flex; align-items: center; justify-content: space-between; }
+    .kpi__sub { font-size: 11px; color: var(--t3); }
+    .kpi__delta {
+      font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px;
+      display: inline-flex; align-items: center; gap: 3px;
+    }
+    .kpi__delta--up { background: var(--teal-dim); color: var(--teal); }
+    .kpi__delta--down { background: var(--red-dim); color: var(--red); }
+    .kpi__delta--warn { background: var(--amber-dim); color: var(--amber); }
+    .kpi-bar { height: 3px; background: rgba(255,255,255,.07); border-radius: 2px; }
+    .kpi-bar__fill { height: 100%; border-radius: 2px; background: var(--accent, var(--teal)); }
+
+    /* ── Bento Grid ── */
+    .bento {
+      display: grid;
+      grid-template-columns: 1fr 1fr 300px;
+      grid-template-rows: 280px 240px;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .card--span2 { grid-column: span 2; }
+    .card--rowspan2 { grid-row: span 2; }
+
+    .card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px 0; flex-shrink: 0;
+    }
+    .card-title { font-size: 12px; font-weight: 600; color: var(--t2); letter-spacing: .2px; }
+    .card-actions { display: flex; gap: 6px; }
+    .card-action-btn {
+      width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--border);
+      background: transparent; color: var(--t3); display: flex; align-items: center;
+      justify-content: center; cursor: pointer; font-size: 10px;
+    }
+    .card-body { flex: 1; padding: 12px 16px 16px; min-height: 0; }
+
+    /* ── Map Card ── */
+    .map-card { position: relative; }
+    .map-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 50%, rgba(62,207,142,.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 30%, rgba(91,141,245,.05) 0%, transparent 50%),
+        linear-gradient(180deg, #141618 0%, #0f1216 100%);
+    }
+    .map-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 30px 30px;
+    }
+    .map-content { position: relative; z-index: 1; height: 100%; display: flex; align-items: center; justify-content: center; }
+
+    /* World map SVG paths */
+    .map-svg { width: 100%; height: 100%; }
+
+    /* Vessel dots */
+    .vessel-dot {
+      position: absolute; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--teal); border: 2px solid rgba(62,207,142,.4);
+      box-shadow: 0 0 0 4px rgba(62,207,142,.12), 0 0 12px rgba(62,207,142,.4);
+      cursor: pointer;
+    }
+    .vessel-dot--warn { background: var(--amber); border-color: rgba(245,166,35,.4); box-shadow: 0 0 0 4px rgba(245,166,35,.12), 0 0 12px rgba(245,166,35,.4); }
+    .vessel-dot--alert { background: var(--red); border-color: rgba(245,91,91,.4); box-shadow: 0 0 0 4px rgba(245,91,91,.12), 0 0 12px rgba(245,91,91,.4); }
+    .map-legend {
+      position: absolute; bottom: 14px; left: 16px;
+      display: flex; gap: 12px;
+    }
+    .map-legend-item { display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--t3); }
+    .map-legend-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .map-count { position: absolute; top: 14px; right: 16px; font-size: 11px; color: var(--t3); }
+    .map-count strong { color: var(--t1); font-size: 13px; }
+
+    /* ── Compliance Status Card ── */
+    .compliance-list { display: flex; flex-direction: column; gap: 8px; }
+    .comp-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 8px;
+      background: var(--panel-2); border: 1px solid var(--border);
+    }
+    .comp-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .comp-icon--green { background: var(--teal-dim); color: var(--teal); }
+    .comp-icon--blue  { background: var(--blue-dim); color: var(--blue); }
+    .comp-icon--amber { background: var(--amber-dim); color: var(--amber); }
+    .comp-icon--red   { background: var(--red-dim); color: var(--red); }
+    .comp-name { font-size: 12px; font-weight: 500; color: var(--t2); flex: 1; }
+    .comp-fraction { font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--t1); font-weight: 600; margin-right: 6px; }
+    .comp-pct { font-size: 10.5px; color: var(--t3); }
+    .comp-bar-wrap { flex: 1; height: 3px; background: rgba(255,255,255,.06); border-radius: 2px; }
+    .comp-bar { height: 100%; border-radius: 2px; }
+
+    /* ── Bottom Grid ── */
+    .bottom-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+    /* ── Fuel Donut ── */
+    .donut-wrap { display: flex; align-items: center; gap: 20px; }
+    .donut-svg { flex-shrink: 0; }
+    .donut-legend { display: flex; flex-direction: column; gap: 8px; }
+    .donut-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .donut-item__color { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+    .donut-item__label { color: var(--t2); flex: 1; }
+    .donut-item__pct { font-family: 'Geist Mono', monospace; font-size: 11.5px; color: var(--t1); font-weight: 500; }
+
+    /* ── Sparkline Chart ── */
+    .spark-row { display: flex; flex-direction: column; gap: 10px; }
+    .spark-item { display: flex; align-items: center; gap: 12px; }
+    .spark-label { font-size: 11.5px; color: var(--t2); width: 80px; flex-shrink: 0; }
+    .spark-bar-wrap { flex: 1; height: 6px; background: rgba(255,255,255,.06); border-radius: 3px; }
+    .spark-bar { height: 100%; border-radius: 3px; }
+    .spark-delta { font-size: 11px; font-weight: 600; width: 38px; text-align: right; flex-shrink: 0; }
+    .spark-delta--up { color: var(--teal); }
+    .spark-delta--dn { color: var(--red); }
+
+    /* ── EU ETS Card ── */
+    .ets-price { display: flex; align-items: baseline; gap: 6px; margin-bottom: 12px; }
+    .ets-price__num { font-size: 32px; font-weight: 700; color: var(--t1); letter-spacing: -1.5px; font-family: 'Geist Mono', monospace; }
+    .ets-price__unit { font-size: 13px; color: var(--t3); font-weight: 400; }
+    .ets-price__delta { font-size: 12px; font-weight: 600; color: var(--red); background: var(--red-dim); padding: 2px 6px; border-radius: 4px; }
+    .ets-mini-chart { position: relative; }
+
+    /* SVG Sparkline */
+    .ets-prices { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+    .ets-price-row { display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; padding: 4px 0; border-bottom: 1px solid var(--border); }
+    .ets-price-row:last-child { border-bottom: none; }
+    .ets-price-row__date { color: var(--t3); font-family: 'Geist Mono', monospace; font-size: 10.5px; }
+    .ets-price-row__val { color: var(--t1); font-family: 'Geist Mono', monospace; font-weight: 500; }
+
+    /* ── Notices Card ── */
+    .notice-list { display: flex; flex-direction: column; }
+    .notice-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .notice-item:last-child { border-bottom: none; }
+    .notice-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); margin-top: 5px; flex-shrink: 0; }
+    .notice-dot--new { background: var(--blue); box-shadow: 0 0 6px var(--blue); }
+    .notice-title { font-size: 12px; font-weight: 500; color: var(--t1); line-height: 1.45; margin-bottom: 2px; }
+    .notice-meta { font-size: 10.5px; color: var(--t3); }
+    .notice-chip {
+      font-size: 9.5px; font-weight: 600; padding: 1px 6px; border-radius: 3px;
+      background: var(--teal-dim); color: var(--teal);
+      display: inline-block; margin-bottom: 3px;
+    }
+    .notice-chip--new { background: var(--blue-dim); color: var(--blue); }
+
+    /* ── Tag ── */
+    .tag {
+      display: inline-flex; align-items: center; height: 20px;
+      padding: 0 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
+    }
+    .tag--teal { background: var(--teal-dim); color: var(--teal); }
+    .tag--blue { background: var(--blue-dim); color: var(--blue); }
+    .tag--amber { background: var(--amber-dim); color: var(--amber); }
+    .tag--red { background: var(--red-dim); color: var(--red); }
+  </style>
+</head>
+<body>
+
+<!-- ── Top Nav ── -->
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-mark">G</div>
+    <div>
+      <div class="nav-logo-text">GEARS</div>
+      <div class="nav-logo-sub">GHG Reporting System</div>
+    </div>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-period">
+    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M2 6h12M6 2v4M10 2v4"/></svg>
+    2025 Compliance Year
+    <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+  </div>
+  <div class="nav-right">
+    <div class="nav-icon-btn">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1a5 5 0 0 1 5 5v2.5l1 2H2l1-2V6a5 5 0 0 1 5-5z"/><path d="M6.5 13a1.5 1.5 0 0 0 3 0"/></svg>
+      <span class="nav-notif-dot"></span>
+    </div>
+    <div class="nav-icon-btn">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15"/></svg>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-user">
+      <div class="nav-avatar">PS</div>
+      <div>
+        <div class="nav-user-name">POS SM test</div>
+        <div class="nav-user-role">기부사 · POS SM(GEARS)</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sb-label">Overview</div>
+    <div class="sb-item active">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="sb-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 11l2-6h10l2 6H1z"/><path d="M4 11v3M12 11v3M1 11h14"/></svg>
+      Fleet
+    </div>
+    <div class="sb-label">Verification</div>
+    <div class="sb-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1h6l4 4v10H4V1z"/><path d="M10 1v4h4"/><path d="M6 8h4M6 11h3"/></svg>
+      MRV / FuelEU
+    </div>
+    <div class="sb-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg>
+      EU ETS
+      <span class="sb-badge">!</span>
+    </div>
+    <div class="sb-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="8" cy="5" r="3"/></svg>
+      CII Tracking
+    </div>
+    <div class="sb-label">Community</div>
+    <div class="sb-item">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2" width="14" height="12" rx="1.5"/><path d="M4 6h8M4 9h5"/></svg>
+      Notice
+    </div>
+    <div class="sb-footer">
+      <div class="sb-item">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11v.5"/></svg>
+        Settings
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main">
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">Fleet Overview</div>
+        <div class="page-sub">60 vessels · IMO DCS / MRV 2025 compliance</div>
+      </div>
+      <div class="period-tabs">
+        <div class="period-tab">Q1</div>
+        <div class="period-tab">Q2</div>
+        <div class="period-tab active">YTD</div>
+        <div class="period-tab">Full Year</div>
+      </div>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="kpi-strip">
+
+      <!-- Total Fleet -->
+      <div class="kpi" style="--accent: var(--teal);">
+        <div class="kpi__label">Total Vessels</div>
+        <div class="kpi__num">60 <span>vessels</span></div>
+        <div class="kpi-bar"><div class="kpi-bar__fill" style="width:100%;"></div></div>
+        <div class="kpi__foot">
+          <span class="kpi__sub">5 pending registration</span>
+          <span class="kpi__delta kpi__delta--up">
+            <svg width="8" height="8" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M4 7l4-4 4 4"/></svg>
+            +3 YoY
+          </span>
+        </div>
+      </div>
+
+      <!-- SEEMP Compliance -->
+      <div class="kpi" style="--accent: var(--blue);">
+        <div class="kpi__label">SEEMP Compliance</div>
+        <div class="kpi__num">78<span>%</span></div>
+        <div class="kpi-bar"><div class="kpi-bar__fill" style="width:78%;background:var(--blue);"></div></div>
+        <div class="kpi__foot">
+          <span class="kpi__sub">47 / 60 approved</span>
+          <span class="kpi__delta kpi__delta--up">
+            <svg width="8" height="8" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M4 7l4-4 4 4"/></svg>
+            +6%
+          </span>
+        </div>
+      </div>
+
+      <!-- EU ETS Price -->
+      <div class="kpi" style="--accent: var(--amber);">
+        <div class="kpi__label">EU ETS Price</div>
+        <div class="kpi__num">73.8 <span>EUR/t</span></div>
+        <div class="kpi-bar" style="height:3px;background:rgba(255,255,255,.06);">
+          <div class="kpi-bar__fill" style="width:62%;background:var(--amber);"></div>
+        </div>
+        <div class="kpi__foot">
+          <span class="kpi__sub">7-day avg 74.2</span>
+          <span class="kpi__delta kpi__delta--down">
+            <svg width="8" height="8" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3v10M4 9l4 4 4-4"/></svg>
+            −1.2%
+          </span>
+        </div>
+      </div>
+
+      <!-- CII Summary -->
+      <div class="kpi" style="--accent: #8b5cf6;">
+        <div class="kpi__label">CII Distribution</div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+          <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(62,207,142,.15);color:#3ecf8e;">A 12</span>
+          <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(86,160,100,.12);color:#5fa060;">B 23</span>
+          <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(245,166,35,.12);color:#f5a623;">C 18</span>
+          <span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(245,91,91,.12);color:#f55b5b;">D·E 7</span>
+        </div>
+        <div class="kpi-bar" style="margin-top:4px;">
+          <div style="height:3px;border-radius:2px;display:flex;overflow:hidden;">
+            <div style="width:20%;background:#3ecf8e;"></div>
+            <div style="width:38%;background:#5fa060;"></div>
+            <div style="width:30%;background:#f5a623;"></div>
+            <div style="width:12%;background:#f55b5b;"></div>
+          </div>
+        </div>
+        <div class="kpi__foot">
+          <span class="kpi__sub">2025 reporting year</span>
+          <span class="kpi__delta kpi__delta--warn">
+            7 need action
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bento Grid -->
+    <div class="bento">
+
+      <!-- Map Card (2×2) -->
+      <div class="card card--span2 card--rowspan2 map-card">
+        <div class="map-bg"></div>
+        <div class="map-grid"></div>
+        <div class="card-head" style="position:relative;z-index:1;">
+          <span class="card-title">Fleet Position Map</span>
+          <div class="card-actions">
+            <span class="tag tag--teal">Live</span>
+            <div class="card-action-btn">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l10 10M13 3L3 13"/></svg>
+            </div>
+          </div>
+        </div>
+        <!-- Map body with SVG world map outline -->
+        <div style="position:relative;flex:1;overflow:hidden;">
+          <!-- Simplified world map SVG -->
+          <svg viewBox="0 0 800 400" style="width:100%;height:100%;opacity:.18;display:block;" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Continents rough outlines -->
+            <!-- North America -->
+            <path d="M95 80 L130 70 L160 75 L175 90 L180 110 L170 130 L155 150 L145 180 L135 200 L120 215 L100 220 L90 210 L80 190 L70 160 L65 130 L70 100 Z" fill="#3ecf8e" stroke="none"/>
+            <!-- South America -->
+            <path d="M145 220 L165 215 L178 230 L182 255 L180 285 L172 310 L160 330 L148 340 L135 335 L125 315 L120 290 L122 265 L130 240 Z" fill="#3ecf8e" stroke="none"/>
+            <!-- Europe -->
+            <path d="M310 65 L340 60 L365 68 L375 80 L370 95 L355 100 L340 105 L325 100 L312 90 L308 78 Z" fill="#3ecf8e" stroke="none"/>
+            <!-- Africa -->
+            <path d="M320 110 L355 108 L375 115 L385 135 L387 165 L382 195 L370 220 L355 240 L340 248 L322 245 L308 230 L300 205 L298 175 L303 145 L310 120 Z" fill="#3ecf8e" stroke="none"/>
+            <!-- Asia -->
+            <path d="M380 60 L440 55 L500 58 L540 65 L565 75 L572 90 L560 105 L540 115 L510 120 L480 118 L455 110 L435 100 L415 90 L395 85 L382 75 Z" fill="#3ecf8e" stroke="none"/>
+            <!-- India -->
+            <path d="M455 118 L475 115 L490 125 L495 145 L488 165 L475 178 L462 172 L452 155 L450 135 Z" fill="#3ecf8e" stroke="none"/>
+            <!-- Southeast Asia -->
+            <path d="M520 115 L545 110 L560 120 L565 135 L555 148 L540 150 L525 142 L518 128 Z" fill="#3ecf8e" stroke="none"/>
+            <!-- Australia -->
+            <path d="M570 210 L615 205 L645 215 L655 235 L648 258 L628 270 L600 268 L578 255 L568 235 L565 218 Z" fill="#3ecf8e" stroke="none"/>
+            <!-- Grid lines (latitude/longitude) -->
+            <line x1="0" y1="200" x2="800" y2="200" stroke="#3ecf8e" stroke-width=".5" stroke-dasharray="4 6"/>
+            <line x1="400" y1="0" x2="400" y2="400" stroke="#3ecf8e" stroke-width=".5" stroke-dasharray="4 6"/>
+            <line x1="0" y1="100" x2="800" y2="100" stroke="#3ecf8e" stroke-width=".3" stroke-dasharray="2 8"/>
+            <line x1="0" y1="300" x2="800" y2="300" stroke="#3ecf8e" stroke-width=".3" stroke-dasharray="2 8"/>
+            <line x1="200" y1="0" x2="200" y2="400" stroke="#3ecf8e" stroke-width=".3" stroke-dasharray="2 8"/>
+            <line x1="600" y1="0" x2="600" y2="400" stroke="#3ecf8e" stroke-width=".3" stroke-dasharray="2 8"/>
+          </svg>
+
+          <!-- Vessel dots -->
+          <div style="position:absolute;inset:0;">
+            <!-- Atlantic routes -->
+            <div class="vessel-dot" style="left:22%;top:45%;"></div>
+            <div class="vessel-dot" style="left:28%;top:52%;"></div>
+            <!-- North Sea / Europe -->
+            <div class="vessel-dot" style="left:44%;top:28%;"></div>
+            <div class="vessel-dot" style="left:47%;top:32%;"></div>
+            <!-- Med -->
+            <div class="vessel-dot" style="left:46%;top:38%;"></div>
+            <div class="vessel-dot--warn" style="left:52%;top:40%;"></div>
+            <!-- Indian Ocean -->
+            <div class="vessel-dot" style="left:60%;top:48%;"></div>
+            <div class="vessel-dot" style="left:63%;top:44%;"></div>
+            <div class="vessel-dot--alert" style="left:58%;top:52%;"></div>
+            <!-- Asia Pacific -->
+            <div class="vessel-dot" style="left:72%;top:35%;"></div>
+            <div class="vessel-dot" style="left:76%;top:40%;"></div>
+            <div class="vessel-dot" style="left:74%;top:48%;"></div>
+            <div class="vessel-dot" style="left:68%;top:43%;"></div>
+            <!-- Pacific -->
+            <div class="vessel-dot" style="left:84%;top:42%;"></div>
+          </div>
+
+          <!-- Route lines (SVG) -->
+          <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M22 45 Q35 40 44 28" stroke="rgba(62,207,142,.2)" stroke-width=".4" fill="none" stroke-dasharray="1 1.5"/>
+            <path d="M44 28 Q50 35 60 48" stroke="rgba(62,207,142,.2)" stroke-width=".4" fill="none" stroke-dasharray="1 1.5"/>
+            <path d="M60 48 Q65 43 72 35" stroke="rgba(62,207,142,.2)" stroke-width=".4" fill="none" stroke-dasharray="1 1.5"/>
+            <path d="M72 35 Q78 38 84 42" stroke="rgba(62,207,142,.2)" stroke-width=".4" fill="none" stroke-dasharray="1 1.5"/>
+          </svg>
+
+          <div class="map-legend">
+            <div class="map-legend-item"><div class="map-legend-dot" style="background:var(--teal);"></div>On Route</div>
+            <div class="map-legend-item"><div class="map-legend-dot" style="background:var(--amber);"></div>CII Warning</div>
+            <div class="map-legend-item"><div class="map-legend-dot" style="background:var(--red);"></div>Non-Compliant</div>
+          </div>
+          <div class="map-count"><strong>60</strong> vessels tracked</div>
+        </div>
+      </div>
+
+      <!-- Compliance Status Card -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">IMO DCS Compliance</span>
+          <span class="tag tag--teal">2025</span>
+        </div>
+        <div class="card-body" style="padding-top:10px;">
+          <div class="compliance-list">
+            <div class="comp-row">
+              <div class="comp-icon comp-icon--green">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg>
+              </div>
+              <span class="comp-name">SEEMP Part II</span>
+              <span class="comp-fraction">47<span style="color:var(--t3);font-weight:400;">/60</span></span>
+              <div class="comp-bar-wrap"><div class="comp-bar" style="width:78%;background:var(--teal);"></div></div>
+              <span class="comp-pct">78%</span>
+            </div>
+            <div class="comp-row">
+              <div class="comp-icon comp-icon--blue">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg>
+              </div>
+              <span class="comp-name">SEEMP Part III</span>
+              <span class="comp-fraction">42<span style="color:var(--t3);font-weight:400;">/60</span></span>
+              <div class="comp-bar-wrap"><div class="comp-bar" style="width:70%;background:var(--blue);"></div></div>
+              <span class="comp-pct">70%</span>
+            </div>
+            <div class="comp-row">
+              <div class="comp-icon comp-icon--amber">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4v4M8 10v.5"/></svg>
+              </div>
+              <span class="comp-name">Data Verification</span>
+              <span class="comp-fraction">38<span style="color:var(--t3);font-weight:400;">/60</span></span>
+              <div class="comp-bar-wrap"><div class="comp-bar" style="width:63%;background:var(--amber);"></div></div>
+              <span class="comp-pct">63%</span>
+            </div>
+            <div class="comp-row">
+              <div class="comp-icon comp-icon--red">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l10 10M13 3L3 13"/></svg>
+              </div>
+              <span class="comp-name">CII Report</span>
+              <span class="comp-fraction">31<span style="color:var(--t3);font-weight:400;">/60</span></span>
+              <div class="comp-bar-wrap"><div class="comp-bar" style="width:52%;background:var(--red);"></div></div>
+              <span class="comp-pct">52%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EU ETS Card -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">EU ETS Allowance</span>
+          <span class="tag tag--amber">Spot</span>
+        </div>
+        <div class="card-body">
+          <div class="ets-price">
+            <span class="ets-price__num">73.8</span>
+            <span class="ets-price__unit">EUR/t</span>
+            <span class="ets-price__delta">▼ 1.2%</span>
+          </div>
+          <!-- mini sparkline SVG -->
+          <svg viewBox="0 0 200 50" style="width:100%;height:44px;overflow:visible;" fill="none">
+            <defs>
+              <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#f5a623" stop-opacity=".25"/>
+                <stop offset="100%" stop-color="#f5a623" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 30 L28 25 L55 28 L82 15 L110 20 L138 10 L165 18 L200 22" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0 30 L28 25 L55 28 L82 15 L110 20 L138 10 L165 18 L200 22 L200 50 L0 50Z" fill="url(#sg)"/>
+            <circle cx="200" cy="22" r="3" fill="var(--amber)"/>
+          </svg>
+          <div class="ets-prices">
+            <div class="ets-price-row"><span class="ets-price-row__date">2026-05-13</span><span class="ets-price-row__val">73.80</span></div>
+            <div class="ets-price-row"><span class="ets-price-row__date">2026-05-12</span><span class="ets-price-row__val">74.52</span></div>
+            <div class="ets-price-row"><span class="ets-price-row__date">2026-05-09</span><span class="ets-price-row__val">75.90</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Grid -->
+    <div class="bottom-grid">
+
+      <!-- Fuel Composition -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Fuel Composition 2025</span>
+          <span class="tag tag--blue">Total</span>
+        </div>
+        <div class="card-body">
+          <div class="donut-wrap">
+            <!-- Donut SVG -->
+            <svg class="donut-svg" width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="36" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="14"/>
+              <!-- HFO 40% -->
+              <circle cx="50" cy="50" r="36" fill="none" stroke="#3ecf8e" stroke-width="14"
+                stroke-dasharray="90.5 225.9" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
+              <!-- LFO 25% -->
+              <circle cx="50" cy="50" r="36" fill="none" stroke="#5b8df5" stroke-width="14"
+                stroke-dasharray="56.5 225.9" stroke-dashoffset="-90.5" transform="rotate(-90 50 50)"/>
+              <!-- DIESEL 22% -->
+              <circle cx="50" cy="50" r="36" fill="none" stroke="#f5a623" stroke-width="14"
+                stroke-dasharray="49.7 225.9" stroke-dashoffset="-147" transform="rotate(-90 50 50)"/>
+              <!-- LNG 13% -->
+              <circle cx="50" cy="50" r="36" fill="none" stroke="#8b5cf6" stroke-width="14"
+                stroke-dasharray="29.4 225.9" stroke-dashoffset="-196.7" transform="rotate(-90 50 50)"/>
+              <text x="50" y="47" text-anchor="middle" fill="var(--t1)" font-size="13" font-weight="700" font-family="Geist,sans-serif">2025</text>
+              <text x="50" y="59" text-anchor="middle" fill="var(--t3)" font-size="8" font-family="Geist,sans-serif">Fuel mix</text>
+            </svg>
+            <div class="donut-legend">
+              <div class="donut-item"><div class="donut-item__color" style="background:#3ecf8e;"></div><span class="donut-item__label">HFO</span><span class="donut-item__pct">40%</span></div>
+              <div class="donut-item"><div class="donut-item__color" style="background:#5b8df5;"></div><span class="donut-item__label">LFO</span><span class="donut-item__pct">25%</span></div>
+              <div class="donut-item"><div class="donut-item__color" style="background:#f5a623;"></div><span class="donut-item__label">DIESEL</span><span class="donut-item__pct">22%</span></div>
+              <div class="donut-item"><div class="donut-item__color" style="background:#8b5cf6;"></div><span class="donut-item__label">LNG</span><span class="donut-item__pct">13%</span></div>
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <div style="font-size:10.5px;color:var(--t3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px;font-weight:600;">YoY Change</div>
+            <div class="spark-row">
+              <div class="spark-item">
+                <span class="spark-label">HFO</span>
+                <div class="spark-bar-wrap"><div class="spark-bar" style="width:78%;background:#3ecf8e;"></div></div>
+                <span class="spark-delta spark-delta--up">+12%</span>
+              </div>
+              <div class="spark-item">
+                <span class="spark-label">LFO</span>
+                <div class="spark-bar-wrap"><div class="spark-bar" style="width:42%;background:#5b8df5;"></div></div>
+                <span class="spark-delta spark-delta--dn">−3%</span>
+              </div>
+              <div class="spark-item">
+                <span class="spark-label">DIESEL</span>
+                <div class="spark-bar-wrap"><div class="spark-bar" style="width:55%;background:#f5a623;"></div></div>
+                <span class="spark-delta spark-delta--up">+8%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CII Trend Chart -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Fleet CII Trend</span>
+          <div class="card-actions">
+            <span class="tag tag--blue">3-Year</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Area chart SVG -->
+          <svg viewBox="0 0 260 120" style="width:100%;height:120px;overflow:visible;" fill="none">
+            <defs>
+              <linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3ecf8e" stop-opacity=".3"/>
+                <stop offset="100%" stop-color="#3ecf8e" stop-opacity=".02"/>
+              </linearGradient>
+              <linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#5b8df5" stop-opacity=".2"/>
+                <stop offset="100%" stop-color="#5b8df5" stop-opacity=".02"/>
+              </linearGradient>
+            </defs>
+            <!-- Grid -->
+            <line x1="0" y1="30" x2="260" y2="30" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+            <line x1="0" y1="60" x2="260" y2="60" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+            <line x1="0" y1="90" x2="260" y2="90" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+            <!-- 2023 line -->
+            <path d="M0 80 L43 75 L86 70 L130 65 L173 60 L216 55 L260 50" stroke="#5b8df5" stroke-width="1.5" stroke-dasharray="4 3"/>
+            <!-- 2025 line (bold) -->
+            <path d="M0 90 L43 78 L86 65 L130 55 L173 48 L216 42 L260 38" stroke="#3ecf8e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M0 90 L43 78 L86 65 L130 55 L173 48 L216 42 L260 38 L260 120 L0 120Z" fill="url(#cg1)"/>
+            <!-- Labels -->
+            <text x="0" y="118" fill="var(--t3)" font-size="8" font-family="Geist,sans-serif">Jan</text>
+            <text x="43" y="118" fill="var(--t3)" font-size="8" font-family="Geist,sans-serif">Mar</text>
+            <text x="86" y="118" fill="var(--t3)" font-size="8" font-family="Geist,sans-serif">May</text>
+            <text x="130" y="118" fill="var(--t3)" font-size="8" font-family="Geist,sans-serif">Jul</text>
+            <text x="173" y="118" fill="var(--t3)" font-size="8" font-family="Geist,sans-serif">Sep</text>
+            <text x="216" y="118" fill="var(--t3)" font-size="8" font-family="Geist,sans-serif">Nov</text>
+            <circle cx="260" cy="38" r="3.5" fill="#3ecf8e"/>
+            <!-- Current value label -->
+            <rect x="220" y="25" width="38" height="14" rx="4" fill="var(--teal-dim)"/>
+            <text x="239" y="35" text-anchor="middle" fill="#3ecf8e" font-size="8.5" font-weight="600" font-family="Geist Mono,monospace">4.21 g/t</text>
+          </svg>
+          <div style="display:flex;gap:14px;margin-top:6px;">
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t3);">
+              <div style="width:16px;height:2px;background:#3ecf8e;border-radius:1px;"></div>2025
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t3);">
+              <div style="width:16px;height:1.5px;background:#5b8df5;border-radius:1px;border-top:1.5px dashed #5b8df5;"></div>2023
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+            <div style="padding:8px 10px;background:var(--panel-2);border-radius:6px;border:1px solid var(--border);">
+              <div style="font-size:10px;color:var(--t3);margin-bottom:2px;">Attained CII</div>
+              <div style="font-size:16px;font-weight:700;color:var(--teal);font-family:'Geist Mono',monospace;">4.21</div>
+              <div style="font-size:10px;color:var(--t3);">g CO₂/GT·nm</div>
+            </div>
+            <div style="padding:8px 10px;background:var(--panel-2);border-radius:6px;border:1px solid var(--border);">
+              <div style="font-size:10px;color:var(--t3);margin-bottom:2px;">Required CII</div>
+              <div style="font-size:16px;font-weight:700;color:var(--t2);font-family:'Geist Mono',monospace;">4.63</div>
+              <div style="font-size:10px;color:var(--t3);">g CO₂/GT·nm</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notices -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Recent Notices</span>
+          <span style="font-size:11px;color:var(--blue);font-weight:500;cursor:pointer;">View all →</span>
+        </div>
+        <div class="card-body">
+          <div class="notice-list">
+            <div class="notice-item">
+              <div class="notice-dot notice-dot--new"></div>
+              <div>
+                <div class="notice-chip notice-chip--new">NEW</div>
+                <div class="notice-title">[New] User Guideline for Flexibility/Pooling</div>
+                <div class="notice-meta">2026-02-25</div>
+              </div>
+            </div>
+            <div class="notice-item">
+              <div class="notice-dot"></div>
+              <div>
+                <div class="notice-chip">[EU Reg.]</div>
+                <div class="notice-title">Notice on Port Country Code for French Outermost Regions (THETIS Upload)</div>
+                <div class="notice-meta">2026-01-28</div>
+              </div>
+            </div>
+            <div class="notice-item">
+              <div class="notice-dot"></div>
+              <div>
+                <div class="notice-chip">[KR]</div>
+                <div class="notice-title">CII Calculator update (excel version, rev 2.0)</div>
+                <div class="notice-meta">2025-08-13</div>
+              </div>
+            </div>
+            <div class="notice-item" style="border-bottom:none;">
+              <div class="notice-dot"></div>
+              <div>
+                <div class="notice-chip">[IMO DCS/CII]</div>
+                <div class="notice-title">Sample to reflect the amendment of SEEMP guidelines</div>
+                <div class="notice-meta">2025-05-11</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>
