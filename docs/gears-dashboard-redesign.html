@@ -1456,24 +1456,37 @@
     <!-- OVERVIEW -->
     <div class="sidebar__section-label">Overview</div>
 
-    <a href="#" class="sidebar__item active" data-label="Dashboard">
-      <svg class="sidebar__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
-      <span class="sidebar__label">Dashboard</span>
-    </a>
+    <div class="acc-item is-open" data-label="Dashboard">
+      <button class="acc-head">
+        <svg class="sidebar__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        <span class="sidebar__label">Dashboard</span>
+        <svg class="acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+      </button>
+      <div class="acc-body">
+        <a href="#" class="acc-link active"><span class="acc-link-dot"></span>Notice</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Board</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Status</a>
+      </div>
+    </div>
 
     <!-- MY -->
     <div class="sidebar__section-label">My</div>
 
-    <div class="acc-item" data-label="My Info.">
+    <div class="acc-item" data-label="My Info">
       <button class="acc-head">
         <svg class="sidebar__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/></svg>
-        <span class="sidebar__label">My Info.</span>
+        <span class="sidebar__label">My Info</span>
         <svg class="acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
       </button>
       <div class="acc-body">
-        <a href="#" class="acc-link active"><span class="acc-link-dot"></span>Profile</a>
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Account Settings</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>My Account</a>
         <a href="#" class="acc-link"><span class="acc-link-dot"></span>Change Password</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Verification Email</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Company Audit Status</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Contracts</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Billing Info</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Invoices</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Messages</a>
       </div>
     </div>
 
@@ -1484,21 +1497,19 @@
         <svg class="acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
       </button>
       <div class="acc-body">
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>MRV Reports</a>
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>CII Reports</a>
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>EU ETS Reports</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Report</a>
       </div>
     </div>
 
-    <div class="acc-item" data-label="My Companies">
+    <div class="acc-item" data-label="My Company">
       <button class="acc-head">
-        <svg class="sidebar__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="12" height="9" rx="1.5"/><path d="M5 5V4a3 3 0 0 1 6 0v1"/><path d="M8 9v2"/></svg>
-        <span class="sidebar__label">My Companies</span>
+        <svg class="sidebar__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="12" height="9" rx="1.5"/><path d="M5 5V4a3 3 0 0 1 6 0v1"/></svg>
+        <span class="sidebar__label">My Company</span>
         <svg class="acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
       </button>
       <div class="acc-body">
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Company List</a>
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Vessel Assignment</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Company</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>CER</a>
       </div>
     </div>
 
@@ -1512,10 +1523,38 @@
         <svg class="acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
       </button>
       <div class="acc-body">
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>SEEMP Part II</a>
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>SEEMP Part III</a>
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Data Verification</a>
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>CII Status</a>
+        <a href="gears-mrv-detail.html" class="acc-link"><span class="acc-link-dot"></span>Status (Overview)</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Ship</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>CB Board</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Operation Data</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Docs</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>EU MP</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>UK MP</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>FEU MP</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>SEEMP II</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>SEEMP III</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>EU ER</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>UK ER</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>FEU Report</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>CB Upload</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>DCS / CII</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Voyage Stmt</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>EEOI</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>GRC</a>
+      </div>
+    </div>
+
+    <div class="acc-item" data-label="Flexibility">
+      <button class="acc-head">
+        <svg class="sidebar__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8h3l2-5 3 10 2-5h2"/></svg>
+        <span class="sidebar__label">Flexibility</span>
+        <svg class="acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+      </button>
+      <div class="acc-body">
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Pooling Board</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Fuel EU</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Requests</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Join Status</a>
       </div>
     </div>
 
@@ -1526,19 +1565,38 @@
         <svg class="acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
       </button>
       <div class="acc-body">
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Dashboard</a>
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Trend Analysis</a>
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Benchmarking</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Monitor — CII</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Monitor — MRV</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Monitor — ETS</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Monitor — FuelEU</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Simulator — CII</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Simulator — MRV</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Simulator — ETS</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Simulator — FuelEU</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Simulator — Flexibility</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>CII Benchmark</a>
       </div>
     </div>
 
     <!-- SUPPORT -->
     <div class="sidebar__section-label">Support</div>
 
-    <a href="#" class="sidebar__item" data-label="Contact us">
-      <svg class="sidebar__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M1 4l7 5 7-5"/></svg>
-      <span class="sidebar__label">Contact us</span>
-    </a>
+    <div class="acc-item" data-label="Contact Us">
+      <button class="acc-head">
+        <svg class="sidebar__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M1 4l7 5 7-5"/></svg>
+        <span class="sidebar__label">Contact Us</span>
+        <svg class="acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+      </button>
+      <div class="acc-body">
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Surveyors</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Complaint / Appeal</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Satisfaction Survey</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Q &amp; A</a>
+      </div>
+    </div>
+
+    <!-- ADMIN ONLY -->
+    <div class="sidebar__section-label">Admin Only</div>
 
     <div class="acc-item" data-label="Admin">
       <button class="acc-head">
@@ -1547,9 +1605,39 @@
         <svg class="acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
       </button>
       <div class="acc-body">
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>User Management</a>
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>System Settings</a>
-        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Audit Logs</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Board</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Tariff</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Questionnaire</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Emission DB</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>MP Certificate</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>PANAMA Cert.</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Cert. by Flag</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Bloc Fee</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Quality Docs.</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Human Resource</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>CB Upload</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>기타 검증 계약</a>
+      </div>
+    </div>
+
+    <div class="acc-item" data-label="System">
+      <button class="acc-head">
+        <svg class="sidebar__icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="10" rx="1.5"/><path d="M5 13v2M11 13v2M3 15h10"/></svg>
+        <span class="sidebar__label">System</span>
+        <svg class="acc-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4l4 4-4 4"/></svg>
+      </button>
+      <div class="acc-body">
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Common Code</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Program</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Menu</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>User Authority</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Manage Flag</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Manage Port</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>Portal User</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>CRM User</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>SEEMP Part II</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>SEEMP Part III</a>
+        <a href="#" class="acc-link"><span class="acc-link-dot"></span>DCS XML</a>
       </div>
     </div>
 
